@@ -7,8 +7,8 @@ E-Tounsi is a web platform that helps Tunisian citizens complete their administr
 
 Features
 Municipalité : demandes de documents et réclamations municipales
-STEG : suivi des factures et réclamations électricité/gaz
-SONEDE : suivi des factures et réclamations eau
+CNAM : suivi des factures et réclamations électricité/gaz
+POSTE : suivi des factures et réclamations eau
 Transport : informations et services de transport
 Poste de police : démarches administratives (documents, rendez-vous)
 Front Office : espace citoyen
@@ -37,8 +37,8 @@ Le projet suit l'architecture MVC (Model – View – Controller) :
 └── lib/
 Contributors
 Samar Debbichi – Module Municipalité
-Mariem Kaabi – Module STEG
-Mariem Kochbati – Module SONEDE
+Mariem Kaabi – Module CNAM
+Mariem Kochbati – Module POSTE
 Ranim Aissa – Module Transport
 Darine Ghodhbani – Module Poste de police
 Academic Context
