@@ -1,4 +1,7 @@
 <?php
 
-header('Location: FrontOffice/');
-exit;
+require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/app/core/App.php';
+
+$app = new App();
+$app->run();

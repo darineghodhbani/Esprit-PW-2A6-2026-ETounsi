@@ -2,86 +2,116 @@
 
 ## Overview
 
-Ce module de l’équipe Power Girls regroupe les services postaux et la gestion des utilisateurs pour E-Tounsi. Le Front Office reprend eLearning et le Back Office Spark Admin. Le code utilise PHP MVC et les notions des cours HTML, CSS, PHP, POO et PDO.
+Ce module de Mariem Kochbati, équipe Power Girls, permet de consulter les bureaux de poste et de déclarer, suivre et administrer les colis. Il intègre le Front Office eLearning et le Back Office Spark Admin dans une seule structure MVC PHP.
 
 ## Features
 
-- Recherche de bureaux par ville et suivi public des colis.
-- Déclaration d’envoi, historique personnel et annulation d’un envoi en attente.
-- Inscription citoyenne, connexion, profil et déconnexion.
-- CRUD utilisateurs, attribution des rôles et activation ou désactivation des comptes.
-- Gestion administrative des bureaux, des colis et de leurs statuts.
-- Validation PHP des formulaires, requêtes PDO préparées, mots de passe hachés et jetons CSRF.
-- Interface Front Office en français et en arabe.
+- Annuaire des bureaux avec filtre par ville et suivi public des colis.
+- Inscription, connexion, profil et déconnexion.
+- Déclaration d’envoi, historique personnel et annulation des envois en attente.
+- CRUD des bureaux, gestion des colis et modification des statuts.
+- CRUD des utilisateurs, gestion des rôles et activation des comptes.
+- Contrôle des accès, sessions et validation PHP des formulaires.
+- Front Office en français et en arabe, logo E-Tounsi de la présentation.
 
 ## Tech Stack
 
-### Frontend
-
-HTML5, CSS3 avec Flexbox et Grid, JavaScript et Bootstrap. Templates eLearning et Spark Admin.
-
-### Backend
-
-PHP 8.2, PDO MySQL, MariaDB fourni par XAMPP et sessions PHP. Extensions requises `pdo_mysql` et `mbstring`. L’import des anciennes données demande aussi `pdo_sqlite`.
+HTML5, CSS3, Flexbox, Grid, JavaScript, Bootstrap, PHP 8.2, PDO MySQL et MariaDB avec XAMPP. Les extensions PHP `pdo_mysql` et `mbstring` sont nécessaires.
 
 ## Architecture
 
-- `FrontOffice/index.php` prépare les pages citoyennes avec un `switch` et assemble les blocs de l’atelier.
-- `FrontOffice/Controllers/` prépare les parcours de compte et de colis.
-- `BackOffice/app/` contient routes, contrôleurs, vues et layout Spark Admin.
-- `Models/Utilisateur.php` contient l’entité utilisateur et ses getters/setters.
-- `Controllers/UtilisateurController.php` contient les requêtes et la validation des comptes.
-- `Models/PosteRepository.php` contient les requêtes du module Poste.
-- `securite.php` centralise les sessions, les rôles et les jetons CSRF.
-- `config/database.php` ouvre la connexion PDO et `data/installation.sql` décrit la base.
+```text
+poste/
+├── index.php                   Point d’entrée du Front et du Back Office
+├── .htaccess                   Accès local et anciennes adresses
+├── config/
+│   ├── database.php            Connexion PDO
+│   └── local.example.php       Exemple de configuration locale
+├── app/
+│   ├── core/
+│   │   ├── App.php             Choix du contrôleur avec switch
+│   │   ├── Controller.php      Affichage commun du Back Office
+│   │   ├── fonctions.php       Liens, traduction et échappement HTML
+│   │   └── securite.php        Sessions, rôles et jetons CSRF
+│   ├── controllers/            Requêtes, validation et traitements
+│   ├── models/                 Utilisateur, BureauPostal et Colis
+│   └── views/
+│       ├── layouts/            Assemblage du Front et du Back Office
+│       ├── includes/           Blocs communs eLearning
+│       ├── partials/           Blocs communs Spark Admin
+│       ├── admin/              Pages d’administration
+│       └── *.php               Pages citoyennes avec leur HTML
+├── public/assets/
+│   ├── front/                  CSS et JavaScript du Front Office
+│   ├── back/                   CSS et JavaScript du Back Office
+│   ├── images/                 Logo et image du template
+│   ├── fonts/                  Polices locales
+│   ├── js/                     Bootstrap partagé
+│   └── vendor/                 Icônes partagées
+└── sql/
+    ├── database.sql            Tables et relations
+    └── installer.php           Installation depuis le terminal
+```
+
+Les modèles représentent les entités avec des attributs privés, un constructeur et des getters/setters. Les contrôleurs contiennent les requêtes PDO et les traitements, selon le workshop de sécurité. `HomeController` prépare les pages citoyennes. `AdminController`, `BureauController`, `ColisController` et `UtilisateurController` préparent les vues administratives. `AuthController` gère les comptes et `PosteController` les données postales.
+
+Les vues contiennent le HTML. Les fichiers `public/assets/front/css/style.css` et `public/assets/back/css/main.css` proviennent des templates fournis. Leurs adaptations se trouvent dans les deux fichiers `poste.css`. Le Front Office assemble `head`, `spinner`, `navbar`, la vue, `footer`, puis `scripts`, dans l’ordre de l’atelier.
+
+### Notions des cours
+
+Le PHP utilise les fonctions, tableaux, conditions, boucles, formulaires GET/POST, classes, sessions et requêtes PDO préparées. Le JavaScript utilise les fonctions, les sélecteurs DOM, `classList`, `dataset` et `addEventListener`, étudiés dans les chapitres 2, 3 et 4 et leurs ateliers. Les formulaires sont contrôlés côté PHP, y compris lorsque JavaScript est désactivé. Aucune compilation n’est nécessaire.
 
 ## Contributors
 
-Mariem Kochbati — module Poste, équipe Power Girls.
+Mariem Kochbati — module Poste et gestion des utilisateurs, équipe Power Girls.
 
 ## Academic Context
 
-Developed at Esprit School of Engineering – Tunisia. Projet Web de la classe 2A6, année universitaire 2026–2027.
+Developed at Esprit School of Engineering – Tunisia. Projet Technologies Web, classe 2A6, année universitaire 2026–2027.
 
 ## Getting Started
 
 1. Cloner le dépôt d’équipe dans `C:\xampp\htdocs\Esprit-PW-2A6-2026-ETounsi`.
-2. Démarrer **Apache** et **MySQL** dans XAMPP.
-3. Dans CMD, ouvrir le dossier `modules\poste` du dépôt, puis lancer `C:\xampp\php\php.exe scripts\installer.php`.
-4. Ouvrir `http://localhost/Esprit-PW-2A6-2026-ETounsi/modules/poste/FrontOffice/`.
-5. Les comptes générés pour la validation locale se trouvent dans `data/acces-local.txt`. Ce fichier est privé et exclu de Git.
+2. Démarrer Apache et MySQL dans XAMPP.
+3. Ouvrir CMD et exécuter les commandes suivantes.
 
-Les valeurs XAMPP locales par défaut sont le serveur `127.0.0.1`, le port `3306`, la base `etounsi_poste` et l’utilisateur MySQL `root` avec son mot de passe local vide. Si nécessaire, copier `config/local.example.php` vers `config/local.php` et adapter ces valeurs. Le fichier local reste exclu de Git.
+```bat
+cd /d C:\xampp\htdocs\Esprit-PW-2A6-2026-ETounsi\modules\poste
+C:\xampp\php\php.exe sql\installer.php
+```
 
-Le script d’installation initialise MySQL une seule fois. Si une ancienne base `data/poste.sqlite` existe lors de l’installation, ses citoyens, bureaux et colis sont importés avec leurs identifiants. Les six colis existant sur la machine de développement ont ainsi été conservés. Une nouvelle installation utilise des données de démonstration et le numéro `ET000001TN`.
+4. Ouvrir le [Front Office](http://localhost/Esprit-PW-2A6-2026-ETounsi/modules/poste/index.php).
+5. Consulter les comptes générés dans `config/acces-local.txt`, fichier privé exclu de Git. Se connecter avec un administrateur pour accéder au [Back Office](http://localhost/Esprit-PW-2A6-2026-ETounsi/modules/poste/index.php?espace=admin).
 
-Le schéma est consultable dans phpMyAdmin à `http://localhost/phpmyadmin/`, base `etounsi_poste`. Apache limite l’application à un accès local, adapté à la validation sur une machine.
+La configuration XAMPP locale utilise `127.0.0.1`, le port `3306`, la base `etounsi_poste` et l’utilisateur MySQL `root` avec le mot de passe local vide. Pour adapter ces valeurs, copier `config/local.example.php` vers `config/local.php`. Ce fichier reste privé et exclu de Git.
+
+Le schéma se trouve dans `sql/database.sql` et la base est visible dans [phpMyAdmin](http://localhost/phpmyadmin/). L’installation ajoute quatre comptes de démonstration, quatre bureaux et trois colis sur une base neuve. Le numéro `ET000001TN` permet de tester le suivi. Relancer l’installateur sur une base déjà installée conserve ses données. Apache réserve l’application à la machine locale pour la validation.
 
 ### Rôles
 
 | Rôle | Accès |
 | --- | --- |
-| Visiteur | Consulter les bureaux, suivre un colis, créer un compte ou se connecter |
-| Citoyen | Déclarer un envoi, consulter et annuler ses propres envois en attente, modifier son profil |
+| Visiteur | Consulter les bureaux, suivre un colis, s’inscrire ou se connecter |
+| Citoyen | Déclarer, consulter et annuler ses propres envois en attente, modifier son profil |
 | Administrateur Poste | Gérer les bureaux et les colis, modifier son profil |
-| Super administrateur | Accès administrateur et gestion complète des utilisateurs et de leurs rôles |
+| Super administrateur | Accès administrateur et gestion des utilisateurs et de leurs rôles |
 
-La suppression d’un utilisateur possédant des colis est bloquée pour conserver leur historique. Le super administrateur peut le désactiver. Au moins un super administrateur actif doit rester disponible.
+L’inscription publique crée un citoyen. La suppression d’un utilisateur possédant des colis est bloquée pour conserver leur historique. Son compte peut être désactivé. Au moins un super administrateur actif doit rester disponible.
 
 ### Sessions et validation
 
-Les mots de passe comportent au moins huit caractères et au plus 72 octets, conformément à la limite de bcrypt. La connexion renouvelle l’identifiant de session. Les cookies sont HttpOnly et SameSite=Lax, avec Secure si HTTPS est actif. Une session expire après 30 minutes d’inactivité ou huit heures de connexion. Le rôle, l’état du compte et sa version de session sont relus côté serveur. Une modification du mot de passe, du rôle ou de l’activation révoque les sessions antérieures.
+Les requêtes utilisent des paramètres PDO. Les sorties HTML sont échappées. Les actions de modification utilisent POST et un jeton CSRF. Les mots de passe sont hachés et comportent au moins huit caractères, dans la limite de 72 octets. Le rôle, l’état du compte et la version de session sont vérifiés côté serveur.
 
-Les formulaires sont validés côté PHP même si JavaScript est désactivé. La limitation des tentatives de connexion est appliquée à la session du navigateur après cinq échecs en cinq minutes.
+La connexion renouvelle l’identifiant de session. Les cookies sont HttpOnly et SameSite=Lax, avec Secure en HTTPS. Une session expire après 30 minutes d’inactivité ou huit heures de connexion. Modifier le mot de passe, le rôle ou l’activation révoque les sessions antérieures. La limitation des tentatives de connexion s’applique à la session du navigateur après cinq échecs en cinq minutes.
 
 ## Contribution
 
-Créer une branche pour chaque tâche, vérifier le parcours sur XAMPP et proposer une pull request au dépôt d’équipe. Suivre les tâches et leur état dans le GitHub Project Board.
+Créer une branche par tâche, tester sur XAMPP, puis ouvrir une pull request vers le dépôt d’équipe. Les contributions de Mariem sont suivies dans le [GitHub Project Board Poste et utilisateurs](https://github.com/users/kochbatimaryem574-maker/projects/1).
 
 ## Licence
 
-Les ressources tierces conservent leurs licences. Consulter `FrontOffice/LICENSE.txt`, les notices des polices et `BackOffice/assets/SPARK-README.md`. Les comptes et les paramètres privés de chaque machine restent dans les fichiers locaux exclus de Git.
+Les notices tierces sont conservées dans `public/assets/front/LICENSE.txt`, `public/assets/back/SPARK-README.md`, `public/assets/fonts/Cairo-OFL.txt` et `public/assets/vendor/bootstrap-icons/LICENSE.txt`.
 
 ## Acknowledgments
 
-eLearning par [HTML Codex](https://htmlcodex.com/elearning-html-template/). Spark Admin par Spark Admin Dev, distribué par [ThemeWagon](https://themewagon.com/themes/spark-admin/). Gestion des sessions adaptée du workshop fourni par l’enseignante.
+eLearning par [HTML Codex](https://htmlcodex.com/elearning-html-template/). Spark Admin par Spark Admin Dev, distribué par [ThemeWagon](https://themewagon.com/themes/spark-admin/). Organisation MVC et sessions adaptées des workshops fournis par l’enseignante.

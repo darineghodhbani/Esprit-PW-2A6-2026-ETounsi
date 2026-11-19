@@ -51,7 +51,7 @@ bash
 git clone https://github.com/darineghodhbani/Esprit-PW-2A6-2026-ETounsi.git
 Placer le dossier dans htdocs (XAMPP) ou www (WAMP).
 Démarrer Apache et MySQL depuis XAMPP/WAMP.
-Pour le module Poste et les utilisateurs, ouvrir CMD dans modules\poste et lancer C:\xampp\php\php.exe scripts\installer.php. Ce script initialise MySQL et les comptes locaux de validation.
+Pour le module Poste et les utilisateurs, ouvrir CMD dans modules\poste et lancer C:\xampp\php\php.exe sql\installer.php. Ce script initialise MySQL et les comptes locaux de validation.
 Ouvrir dans le navigateur :
 http://localhost/Esprit-PW-2A6-2026-ETounsi/index.php
 ## Acknowledgments
@@ -61,19 +61,19 @@ Nous remercions nos tuteurs et l'équipe pédagogique d'Esprit School of Enginee
 
 ## Module Poste et gestion des utilisateurs
 
-Le module de Mariem Kochbati est intégré dans [modules/poste](modules/poste/README.md). Son Front Office eLearning et son Back Office Spark Admin utilisent MySQL dans XAMPP et une gestion des comptes commune.
+Le module de Mariem Kochbati est intégré dans [modules/poste](modules/poste/README.md). Son Front Office eLearning et son Back Office Spark Admin utilisent MySQL dans XAMPP et une gestion des comptes commune. Ce module possède un point d’entrée `index.php`, les dossiers `app/core`, `app/controllers`, `app/models`, `app/views`, `config`, `public/assets` et `sql`.
 
 Les trois rôles sont citoyen, administrateur Poste et super administrateur. L’inscription publique crée un citoyen. Le super administrateur gère les utilisateurs et leurs rôles. Les sessions, les autorisations et les formulaires suivent le workshop de sécurité.
 
 Après installation, accéder au module depuis le lien **Poste** du menu ou depuis
-http://localhost/Esprit-PW-2A6-2026-ETounsi/modules/poste/FrontOffice/.
+http://localhost/Esprit-PW-2A6-2026-ETounsi/modules/poste/index.php.
 
-Les accès générés se trouvent dans le fichier local modules/poste/data/acces-local.txt. Ce fichier et les paramètres privés de chaque machine sont exclus de Git.
+Les accès générés se trouvent dans le fichier local modules/poste/config/acces-local.txt. Ce fichier et les paramètres privés de chaque machine sont exclus de Git.
 
 Les ressources eLearning sont attribuées à HTML Codex et celles de Spark Admin à Spark Admin Dev / ThemeWagon. Leurs notices sont conservées dans le module.
 
 ## Suivi des tâches Poste et utilisateurs
 
-Le [tableau GitHub Poste et utilisateurs](https://github.com/users/kochbatimaryem574-maker/projects/1) regroupe les issues #2, #3 et #4 de ce dépôt. Elles sont attribuées à kochbatimaryem574-maker et portent le statut **Done** après vérification et fusion de la pull request #5.
+Le [tableau GitHub Poste et utilisateurs](https://github.com/users/kochbatimaryem574-maker/projects/1) suit les contributions de Mariem Kochbati. Les issues #2, #3 et #4 concernent les fonctionnalités et la sécurité. L’issue #7 concerne le rangement MVC pour la validation. Elles sont attribuées à kochbatimaryem574-maker et leur avancement est indiqué dans le tableau.
 
 La vue **Avancement Poste** présente ces tâches sous forme de tableau. Le projet est public, sous le compte de Mariem, et accessible depuis ce lien pour la validation.

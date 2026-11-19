@@ -11,7 +11,7 @@
                 <a href="index.php?page=home" class="nav-item nav-link <?php echo ($currentPage == 'home') ? 'active' : ''; ?>">Accueil</a>
                 <a href="index.php?page=about" class="nav-item nav-link <?php echo ($currentPage == 'about') ? 'active' : ''; ?>">À propos</a>
                 <a href="index.php?page=courses" class="nav-item nav-link <?php echo ($currentPage == 'courses') ? 'active' : ''; ?>">Services</a>
-                <a href="modules/poste/FrontOffice/" class="nav-item nav-link">Poste</a>
+                <a href="modules/poste/index.php" class="nav-item nav-link">Poste</a>
                 <div class="nav-item dropdown">
                     <a href="#" class="nav-link dropdown-toggle <?php echo in_array($currentPage, ['team', 'testimonial', '404']) ? 'active' : ''; ?>" data-bs-toggle="dropdown">Pages</a>
                     <div class="dropdown-menu fade-down m-0">
@@ -22,7 +22,7 @@
                 </div>
                 <a href="index.php?page=contact" class="nav-item nav-link <?php echo ($currentPage == 'contact') ? 'active' : ''; ?>">Contact</a>
             </div>
-            <a href="modules/poste/FrontOffice/?page=connexion" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">Se connecter<i class="fa fa-arrow-right ms-3"></i></a>
+            <a href="modules/poste/index.php?page=connexion" class="btn btn-primary py-4 px-lg-5 d-none d-lg-block">Se connecter<i class="fa fa-arrow-right ms-3"></i></a>
         </div>
     </nav>
     <!-- Navbar End -->
