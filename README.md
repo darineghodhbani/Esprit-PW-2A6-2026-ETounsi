@@ -71,3 +71,9 @@ http://localhost/Esprit-PW-2A6-2026-ETounsi/modules/poste/FrontOffice/.
 Les accès générés se trouvent dans le fichier local modules/poste/data/acces-local.txt. Ce fichier et les paramètres privés de chaque machine sont exclus de Git.
 
 Les ressources eLearning sont attribuées à HTML Codex et celles de Spark Admin à Spark Admin Dev / ThemeWagon. Leurs notices sont conservées dans le module.
+
+## Suivi des tâches Poste et utilisateurs
+
+Le [tableau GitHub Poste et utilisateurs](https://github.com/users/kochbatimaryem574-maker/projects/1) regroupe les issues #2, #3 et #4 de ce dépôt. Elles sont attribuées à kochbatimaryem574-maker et portent le statut **Done** après vérification et fusion de la pull request #5.
+
+La vue **Avancement Poste** présente ces tâches sous forme de tableau. Le projet est public, sous le compte de Mariem, et accessible depuis ce lien pour la validation.
