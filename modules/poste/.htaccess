@@ -2,3 +2,7 @@ Options -Indexes
 Require local
 DirectoryIndex index.php
 RedirectMatch 404 /\.git(/|$)
+RewriteEngine On
+RewriteBase /Esprit-PW-2A6-2026-ETounsi/modules/poste/
+RewriteRule ^FrontOffice(?:/index\.php)?/?$ index.php [R=307,QSA,L]
+RewriteRule ^BackOffice(?:/index\.php)?/?$ index.php?espace=admin [R=307,QSA,L]
