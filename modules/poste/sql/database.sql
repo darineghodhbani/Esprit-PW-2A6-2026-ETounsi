@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS Citoyen (
     nom VARCHAR(80) NOT NULL,
     email VARCHAR(190) NOT NULL UNIQUE,
     mot_de_passe VARCHAR(255) DEFAULT NULL,
-    role ENUM('citoyen', 'admin_poste', 'super_admin') NOT NULL DEFAULT 'citoyen',
+    role ENUM('citoyen', 'admin') NOT NULL DEFAULT 'citoyen',
     actif TINYINT(1) NOT NULL DEFAULT 1,
     version_session INT UNSIGNED NOT NULL DEFAULT 1,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP

@@ -38,7 +38,7 @@ Le projet suit l'architecture MVC (Model – View – Controller) :
 ## Contributors
 Samar Debbichi – Module Municipalité
 Mariem Kaabi – Module CNAM
-Mariem Kochbati – Module POSTE
+Maryem Kochbati – Module POSTE
 Ranim Aissa – Module Transport
 Darine Ghodhbani – Module Poste de police
 ## Academic Context
@@ -61,9 +61,9 @@ Nous remercions nos tuteurs et l'équipe pédagogique d'Esprit School of Enginee
 
 ## Module Poste et gestion des utilisateurs
 
-Le module de Mariem Kochbati est intégré dans [modules/poste](modules/poste/README.md). Son Front Office eLearning et son Back Office Spark Admin utilisent MySQL dans XAMPP et une gestion des comptes commune. Ce module possède un point d’entrée `index.php`, les dossiers `app/core`, `app/controllers`, `app/models`, `app/views`, `config`, `public/assets` et `sql`.
+Le module de Maryem Kochbati est intégré dans [modules/poste](modules/poste/README.md). Son Front Office eLearning et son Back Office Spark Admin utilisent MySQL dans XAMPP et une gestion des comptes commune. Ce module possède un point d’entrée `index.php`, les dossiers `app/core`, `app/controllers`, `app/models`, `app/views`, `config`, `public/assets` et `sql`.
 
-Les trois rôles sont citoyen, administrateur Poste et super administrateur. L’inscription publique crée un citoyen. Le super administrateur gère les utilisateurs et leurs rôles. Les sessions, les autorisations et les formulaires suivent le workshop de sécurité.
+Les deux rôles sont citoyen et administrateur. L’inscription publique crée un citoyen. L’administrateur gère les utilisateurs, leurs rôles, les bureaux et les colis. Les sessions, les autorisations et les formulaires suivent le workshop de sécurité.
 
 Après installation, accéder au module depuis le lien **Poste** du menu ou depuis
 http://localhost/Esprit-PW-2A6-2026-ETounsi/modules/poste/index.php.
@@ -74,6 +74,6 @@ Les ressources eLearning sont attribuées à HTML Codex et celles de Spark Admin
 
 ## Suivi des tâches Poste et utilisateurs
 
-Le [tableau GitHub Poste et utilisateurs](https://github.com/users/kochbatimaryem574-maker/projects/1) suit les contributions de Mariem Kochbati. Les issues #2, #3 et #4 concernent les fonctionnalités et la sécurité. L’issue #7 concerne le rangement MVC pour la validation. Elles sont attribuées à kochbatimaryem574-maker et leur avancement est indiqué dans le tableau.
+Le [tableau GitHub Poste et utilisateurs](https://github.com/users/kochbatimaryem574-maker/projects/1) suit les contributions de Maryem Kochbati. Les issues #2, #3 et #4 concernent les fonctionnalités et la sécurité. L’issue #7 concerne le rangement MVC pour la validation et l’issue #9 le rôle administrateur unique et les footers. Elles sont attribuées à kochbatimaryem574-maker et leur avancement est indiqué dans le tableau.
 
-La vue **Avancement Poste** présente ces tâches sous forme de tableau. Le projet est public, sous le compte de Mariem, et accessible depuis ce lien pour la validation.
+La vue **Avancement Poste** présente ces tâches sous forme de tableau. Le projet est public, sous le compte de Maryem, et accessible depuis ce lien pour la validation.

@@ -12,10 +12,7 @@ class Controller
 
         $csrf = csrfToken();
         $compteConnecte = utilisateurConnecte();
-        $roleConnecte = 'Administrateur Poste';
-        if ($compteConnecte['role'] === 'super_admin') {
-            $roleConnecte = 'Super administrateur';
-        }
+        $roleConnecte = 'Administrateur';
 
         // Le contenu de la vue est placé dans le layout commun de Spark Admin.
         ob_start();

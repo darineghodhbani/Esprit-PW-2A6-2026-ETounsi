@@ -4,13 +4,12 @@ class UtilisateurController extends Controller
 {
     private const ROLES = [
         'citoyen' => 'Citoyen',
-        'admin_poste' => 'Administrateur Poste',
-        'super_admin' => 'Super administrateur',
+        'admin' => 'Administrateur',
     ];
 
     public function index()
     {
-        exigerRole(['super_admin']);
+        exigerRole(['admin']);
         $recherche = $this->text($_GET, 'q');
         $utilisateurs = [];
         foreach (gestionUtilisateurs()->lister() as $utilisateur) {
@@ -28,7 +27,7 @@ class UtilisateurController extends Controller
 
     public function form()
     {
-        exigerRole(['super_admin']);
+        exigerRole(['admin']);
         $utilisateur = ['id' => null, 'nom' => '', 'email' => '', 'role' => 'citoyen', 'actif' => 1];
         if (isset($_GET['id'])) {
             $utilisateur = $this->trouver($this->id($_GET));
@@ -40,7 +39,7 @@ class UtilisateurController extends Controller
 
     public function save()
     {
-        $compteConnecte = exigerRole(['super_admin']);
+        $compteConnecte = exigerRole(['admin']);
         if (!$this->csrfValid()) {
             return;
         }
@@ -103,9 +102,6 @@ class UtilisateurController extends Controller
                 exit;
             }
             connecterUtilisateur($compteModifie);
-            if ($compteModifie['role'] !== 'super_admin') {
-                $this->redirect('dashboard', 'Votre compte a été mis à jour.');
-            }
         }
 
         $message = 'L’utilisateur a été ajouté.';
@@ -117,7 +113,7 @@ class UtilisateurController extends Controller
 
     public function confirmDelete()
     {
-        exigerRole(['super_admin']);
+        exigerRole(['admin']);
         $utilisateur = $this->trouver($this->id($_GET));
         if ($utilisateur !== null) {
             $this->afficherSuppression($utilisateur);
@@ -126,7 +122,7 @@ class UtilisateurController extends Controller
 
     public function delete()
     {
-        exigerRole(['super_admin']);
+        exigerRole(['admin']);
         if (!$this->csrfValid()) {
             return;
         }

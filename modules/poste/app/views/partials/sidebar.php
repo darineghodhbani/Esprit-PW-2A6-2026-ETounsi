@@ -3,10 +3,8 @@ $items = [
     'dashboard' => ['label' => 'Tableau de bord', 'icon' => 'grid'],
     'colis' => ['label' => 'Gestion des colis', 'icon' => 'box'],
     'bureaux' => ['label' => 'Bureaux de poste', 'icon' => 'geo-alt'],
+    'utilisateurs' => ['label' => 'Utilisateurs', 'icon' => 'people'],
 ];
-if ($compteConnecte['role'] === 'super_admin') {
-    $items['utilisateurs'] = ['label' => 'Utilisateurs', 'icon' => 'people'];
-}
 ?>
 <aside class="sidebar-wrapper" id="sidebar" aria-label="Menu du module Poste">
     <a href="?espace=admin&amp;page=dashboard" class="sidebar-brand" title="E-Tounsi · Administration">
