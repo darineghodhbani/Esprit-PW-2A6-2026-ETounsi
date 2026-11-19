@@ -1,0 +1,12 @@
+# Données et accès propres à cette machine
+/data/*.sqlite*
+/data/acces-local.txt
+/config/local.php
+.env
+.env.*
+
+# Journaux et réglages de l'éditeur
+*.log
+/.vscode/
+Thumbs.db
+.DS_Store
