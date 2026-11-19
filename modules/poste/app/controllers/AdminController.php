@@ -21,10 +21,7 @@ class AdminController extends Controller
             ['label' => 'Bureaux de poste', 'value' => count($repository->listOffices()), 'icon' => 'geo-alt'],
         ];
 
-        $compteConnecte = utilisateurConnecte();
-        if ($compteConnecte['role'] === 'super_admin') {
-            $stats[] = ['label' => 'Utilisateurs', 'value' => count(gestionUtilisateurs()->lister()), 'icon' => 'people'];
-        }
+        $stats[] = ['label' => 'Utilisateurs', 'value' => count(gestionUtilisateurs()->lister()), 'icon' => 'people'];
 
         $this->render('dashboard', 'Tableau de bord', 'dashboard', [
             'stats' => $stats,

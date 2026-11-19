@@ -25,6 +25,48 @@ try {
     $base = Config::getConnexion();
     $base->exec(file_get_contents(__DIR__ . '/database.sql'));
 
+    // Mise à jour des bases installées avec les deux anciens rôles administrateurs.
+    $migration = $base->prepare('SELECT nom FROM Migration WHERE nom = :nom');
+    $migration->execute(['nom' => 'administrateur-unique-20261120']);
+    if (!$migration->fetch()) {
+        $base->exec("ALTER TABLE Citoyen MODIFY role
+            ENUM('citoyen', 'admin_poste', 'super_admin', 'admin') NOT NULL DEFAULT 'citoyen'");
+        $base->beginTransaction();
+        $base->exec("UPDATE Citoyen SET role = 'admin', version_session = version_session + 1
+            WHERE role IN ('admin_poste', 'super_admin')");
+
+        // Retirer uniquement l'ancien compte de démonstration, sans supprimer ses colis.
+        $autreAdmin = $base->prepare("SELECT COUNT(*) FROM Citoyen
+            WHERE role = 'admin' AND actif = 1 AND email <> :email");
+        $autreAdmin->execute(['email' => 'super.admin@example.test']);
+        if ((int) $autreAdmin->fetchColumn() > 0) {
+            $suppression = $base->prepare("DELETE FROM Citoyen WHERE email = :email AND role = 'admin'
+                AND id_citoyen NOT IN (SELECT id_citoyen FROM Colis)");
+            $suppression->execute(['email' => 'super.admin@example.test']);
+        }
+        $base->commit();
+        $base->exec("ALTER TABLE Citoyen MODIFY role ENUM('citoyen', 'admin') NOT NULL DEFAULT 'citoyen'");
+        $base->prepare('INSERT INTO Migration (nom) VALUES (:nom)')
+            ->execute(['nom' => 'administrateur-unique-20261120']);
+        echo "Le rôle Administrateur regroupe tous les accès du Back Office.\n";
+    }
+
+    $cheminAcces = dirname(__DIR__) . '/config/acces-local.txt';
+    $ancienAdmin = $base->prepare('SELECT id_citoyen FROM Citoyen WHERE email = :email');
+    $ancienAdmin->execute(['email' => 'super.admin@example.test']);
+    if (!$ancienAdmin->fetch() && file_exists($cheminAcces)) {
+        $contenu = str_replace("\r\n", "\n", file_get_contents($cheminAcces));
+        $blocsConserves = [];
+        foreach (explode("\n\n", $contenu) as $bloc) {
+            if (strpos($bloc, 'Email super.admin@example.test') === false) {
+                $blocsConserves[] = $bloc;
+            }
+        }
+        if (file_put_contents($cheminAcces, implode("\n\n", $blocsConserves), LOCK_EX) === false) {
+            throw new RuntimeException('Impossible de mettre à jour les accès locaux.');
+        }
+    }
+
     $requete = $base->prepare('SELECT nom FROM Migration WHERE nom = :nom');
     $requete->execute(['nom' => 'utilisateurs-et-poste-20261119']);
     if ($requete->fetch()) {
@@ -53,17 +95,14 @@ try {
     $comptes = $base->query("SELECT id_citoyen, nom, email FROM Citoyen
         WHERE email LIKE '%@example.test' AND mot_de_passe IS NULL")->fetchAll();
     $ajoutAdmin = $base->prepare("INSERT INTO Citoyen (nom, email, role) VALUES (:nom, :email, :role)");
-    foreach ([
-        ['nom' => 'Administration Poste', 'email' => 'admin.poste@example.test', 'role' => 'admin_poste'],
-        ['nom' => 'Administration E-Tounsi', 'email' => 'super.admin@example.test', 'role' => 'super_admin'],
-    ] as $compteAdmin) {
-        $ajoutAdmin->execute($compteAdmin);
-        $comptes[] = [
-            'id_citoyen' => $base->lastInsertId(),
-            'nom' => $compteAdmin['nom'],
-            'email' => $compteAdmin['email'],
-        ];
-    }
+    $ajoutAdmin->execute([
+        'nom' => 'Administration Poste', 'email' => 'admin.poste@example.test', 'role' => 'admin',
+    ]);
+    $comptes[] = [
+        'id_citoyen' => $base->lastInsertId(),
+        'nom' => 'Administration Poste',
+        'email' => 'admin.poste@example.test',
+    ];
 
     $acces = "E-Tounsi — comptes de validation locale\n\n";
     $changerPassword = $base->prepare('UPDATE Citoyen SET mot_de_passe = :mot_de_passe WHERE id_citoyen = :id');

@@ -4,7 +4,7 @@ require_once __DIR__ . '/../models/Utilisateur.php';
 
 class AuthController
 {
-    const ROLES = ['citoyen', 'admin_poste', 'super_admin'];
+    const ROLES = ['citoyen', 'admin'];
 
     private $connexion;
 
@@ -84,10 +84,10 @@ class AuthController
                     $this->connexion->rollBack();
                     return $this->resultat(['general' => 'Votre compte a été modifié. Reconnectez-vous avant de modifier votre profil.']);
                 }
-                if ($compte['role'] === 'super_admin' && (int) $compte['actif'] === 1
-                    && ($role !== 'super_admin' || (int) $actif !== 1) && count($administrateurs) <= 1) {
+                if ($compte['role'] === 'admin' && (int) $compte['actif'] === 1
+                    && ($role !== 'admin' || (int) $actif !== 1) && count($administrateurs) <= 1) {
                     $this->connexion->rollBack();
-                    return $this->resultat(['general' => 'Conservez au moins un super administrateur actif.']);
+                    return $this->resultat(['general' => 'Conservez au moins un administrateur actif.']);
                 }
                 $motDePasse = $compte['mot_de_passe'];
                 $version = (int) $compte['version_session'];
@@ -179,9 +179,9 @@ class AuthController
                 $this->connexion->rollBack();
                 return $this->resultat(['general' => 'Cet utilisateur n’existe plus.']);
             }
-            if ($compte['role'] === 'super_admin' && (int) $compte['actif'] === 1 && count($administrateurs) <= 1) {
+            if ($compte['role'] === 'admin' && (int) $compte['actif'] === 1 && count($administrateurs) <= 1) {
                 $this->connexion->rollBack();
-                return $this->resultat(['general' => 'Conservez au moins un super administrateur actif.']);
+                return $this->resultat(['general' => 'Conservez au moins un administrateur actif.']);
             }
             $requete = $this->connexion->prepare('SELECT COUNT(*) FROM Colis WHERE id_citoyen = :id');
             $requete->execute(['id' => $id]);
@@ -280,7 +280,7 @@ class AuthController
     private function verrouillerAdministrateurs()
     {
         $requete = $this->connexion->query(
-            "SELECT id_citoyen FROM Citoyen WHERE role = 'super_admin' AND actif = 1 ORDER BY id_citoyen FOR UPDATE"
+            "SELECT id_citoyen FROM Citoyen WHERE role = 'admin' AND actif = 1 ORDER BY id_citoyen FOR UPDATE"
         );
         return $requete->fetchAll();
     }

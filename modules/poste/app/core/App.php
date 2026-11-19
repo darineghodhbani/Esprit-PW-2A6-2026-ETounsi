@@ -21,7 +21,7 @@ class App
             $page = 'introuvable';
         }
         if ($espace === 'admin') {
-            exigerRole(['admin_poste', 'super_admin']);
+            exigerRole(['admin']);
             if ($page === '') {
                 $page = 'dashboard';
             }
@@ -50,12 +50,6 @@ class App
 
     private function administration($page)
     {
-        // Le contrôle du rôle s'applique aussi lorsqu'une URL est saisie directement.
-        $pagesUtilisateurs = ['utilisateurs', 'utilisateur-form', 'utilisateur-save', 'utilisateur-suppression', 'utilisateur-delete'];
-        if (in_array($page, $pagesUtilisateurs, true)) {
-            exigerRole(['super_admin']);
-        }
-
         // Les noms des pages correspondent aux liens et aux actions des formulaires.
         switch ($page) {
             case 'dashboard':

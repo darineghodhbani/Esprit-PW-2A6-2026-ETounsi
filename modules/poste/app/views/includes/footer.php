@@ -2,15 +2,16 @@
     <div class="container footer-wrap py-4">
         <div>
             <span class="footer-brand">E‑Tounsi <span lang="ar">إي تونسي</span></span>
-            <p class="mb-0"><?= e(tr('Services postaux · Projet d’intégration', 'الخدمات البريدية · مشروع تطبيقي')) ?></p>
+            <p class="mb-0"><?= e(tr('Services postaux', 'الخدمات البريدية')) ?></p>
+            <small><?= e(tr('Intégration du module Poste : Maryem Kochbati', 'إدماج الخدمات البريدية: Maryem Kochbati')) ?></small>
         </div>
         <div class="footer-links">
-            <?php if ($utilisateur !== null && $utilisateur['role'] !== 'citoyen'): ?>
-                <a href="<?= e(adminUrl()) ?>"><?= e(tr('Back Office', 'فضاء الإدارة')) ?></a>
+            <?php if ($utilisateur !== null && $utilisateur['role'] === 'admin'): ?>
+                <a href="<?= e(adminUrl()) ?>"><?= e(tr('Administration', 'الإدارة')) ?></a>
             <?php else: ?>
                 <a href="<?= e(frontUrl('profil')) ?>"><?= e(tr('Mon espace', 'فضائي')) ?></a>
             <?php endif; ?>
-            <small>eLearning · <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a></small>
+            <small><?= e(tr('Template eLearning par', 'قالب eLearning من')) ?> <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a></small>
         </div>
     </div>
 </footer>

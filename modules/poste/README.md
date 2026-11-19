@@ -2,7 +2,7 @@
 
 ## Overview
 
-Ce module de Mariem Kochbati, équipe Power Girls, permet de consulter les bureaux de poste et de déclarer, suivre et administrer les colis. Il intègre le Front Office eLearning et le Back Office Spark Admin dans une seule structure MVC PHP.
+Ce module de Maryem Kochbati, équipe Power Girls, permet de consulter les bureaux de poste et de déclarer, suivre et administrer les colis. Il intègre le Front Office eLearning et le Back Office Spark Admin dans une seule structure MVC PHP.
 
 ## Features
 
@@ -63,7 +63,7 @@ Le PHP utilise les fonctions, tableaux, conditions, boucles, formulaires GET/POS
 
 ## Contributors
 
-Mariem Kochbati — module Poste et gestion des utilisateurs, équipe Power Girls.
+Maryem Kochbati — module Poste et gestion des utilisateurs, équipe Power Girls.
 
 ## Academic Context
 
@@ -85,7 +85,7 @@ C:\xampp\php\php.exe sql\installer.php
 
 La configuration XAMPP locale utilise `127.0.0.1`, le port `3306`, la base `etounsi_poste` et l’utilisateur MySQL `root` avec le mot de passe local vide. Pour adapter ces valeurs, copier `config/local.example.php` vers `config/local.php`. Ce fichier reste privé et exclu de Git.
 
-Le schéma se trouve dans `sql/database.sql` et la base est visible dans [phpMyAdmin](http://localhost/phpmyadmin/). L’installation ajoute quatre comptes de démonstration, quatre bureaux et trois colis sur une base neuve. Le numéro `ET000001TN` permet de tester le suivi. Relancer l’installateur sur une base déjà installée conserve ses données. Apache réserve l’application à la machine locale pour la validation.
+Le schéma se trouve dans `sql/database.sql` et la base est visible dans [phpMyAdmin](http://localhost/phpmyadmin/). L’installation ajoute trois comptes de démonstration, quatre bureaux et trois colis sur une base neuve. Le numéro `ET000001TN` permet de tester le suivi. Relancer l’installateur sur une base déjà installée conserve ses données. Apache réserve l’application à la machine locale pour la validation.
 
 ### Rôles
 
@@ -93,10 +93,11 @@ Le schéma se trouve dans `sql/database.sql` et la base est visible dans [phpMyA
 | --- | --- |
 | Visiteur | Consulter les bureaux, suivre un colis, s’inscrire ou se connecter |
 | Citoyen | Déclarer, consulter et annuler ses propres envois en attente, modifier son profil |
-| Administrateur Poste | Gérer les bureaux et les colis, modifier son profil |
-| Super administrateur | Accès administrateur et gestion des utilisateurs et de leurs rôles |
+| Administrateur | Gérer les utilisateurs, leurs rôles, les bureaux et les colis, modifier son profil |
 
-L’inscription publique crée un citoyen. La suppression d’un utilisateur possédant des colis est bloquée pour conserver leur historique. Son compte peut être désactivé. Au moins un super administrateur actif doit rester disponible.
+L’inscription publique crée un citoyen. La suppression d’un utilisateur possédant des colis est bloquée pour conserver leur historique. Son compte peut être désactivé. Au moins un administrateur actif doit rester disponible.
+
+Le compte administrateur de démonstration est `admin.poste@example.test`. Il accède à toutes les pages du Back Office. Sur une ancienne installation, relancer `C:\xampp\php\php.exe sql\installer.php` met à jour les rôles et conserve les données métier. L’ancien compte de démonstration supplémentaire est retiré seulement si un autre administrateur actif existe et qu’aucun colis ne lui est associé.
 
 ### Sessions et validation
 
@@ -106,7 +107,7 @@ La connexion renouvelle l’identifiant de session. Les cookies sont HttpOnly et
 
 ## Contribution
 
-Créer une branche par tâche, tester sur XAMPP, puis ouvrir une pull request vers le dépôt d’équipe. Les contributions de Mariem sont suivies dans le [GitHub Project Board Poste et utilisateurs](https://github.com/users/kochbatimaryem574-maker/projects/1).
+Créer une branche par tâche, tester sur XAMPP, puis ouvrir une pull request vers le dépôt d’équipe. Les contributions de Maryem sont suivies dans le [GitHub Project Board Poste et utilisateurs](https://github.com/users/kochbatimaryem574-maker/projects/1).
 
 ## Licence
 
