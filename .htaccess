@@ -1,0 +1,4 @@
+Options -Indexes
+Require local
+DirectoryIndex index.php
+RedirectMatch 404 /\.git(/|$)
