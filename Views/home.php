@@ -1,12 +1,3 @@
-<?php
-$language = etLang();
-$pageTitle = etT('Vos services publics, en toute simplicité', 'خدماتك العموميّة بكلّ سهولة');
-$utilisateur = utilisateurConnecte();
-$jeton = csrfToken();
-$etModules = etServices();
-$etServiceKey = 'poste';
-$etService = $etModules['poste'];
-?>
 <!doctype html>
 <html lang="<?= etE($language) ?>" dir="<?= $language === 'ar' ? 'rtl' : 'ltr' ?>">
 <head><?php require __DIR__ . '/../modules/poste/app/views/shared/head.php'; ?></head>

@@ -26,29 +26,36 @@ MySQL
 
 Le projet suit l'architecture MVC (Model – View – Controller) :
 
-├── Controllers/   → reçoivent les requêtes et choisissent la vue
-├── Models/        → classes et accès à la base de données
-├── Views/
-│   ├── includes/  → éléments communs du Front Office (head, navbar, footer…)
-│   └── partials/  → éléments communs du Back Office (head, sidebar, header…)
-├── css/
-├── img/
-├── js/
-└── lib/
+```text
+├── index.php                  Routage du portail
+├── Controllers/               Préparation des pages du portail
+├── Views/                     HTML et inclusions du portail
+├── css/, js/, img/, lib/       Ressources de présentation
+└── modules/poste/
+    ├── index.php              Point d'entrée du module
+    ├── config/                Connexion PDO commune
+    ├── app/core/              Routage, sessions et fonctions communes
+    ├── app/controllers/       Validation, requêtes PDO et traitements
+    ├── app/models/            Entités privées et getters/setters
+    ├── app/views/             Vues et layouts du Front et Back Office
+    ├── public/assets/         CSS, JavaScript, images et polices
+    └── sql/                   Schéma et installation
+```
 ## Contributors
 Samar Debbichi – Module Municipalité
 Mariem Kaabi – Module CNAM
 Maryem Kochbati – Module POSTE
 Ranim Aissa – Module Transport
-Darine Ghodhbani – Module Poste de police
+Darine Ghodhbani – Module Recette des Finances
 ## Academic Context
 
 Developed at Esprit School of Engineering – Tunisia Projet Technologies Web – 2A | Academic Year 2026–2027 Tuteur(s) : Mounira Hamdi
 
 ## Getting Started
 Cloner le dépôt :
-bash
+```bat
 git clone https://github.com/darineghodhbani/Esprit-PW-2A6-2026-ETounsi.git
+```
 Placer le dossier dans htdocs (XAMPP) ou www (WAMP).
 Démarrer Apache et MySQL depuis XAMPP/WAMP.
 Pour le module Poste et les utilisateurs, ouvrir CMD dans modules\poste et lancer C:\xampp\php\php.exe sql\installer.php. Ce script initialise MySQL et les comptes locaux de validation.
@@ -68,6 +75,8 @@ Le parcours du portail est **Accueil → photo Poste → ouverture des portes �
 Le HTML de l'accueil est dans `Views/home.php`, les blocs partagés dans `modules/poste/app/views/shared`, le thème dans `css/etounsi.css` et les interactions dans `js/etounsi.js`. Les six images et les polices sont locales dans `modules/poste/public/assets`. Le [rapport de validation](docs/validation-interface.md) décrit les contrôles. Aucun chatbot n'est intégré.
 
 Les deux rôles sont citoyen et administrateur. L’inscription publique crée un citoyen. L’administrateur gère les utilisateurs, leurs rôles, les bureaux et les colis. Les sessions, les autorisations et les formulaires suivent le workshop de sécurité.
+
+La [vérification de première validation](docs/verification-premiere-validation.md) relie les consignes aux fichiers, aux cours et aux tests. Elle distingue la partie Poste vérifiée des points d'intégration et d'administration GitHub qui concernent le groupe.
 
 Après installation, accéder au module depuis le lien **Poste** du menu ou depuis
 http://localhost/Esprit-PW-2A6-2026-ETounsi/modules/poste/index.php.

@@ -1,124 +1,35 @@
-<!DOCTYPE html>
-<html lang="fr">
-
-<head>
-    <?php require_once __DIR__ . '/includes/head.php'; ?>
-</head>
-
-<body>
-    <?php require_once __DIR__ . '/includes/spinner.php'; ?>
-    <?php require_once __DIR__ . '/includes/navbar.php'; ?>
-
-    <!-- ===== Contenu spécifique à la page « Contact » ===== -->
-    <!-- Header Start -->
-    <div class="container-fluid bg-primary py-5 mb-5 page-header">
-        <div class="container py-5">
-            <div class="row justify-content-center">
-                <div class="col-lg-10 text-center">
-                    <h1 class="display-3 text-white animated slideInDown">Contact</h1>
-                    <nav aria-label="breadcrumb">
-                        <ol class="breadcrumb justify-content-center">
-                            <li class="breadcrumb-item"><a class="text-white" href="#">Home</a></li>
-                            <li class="breadcrumb-item"><a class="text-white" href="#">Pages</a></li>
-                            <li class="breadcrumb-item text-white active" aria-current="page">Contact</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
+<!doctype html>
+<html lang="<?= etE(etLang()) ?>" dir="<?= etLang() === 'ar' ? 'rtl' : 'ltr' ?>">
+<head><?php require __DIR__ . '/../modules/poste/app/views/shared/head.php'; ?></head>
+<body class="et-portal">
+    <?php require __DIR__ . '/includes/navbar.php'; ?>
+    <main id="contenu" class="et-container et-section">
+        <div class="et-section-heading">
+            <span class="et-eyebrow">E-Tounsi · <?= etE(etT('Poste', 'البريد')) ?></span>
+            <h1><?= etE($pageTitle) ?></h1>
+            <p><?= etE(etT('Retrouvez les adresses des bureaux et les services disponibles pour vos envois.', 'اطّلع على عناوين المكاتب والخدمات المتاحة لإرسالياتك.')) ?></p>
         </div>
-    </div>
-    <!-- Header End -->
-
-
-    <!-- Contact Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h6 class="section-title bg-white text-center text-primary px-3">Contact Us</h6>
-                <h1 class="mb-5">Contact For Any Query</h1>
-            </div>
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <h5>Get In Touch</h5>
-                    <p class="mb-4">The contact form is currently inactive. Get a functional and working contact form with Ajax & PHP in a few minutes. Just copy and paste the files, add a little code and you're done. <a href="https://htmlcodex.com/contact-form">Download Now</a>.</p>
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="d-flex align-items-center justify-content-center flex-shrink-0 bg-primary" style="width: 50px; height: 50px;">
-                            <i class="fa fa-map-marker-alt text-white"></i>
-                        </div>
-                        <div class="ms-3">
-                            <h5 class="text-primary">Office</h5>
-                            <p class="mb-0">123 Street, New York, USA</p>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="d-flex align-items-center justify-content-center flex-shrink-0 bg-primary" style="width: 50px; height: 50px;">
-                            <i class="fa fa-phone-alt text-white"></i>
-                        </div>
-                        <div class="ms-3">
-                            <h5 class="text-primary">Mobile</h5>
-                            <p class="mb-0">+012 345 67890</p>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <div class="d-flex align-items-center justify-content-center flex-shrink-0 bg-primary" style="width: 50px; height: 50px;">
-                            <i class="fa fa-envelope-open text-white"></i>
-                        </div>
-                        <div class="ms-3">
-                            <h5 class="text-primary">Email</h5>
-                            <p class="mb-0">info@example.com</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <iframe class="position-relative rounded w-100 h-100"
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1603794290143!5m2!1sen!2sbd"
-                        frameborder="0" style="min-height: 300px; border:0;" allowfullscreen="" aria-hidden="false"
-                        tabindex="0"></iframe>
-                </div>
-                <div class="col-lg-4 col-md-12 wow fadeInUp" data-wow-delay="0.5s">
-                    <form>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" id="name" placeholder="Your Name">
-                                    <label for="name">Your Name</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-floating">
-                                    <input type="email" class="form-control" id="email" placeholder="Your Email">
-                                    <label for="email">Your Email</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-floating">
-                                    <input type="text" class="form-control" id="subject" placeholder="Subject">
-                                    <label for="subject">Subject</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-floating">
-                                    <textarea class="form-control" placeholder="Leave a message here" id="message" style="height: 150px"></textarea>
-                                    <label for="message">Message</label>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <button class="btn btn-primary w-100 py-3" type="submit">Send Message</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+        <div class="et-postal-actions">
+            <a class="et-action-card" href="<?= etE(etPoste('bureaux')) ?>">
+                <i class="bi bi-geo-alt" aria-hidden="true"></i>
+                <h2><?= etE(etT('Trouver un bureau', 'ابحث عن مكتب')) ?></h2>
+                <p><?= etE(etT('Consultez les noms, les villes et les adresses enregistrés dans l’annuaire.', 'اطّلع على أسماء المكاتب ومدنها وعناوينها المسجّلة في الدليل.')) ?></p>
+                <span><?= etE(etT('Ouvrir l’annuaire', 'افتح الدليل')) ?> <i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+            </a>
+            <a class="et-action-card" href="<?= etE(etPoste('suivi')) ?>">
+                <i class="bi bi-box-seam" aria-hidden="true"></i>
+                <h2><?= etE(etT('Suivre un colis', 'تتبّع طردًا')) ?></h2>
+                <p><?= etE(etT('Utilisez votre référence pour consulter l’état actuel de votre envoi.', 'استعمل رقم التتبّع للاطّلاع على الحالة الحاليّة لإرساليتك.')) ?></p>
+                <span><?= etE(etT('Consulter le suivi', 'اطّلع على التتبّع')) ?> <i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+            </a>
+            <a class="et-action-card" href="<?= etE(etPoste('connexion')) ?>">
+                <i class="bi bi-person" aria-hidden="true"></i>
+                <h2><?= etE(etT('Mon espace citoyen', 'فضاء المواطن')) ?></h2>
+                <p><?= etE(etT('Connectez-vous pour déclarer un envoi et retrouver vos colis.', 'سجّل الدخول للتصريح بإرسالية وللاطّلاع على طرودك.')) ?></p>
+                <span><?= etE(etT('Se connecter', 'تسجيل الدخول')) ?> <i class="bi bi-arrow-right" aria-hidden="true"></i></span>
+            </a>
         </div>
-    </div>
-    <!-- Contact End -->
-
-
-    
-    <!-- ===== Fin du contenu spécifique ===== -->
-
-    <?php require_once __DIR__ . '/includes/footer.php'; ?>
-    <?php require_once __DIR__ . '/includes/scripts.php'; ?>
+    </main>
+    <?php require __DIR__ . '/includes/footer.php'; ?>
 </body>
-
 </html>

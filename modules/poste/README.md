@@ -54,7 +54,7 @@ poste/
     └── installer.php           Installation depuis le terminal
 ```
 
-Les modèles représentent les entités avec des attributs privés, un constructeur et des getters/setters. Les contrôleurs contiennent les requêtes PDO et les traitements, selon le workshop de sécurité. `HomeController` prépare les pages citoyennes. `AdminController`, `BureauController`, `ColisController` et `UtilisateurController` préparent les vues administratives. `AuthController` gère les comptes et `PosteController` les données postales.
+Les modèles représentent les entités avec des attributs privés et des getters/setters. `BureauPostal` et `Colis` ont un constructeur ; `Utilisateur` est initialisé avec ses setters dans `depuisTableau()`, comme la conversion de tableau en objet présentée dans le workshop. Les contrôleurs contiennent les requêtes PDO et les traitements, selon le workshop de sécurité. `HomeController` prépare les pages citoyennes. `AdminController`, `BureauController`, `ColisController` et `UtilisateurController` préparent les vues administratives. `AuthController` gère les comptes et `PosteController` les données postales.
 
 Les vues contiennent le HTML. Les fichiers `public/assets/front/css/style.css` et `public/assets/back/css/main.css` proviennent des templates fournis. Leurs adaptations se trouvent dans les deux fichiers `poste.css` et dans le thème commun `../../css/etounsi.css`. Les interactions communes sont dans `../../js/etounsi.js` ; le menu administrateur reste dans `public/assets/back/js/poste.js`. Le Front Office assemble `head`, `spinner`, `navbar`, la vue, `footer`, puis `scripts`, dans l’ordre de l’atelier.
 
@@ -65,6 +65,8 @@ Cette mise à jour visuelle ne nécessite ni migration de base ni nouvelle insta
 ### Notions des cours
 
 Le PHP utilise les fonctions, tableaux, conditions, boucles, formulaires GET/POST, classes, sessions et requêtes PDO préparées. Le JavaScript utilise les fonctions, les sélecteurs DOM, `classList`, `dataset` et `addEventListener`, étudiés dans les chapitres 2, 3 et 4 et leurs ateliers. Les formulaires sont contrôlés côté PHP, y compris lorsque JavaScript est désactivé. Aucune compilation n’est nécessaire.
+
+Le nouveau design utilise aussi quelques API du navigateur non retrouvées dans les supports fournis : `dialog.showModal()`/`close()` pour le bureau modal, `scrollIntoView()` pour descendre vers la connexion, `matchMedia()` pour respecter le mouvement réduit, `URL`/`searchParams` et `history.replaceState()` pour conserver la recherche, `normalize()` pour rechercher sans accents. Ces compléments sont dans `../../js/etounsi.js` ; ils ne remplacent aucun traitement PHP et ne nécessitent ni React ni TypeScript. Le [bilan de première validation](../../docs/verification-premiere-validation.md) précise ce qui vient des cours et ce qui concerne seulement cette présentation.
 
 ## Contributors
 
