@@ -31,6 +31,8 @@ function parcelStatus($statut)
     switch ($statut) {
         case 'En attente':
             return tr('En attente', 'قيد الانتظار');
+        case 'Accepté':
+            return tr('Accepté', 'تمّ القبول');
         case 'En transit':
             return tr('En transit', 'قيد النقل');
         case 'Livré':

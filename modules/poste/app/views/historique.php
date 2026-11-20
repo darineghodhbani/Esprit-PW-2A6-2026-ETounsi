@@ -9,7 +9,7 @@ require __DIR__ . '/page-heading.php';
     <?php if ($confirmation !== null): ?>
         <p class="alert alert-success" role="status">
             <?php if ($confirmation['kind'] === 'declared'): ?>
-                <?= e(tr('Envoi déclaré. Numéro de suivi', 'تمّ التصريح بالإرسال. رقم التتبّع')) ?>
+                <?= e(tr('Envoi déclaré, en attente d’acceptation. Numéro de suivi', 'تمّ التصريح بالإرسال في انتظار القبول. رقم التتبّع')) ?>
                 <a href="<?= e(frontUrl('suivi', ['numero' => $confirmation['number']])) ?>"><bdi><?= e($confirmation['number']) ?></bdi></a>
             <?php else: ?>
                 <?= e(tr('L’envoi a été annulé.', 'تمّ إلغاء الإرسالية.')) ?>

@@ -9,7 +9,7 @@ Ce module de Maryem Kochbati, équipe Power Girls, permet de consulter les burea
 - Annuaire des bureaux avec filtre par ville et suivi public des colis.
 - Inscription, connexion, profil et déconnexion.
 - Déclaration d’envoi, historique personnel et annulation des envois en attente.
-- CRUD des bureaux, gestion des colis et modification des statuts.
+- CRUD des bureaux, acceptation des déclarations et suivi des étapes de traitement des colis.
 - CRUD des utilisateurs, gestion des rôles et activation des comptes.
 - Contrôle des accès, sessions et validation PHP des formulaires.
 - Front Office en français et en arabe, logo E-Tounsi de la présentation.
@@ -97,7 +97,18 @@ Le schéma se trouve dans `sql/database.sql` et la base est visible dans [phpMyA
 
 L’inscription publique crée un citoyen. La suppression d’un utilisateur possédant des colis est bloquée pour conserver leur historique. Son compte peut être désactivé. Au moins un administrateur actif doit rester disponible.
 
-Le compte administrateur de démonstration est `admin.poste@example.test`. Il accède à toutes les pages du Back Office. Sur une ancienne installation, relancer `C:\xampp\php\php.exe sql\installer.php` met à jour les rôles et conserve les données métier. L’ancien compte de démonstration supplémentaire est retiré seulement si un autre administrateur actif existe et qu’aucun colis ne lui est associé.
+Le compte administrateur de démonstration est `admin.poste@example.test`. Il accède à toutes les pages du Back Office. Sur une ancienne installation, relancer `C:\xampp\php\php.exe sql\installer.php` met à jour les rôles et les statuts des colis, en conservant les données métier. L’ancien compte de démonstration supplémentaire est retiré seulement si un autre administrateur actif existe et qu’aucun colis ne lui est associé.
+
+### Parcours des colis
+
+1. L’administrateur ajoute un bureau avec le formulaire du Back Office.
+2. Le citoyen connecté choisit un bureau et déclare son envoi. Le système attribue une référence unique et le statut **En attente**.
+3. La déclaration apparaît dans **Gestion des colis**. L’administrateur utilise **Accepter** pour la valider.
+4. L’administrateur fait ensuite évoluer le colis vers **En transit**, puis **Livré**. Le citoyen voit l’état dans son historique et avec sa référence de suivi.
+
+Le parcours est **En attente → Accepté → En transit → Livré**. Le citoyen peut annuler ses propres envois en attente. L’administrateur peut annuler un colis avant son départ. Les états **Livré** et **Annulé** sont définitifs. Les contrôles PHP et la mise à jour PDO empêchent les sauts d’étape et l’écrasement d’un état modifié depuis l’ouverture du formulaire.
+
+La table `Colis` conserve les champs du diagramme fourni, dont `id_bureau_depart`, `id_citoyen`, `numero_suivi` unique et `statut`. Le statut **Accepté** est ajouté par l’installateur dans la base existante. Après récupération d’une mise à jour du projet, relancer `C:\xampp\php\php.exe sql\installer.php` depuis le dossier du module.
 
 ### Sessions et validation
 

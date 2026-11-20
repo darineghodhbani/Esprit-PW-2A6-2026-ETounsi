@@ -17,6 +17,7 @@ class AdminController extends Controller
         $stats = [
             ['label' => 'Colis enregistrés', 'value' => count($parcels), 'icon' => 'box'],
             ['label' => 'En attente', 'value' => $statusCounts['En attente'], 'icon' => 'clock'],
+            ['label' => 'Acceptés', 'value' => $statusCounts['Accepté'], 'icon' => 'check-circle'],
             ['label' => 'En transit', 'value' => $statusCounts['En transit'], 'icon' => 'truck'],
             ['label' => 'Bureaux de poste', 'value' => count($repository->listOffices()), 'icon' => 'geo-alt'],
         ];

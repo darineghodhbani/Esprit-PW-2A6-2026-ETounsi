@@ -227,6 +227,7 @@ body.sidebar-minimized .poste-brand-logo {
     font-weight: 700;
 }
 .poste-status-waiting { color: #804c0d; background: #fff2db; }
+.poste-status-accepted { color: #12635c; background: #e3f5f2; }
 .poste-status-transit { color: #154f96; background: #e9f1ff; }
 .poste-status-delivered { color: #146449; background: #e5f7ed; }
 .poste-status-cancelled { color: #992940; background: #fce9ee; }

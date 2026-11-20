@@ -1,6 +1,7 @@
 <?php
 $couleurs = [
     'En attente' => 'waiting',
+    'Accepté' => 'accepted',
     'En transit' => 'transit',
     'Livré' => 'delivered',
     'Annulé' => 'cancelled',

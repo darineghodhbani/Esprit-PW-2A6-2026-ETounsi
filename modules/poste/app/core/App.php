@@ -100,6 +100,12 @@ class App
                     $controller->form();
                 }
                 break;
+            case 'colis-accepter':
+                if ($this->verifierMethode('POST')) {
+                    $controller = new ColisController();
+                    $controller->accepter();
+                }
+                break;
             case 'colis-save':
                 if ($this->verifierMethode('POST')) {
                     $controller = new ColisController();
