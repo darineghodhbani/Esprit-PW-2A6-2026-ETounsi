@@ -1,21 +1,4 @@
-<?php
-$intro = tr('Connectez-vous pour accéder à votre espace.', 'سجّل الدخول للوصول إلى فضائك.');
-require __DIR__ . '/page-heading.php';
-?>
-<div class="container py-5">
-    <div class="content-panel panel-narrow compte-panel">
-        <?php require __DIR__ . '/compte-erreurs.php'; ?>
-        <form method="post" action="<?= e(frontUrl('connexion')) ?>" novalidate>
-            <input type="hidden" name="csrf" value="<?= e($jeton) ?>">
-            <?php
-            $champsCompte = [
-                'email' => [tr('Adresse email', 'البريد الإلكتروني'), 'email', 'email', true],
-                'password' => [tr('Mot de passe', 'كلمة المرور'), 'password', 'current-password', true],
-            ];
-            require __DIR__ . '/compte-champs.php';
-            ?>
-            <button class="btn btn-primary w-100" type="submit"><?= e(tr('Se connecter', 'تسجيل الدخول')) ?></button>
-        </form>
-        <p class="compte-lien"><?= e(tr('Vous n’avez pas encore de compte ?', 'ليس لديك حساب بعد؟')) ?> <a href="<?= e(frontUrl('inscription')) ?>"><?= e(tr('Créer un compte', 'إنشاء حساب')) ?></a></p>
-    </div>
-</div>
+<section class="et-container et-section et-standalone-login">
+    <div class="et-login-picture"><img src="<?= etE(etAsset('images/portal/bureau-poste.webp')) ?>" alt="" width="640" height="800"><div><span class="et-office-tag">E-Tounsi · <?= etE(tr('Poste', 'البريد')) ?></span><h1><?= e(tr('Votre bureau, à portée de main.', 'مكتب البريد بين يديك.')) ?></h1><p><?= e(tr('Vos colis et vos démarches, dans un seul espace.', 'طرودك وإجراءاتك في فضاء واحد.')) ?></p></div></div>
+    <div class="et-login-card"><span class="et-form-icon"><i class="bi bi-person" aria-hidden="true"></i></span><h2><?= e($pageTitle) ?></h2><p><?= e(tr('Heureux de vous retrouver sur E-Tounsi.', 'مرحبًا بعودتك إلى إي تونسي.')) ?></p><?php require __DIR__ . '/compte-erreurs.php'; $etPrefix = ''; require __DIR__ . '/shared/login.php'; ?></div>
+</section>

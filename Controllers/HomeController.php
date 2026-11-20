@@ -9,6 +9,7 @@ class HomeController
     }
 
     public function home()        { $this->render('home', 'E-Tounsi - Accueil', 'home'); }
+    public function service()     { $this->render('service', 'E-Tounsi - Services', 'service'); }
     public function about()       { $this->render('about', 'E-Tounsi - À propos', 'about'); }
     public function courses()     { $this->render('courses', 'E-Tounsi - Services', 'courses'); }
     public function team()        { $this->render('team', 'E-Tounsi - Notre équipe', 'team'); }

@@ -3,7 +3,7 @@ $intro = tr('Retrouvez un bureau de poste de démonstration par ville.', 'اعث
 require __DIR__ . '/page-heading.php';
 ?>
 <div class="container py-5">
-    <form method="get" action="./" class="filter-bar mb-4">
+    <form method="get" action="./" class="filter-bar mb-4" novalidate>
         <input type="hidden" name="page" value="bureaux">
         <input type="hidden" name="lang" value="<?= e($language) ?>">
         <div>

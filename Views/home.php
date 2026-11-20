@@ -1,432 +1,59 @@
-<!DOCTYPE html>
-<html lang="fr">
-
-<head>
-    <?php require_once __DIR__ . '/includes/head.php'; ?>
-</head>
-
-<body>
-    <?php require_once __DIR__ . '/includes/spinner.php'; ?>
-    <?php require_once __DIR__ . '/includes/navbar.php'; ?>
-
-    <!-- ===== Contenu spécifique à la page « Accueil » ===== -->
-    <!-- Carousel Start -->
-    <div class="container-fluid p-0 mb-5">
-        <div class="owl-carousel header-carousel position-relative">
-            <div class="owl-carousel-item position-relative">
-                <img class="img-fluid" src="img/carousel-1.jpg" alt="">
-                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(24, 29, 56, .7);">
-                    <div class="container">
-                        <div class="row justify-content-start">
-                            <div class="col-sm-10 col-lg-8">
-                                <h5 class="text-primary text-uppercase mb-3 animated slideInDown">Best Online Courses</h5>
-                                <h1 class="display-3 text-white animated slideInDown">The Best Online Learning Platform</h1>
-                                <p class="fs-5 text-white mb-4 pb-2">Vero elitr justo clita lorem. Ipsum dolor at sed stet sit diam no. Kasd rebum ipsum et diam justo clita et kasd rebum sea sanctus eirmod elitr.</p>
-                                <a href="" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Read More</a>
-                                <a href="" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Join Now</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<?php
+$language = etLang();
+$pageTitle = etT('Vos services publics, en toute simplicité', 'خدماتك العموميّة بكلّ سهولة');
+$utilisateur = utilisateurConnecte();
+$jeton = csrfToken();
+$etModules = etServices();
+$etServiceKey = 'poste';
+$etService = $etModules['poste'];
+?>
+<!doctype html>
+<html lang="<?= etE($language) ?>" dir="<?= $language === 'ar' ? 'rtl' : 'ltr' ?>">
+<head><?php require __DIR__ . '/../modules/poste/app/views/shared/head.php'; ?></head>
+<body class="et-portal">
+<?php require __DIR__ . '/../modules/poste/app/views/shared/header.php'; ?>
+<main id="contenu">
+    <section class="et-container et-hero-wrap" aria-labelledby="hero-title">
+        <div class="et-hero">
+            <img class="et-hero-image" src="<?= etE(etAsset('images/portal/e-tounsi-hero.webp')) ?>" width="1536" height="1024" alt="<?= etE(etT('Une rue tunisienne, ses portes en bois, ses palmiers et son tramway', 'نهج تونسي بأبوابه الخشبيّة ونخيله والترامواي')) ?>" fetchpriority="high">
+            <div class="et-hero-copy">
+                <span class="et-hero-badge"><span></span><?= etE(etT('Votre Tunisie, à portée de main', 'تونس بين يديك')) ?></span>
+                <h1 id="hero-title"><?= etE(etT('Vos services publics,', 'خدماتك العموميّة،')) ?><br><em><?= etE(etT('en toute simplicité.', 'بكلّ سهولة.')) ?></em></h1>
+                <p><?= etE(etT('Moins de déplacements, plus de temps pour vous. Retrouvez vos démarches du quotidien dans un seul espace.', 'تنقّلات أقلّ ووقت أكثر ليك. تلقى إجراءاتك اليوميّة في فضاء واحد.')) ?></p>
+                <div class="et-hero-actions"><a class="et-button" href="#services"><?= etE(etT('Découvrir les services', 'اكتشف الخدمات')) ?><i class="bi bi-arrow-right" aria-hidden="true"></i></a><a class="et-button et-button-white" href="<?= etE(etPoste('bureaux')) ?>"><i class="bi bi-geo-alt" aria-hidden="true"></i><?= etE(etT('Trouver un bureau', 'ابحث عن مكتب')) ?></a></div>
             </div>
-            <div class="owl-carousel-item position-relative">
-                <img class="img-fluid" src="img/carousel-2.jpg" alt="">
-                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(24, 29, 56, .7);">
-                    <div class="container">
-                        <div class="row justify-content-start">
-                            <div class="col-sm-10 col-lg-8">
-                                <h5 class="text-primary text-uppercase mb-3 animated slideInDown">Best Online Courses</h5>
-                                <h1 class="display-3 text-white animated slideInDown">Get Educated Online From Your Home</h1>
-                                <p class="fs-5 text-white mb-4 pb-2">Vero elitr justo clita lorem. Ipsum dolor at sed stet sit diam no. Kasd rebum ipsum et diam justo clita et kasd rebum sea sanctus eirmod elitr.</p>
-                                <a href="" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Read More</a>
-                                <a href="" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Join Now</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="et-hero-caption"><span aria-hidden="true">✦</span> <?= etE(etT('Une porte ouverte sur vos démarches', 'باب مفتوح لإجراءاتك')) ?></div>
         </div>
-    </div>
-    <!-- Carousel End -->
-
-
-    <!-- Service Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="service-item text-center pt-3">
-                        <div class="p-4">
-                            <i class="fa fa-3x fa-graduation-cap text-primary mb-4"></i>
-                            <h5 class="mb-3">Skilled Instructors</h5>
-                            <p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="service-item text-center pt-3">
-                        <div class="p-4">
-                            <i class="fa fa-3x fa-globe text-primary mb-4"></i>
-                            <h5 class="mb-3">Online Classes</h5>
-                            <p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.5s">
-                    <div class="service-item text-center pt-3">
-                        <div class="p-4">
-                            <i class="fa fa-3x fa-home text-primary mb-4"></i>
-                            <h5 class="mb-3">Home Projects</h5>
-                            <p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-sm-6 wow fadeInUp" data-wow-delay="0.7s">
-                    <div class="service-item text-center pt-3">
-                        <div class="p-4">
-                            <i class="fa fa-3x fa-book-open text-primary mb-4"></i>
-                            <h5 class="mb-3">Book Library</h5>
-                            <p>Diam elitr kasd sed at elitr sed ipsum justo dolor sed clita amet diam</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <form class="et-search" method="get" action="index.php#services" role="search" data-service-search novalidate>
+            <input type="hidden" name="lang" value="<?= etE($language) ?>">
+            <div class="et-search-field"><i class="bi bi-search" aria-hidden="true"></i><label class="et-visually-hidden" for="service-query"><?= etE(etT('Rechercher un service', 'ابحث عن خدمة')) ?></label><input id="service-query" name="q" type="search" placeholder="<?= etE(etT('De quel service avez-vous besoin ?', 'شنوّة الخدمة اللي تحتاجها؟')) ?>" value="<?= etE(is_string($_GET['q'] ?? null) ? $_GET['q'] : '') ?>" autocomplete="off"><button type="button" class="et-search-clear" data-search-clear aria-label="<?= etE(etT('Effacer la recherche', 'امسح البحث')) ?>" hidden><i class="bi bi-x" aria-hidden="true"></i></button></div><button class="et-button" type="submit"><?= etE(etT('Rechercher', 'ابحث')) ?><i class="bi bi-arrow-right" aria-hidden="true"></i></button>
+        </form>
+        <div class="et-search-hints"><span><?= etE(etT('Par exemple :', 'مثال:')) ?></span><?php foreach (['CNAM', etT('Colis', 'طرد'), etT('Transport', 'النقل')] as $etHint): ?><button type="button" data-search-hint="<?= etE($etHint) ?>"><?= etE($etHint) ?></button><?php endforeach; ?></div>
+    </section>
+    <section class="et-container et-section" id="services" aria-labelledby="services-title">
+        <div class="et-section-heading et-heading-row"><div><span class="et-eyebrow"><?= etE(etT('À chaque démarche, sa porte', 'لكلّ إجراء بابه')) ?></span><h2 id="services-title"><?= etE(etT('Entrez, on s’occupe de vous.', 'تفضّل، خدماتنا على ذمّتك.')) ?></h2></div><p><?= etE(etT('Choisissez votre service et poussez la porte de votre administration.', 'اختر خدمتك وافتح باب إدارتك.')) ?></p></div>
+        <div class="et-service-ribbon" data-service-ribbon>
+            <?php foreach ($etModules as $etKey => $etModule): ?>
+                <a class="et-service-photo" href="index.php?page=service&amp;service=<?= etE($etKey) ?>&amp;lang=<?= etE($language) ?>" data-open-office="<?= etE($etKey) ?>" data-name="<?= etE($etModule['nom']) ?>" data-description="<?= etE($etModule['description']) ?>" data-image="<?= etE(etAsset('images/portal/' . $etModule['image'] . '.webp')) ?>" data-search="<?= etE($etModule['nom'] . ' ' . $etModule['mots']) ?>" aria-label="<?= etE(etT('Entrer : ', 'الدخول: ') . $etModule['nom']) ?>">
+                    <img src="<?= etE(etAsset('images/portal/' . $etModule['image'] . '.webp')) ?>" alt="" loading="lazy" width="400" height="600">
+                    <div class="et-service-photo-shade"></div><span class="et-service-number"><?= etE(str_pad(array_search($etKey, array_keys($etModules)) + 1, 2, '0', STR_PAD_LEFT)) ?></span>
+                    <div class="et-service-label"><i class="bi bi-<?= etE($etModule['icone']) ?>" aria-hidden="true"></i><h3><?= etE($etModule['nom']) ?></h3><p><?= etE($etModule['court']) ?></p><span class="et-enter"><?= etE(etT('Entrer', 'الدخول')) ?> <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></div>
+                </a>
+            <?php endforeach; ?>
         </div>
-    </div>
-    <!-- Service End -->
-
-
-    <!-- About Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="row g-5">
-                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s" style="min-height: 400px;">
-                    <div class="position-relative h-100">
-                        <img class="img-fluid position-absolute w-100 h-100" src="img/about.jpg" alt="" style="object-fit: cover;">
-                    </div>
-                </div>
-                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <h6 class="section-title bg-white text-start text-primary pe-3">About Us</h6>
-                    <h1 class="mb-4">Welcome to eLEARNING</h1>
-                    <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
-                    <p class="mb-4">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit, sed stet lorem sit clita duo justo magna dolore erat amet</p>
-                    <div class="row gy-2 gx-4 mb-4">
-                        <div class="col-sm-6">
-                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>Skilled Instructors</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>Online Classes</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>International Certificate</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>Skilled Instructors</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>Online Classes</p>
-                        </div>
-                        <div class="col-sm-6">
-                            <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>International Certificate</p>
-                        </div>
-                    </div>
-                    <a class="btn btn-primary py-3 px-5 mt-2" href="">Read More</a>
-                </div>
-            </div>
+        <p class="et-search-status" data-search-status role="status" aria-live="polite" data-none="<?= etE(etT('Aucun service trouvé. Essayez « Poste », « CNAM » ou « Transport ».', 'لا توجد خدمة مطابقة. جرّب « البريد » أو « CNAM » أو « النقل ».')) ?>" data-count="<?= etE(etT('service(s) trouvé(s)', 'خدمة مطابقة')) ?>"></p>
+    </section>
+    <section class="et-how-section" id="comment" aria-labelledby="how-title">
+        <div class="et-container et-section"><div class="et-section-heading et-centered"><span class="et-eyebrow"><?= etE(etT('Simple comme bonjour', 'سهلة كيف السلام')) ?></span><h2 id="how-title"><?= etE(etT('Vos démarches en trois étapes.', 'إجراءاتك في ثلاث مراحل.')) ?></h2></div>
+            <div class="et-steps"><?php $etSteps = [[etT('Choisissez votre service', 'اختر خدمتك'), etT('Trouvez l’administration qui correspond à votre besoin.', 'اعثر على الإدارة المناسبة لحاجتك.')], [etT('Entrez dans votre espace', 'ادخل لفضائك'), etT('Ouvrez la porte du bureau et connectez-vous à votre compte.', 'افتح باب المكتب وسجّل الدخول لحسابك.')], [etT('Suivez votre démarche', 'تابع إجراءك'), etT('Retrouvez vos informations et l’avancement de vos demandes.', 'اطّلع على معلوماتك وتقدّم مطالبك.')]]; foreach ($etSteps as $etIndex => $etStep): ?><article class="et-step"><span><?= etE($etIndex + 1) ?></span><h3><?= etE($etStep[0]) ?></h3><p><?= etE($etStep[1]) ?></p></article><?php endforeach; ?></div>
         </div>
-    </div>
-    <!-- About End -->
-
-
-    <!-- Categories Start -->
-    <div class="container-xxl py-5 category">
-        <div class="container">
-            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h6 class="section-title bg-white text-center text-primary px-3">Categories</h6>
-                <h1 class="mb-5">Courses Categories</h1>
-            </div>
-            <div class="row g-3">
-                <div class="col-lg-7 col-md-6">
-                    <div class="row g-3">
-                        <div class="col-lg-12 col-md-12 wow zoomIn" data-wow-delay="0.1s">
-                            <a class="position-relative d-block overflow-hidden" href="">
-                                <img class="img-fluid" src="img/cat-1.jpg" alt="">
-                                <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3" style="margin: 1px;">
-                                    <h5 class="m-0">Web Design</h5>
-                                    <small class="text-primary">49 Courses</small>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-lg-6 col-md-12 wow zoomIn" data-wow-delay="0.3s">
-                            <a class="position-relative d-block overflow-hidden" href="">
-                                <img class="img-fluid" src="img/cat-2.jpg" alt="">
-                                <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3" style="margin: 1px;">
-                                    <h5 class="m-0">Graphic Design</h5>
-                                    <small class="text-primary">49 Courses</small>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="col-lg-6 col-md-12 wow zoomIn" data-wow-delay="0.5s">
-                            <a class="position-relative d-block overflow-hidden" href="">
-                                <img class="img-fluid" src="img/cat-3.jpg" alt="">
-                                <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3" style="margin: 1px;">
-                                    <h5 class="m-0">Video Editing</h5>
-                                    <small class="text-primary">49 Courses</small>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-5 col-md-6 wow zoomIn" data-wow-delay="0.7s" style="min-height: 350px;">
-                    <a class="position-relative d-block h-100 overflow-hidden" href="">
-                        <img class="img-fluid position-absolute w-100 h-100" src="img/cat-4.jpg" alt="" style="object-fit: cover;">
-                        <div class="bg-white text-center position-absolute bottom-0 end-0 py-2 px-3" style="margin:  1px;">
-                            <h5 class="m-0">Online Marketing</h5>
-                            <small class="text-primary">49 Courses</small>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Categories Start -->
-
-
-    <!-- Courses Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h6 class="section-title bg-white text-center text-primary px-3">Courses</h6>
-                <h1 class="mb-5">Popular Courses</h1>
-            </div>
-            <div class="row g-4 justify-content-center">
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="course-item bg-light">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="img/course-1.jpg" alt="">
-                            <div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
-                                <a href="#" class="flex-shrink-0 btn btn-sm btn-primary px-3 border-end" style="border-radius: 30px 0 0 30px;">Read More</a>
-                                <a href="#" class="flex-shrink-0 btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;">Join Now</a>
-                            </div>
-                        </div>
-                        <div class="text-center p-4 pb-0">
-                            <h3 class="mb-0">$149.00</h3>
-                            <div class="mb-3">
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small>(123)</small>
-                            </div>
-                            <h5 class="mb-4">Web Design & Development Course for Beginners</h5>
-                        </div>
-                        <div class="d-flex border-top">
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-user-tie text-primary me-2"></i>John Doe</small>
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-clock text-primary me-2"></i>1.49 Hrs</small>
-                            <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>30 Students</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="course-item bg-light">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="img/course-2.jpg" alt="">
-                            <div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
-                                <a href="#" class="flex-shrink-0 btn btn-sm btn-primary px-3 border-end" style="border-radius: 30px 0 0 30px;">Read More</a>
-                                <a href="#" class="flex-shrink-0 btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;">Join Now</a>
-                            </div>
-                        </div>
-                        <div class="text-center p-4 pb-0">
-                            <h3 class="mb-0">$149.00</h3>
-                            <div class="mb-3">
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small>(123)</small>
-                            </div>
-                            <h5 class="mb-4">Web Design & Development Course for Beginners</h5>
-                        </div>
-                        <div class="d-flex border-top">
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-user-tie text-primary me-2"></i>John Doe</small>
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-clock text-primary me-2"></i>1.49 Hrs</small>
-                            <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>30 Students</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                    <div class="course-item bg-light">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="img/course-3.jpg" alt="">
-                            <div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
-                                <a href="#" class="flex-shrink-0 btn btn-sm btn-primary px-3 border-end" style="border-radius: 30px 0 0 30px;">Read More</a>
-                                <a href="#" class="flex-shrink-0 btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;">Join Now</a>
-                            </div>
-                        </div>
-                        <div class="text-center p-4 pb-0">
-                            <h3 class="mb-0">$149.00</h3>
-                            <div class="mb-3">
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small class="fa fa-star text-primary"></small>
-                                <small>(123)</small>
-                            </div>
-                            <h5 class="mb-4">Web Design & Development Course for Beginners</h5>
-                        </div>
-                        <div class="d-flex border-top">
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-user-tie text-primary me-2"></i>John Doe</small>
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-clock text-primary me-2"></i>1.49 Hrs</small>
-                            <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>30 Students</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Courses End -->
-
-
-    <!-- Team Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h6 class="section-title bg-white text-center text-primary px-3">Instructors</h6>
-                <h1 class="mb-5">Expert Instructors</h1>
-            </div>
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="team-item bg-light">
-                        <div class="overflow-hidden">
-                            <img class="img-fluid" src="img/team-1.jpg" alt="">
-                        </div>
-                        <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                            <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center p-4">
-                            <h5 class="mb-0">Instructor Name</h5>
-                            <small>Designation</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="team-item bg-light">
-                        <div class="overflow-hidden">
-                            <img class="img-fluid" src="img/team-2.jpg" alt="">
-                        </div>
-                        <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                            <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center p-4">
-                            <h5 class="mb-0">Instructor Name</h5>
-                            <small>Designation</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                    <div class="team-item bg-light">
-                        <div class="overflow-hidden">
-                            <img class="img-fluid" src="img/team-3.jpg" alt="">
-                        </div>
-                        <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                            <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center p-4">
-                            <h5 class="mb-0">Instructor Name</h5>
-                            <small>Designation</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
-                    <div class="team-item bg-light">
-                        <div class="overflow-hidden">
-                            <img class="img-fluid" src="img/team-4.jpg" alt="">
-                        </div>
-                        <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                            <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-sm-square btn-primary mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                        <div class="text-center p-4">
-                            <h5 class="mb-0">Instructor Name</h5>
-                            <small>Designation</small>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Team End -->
-
-
-    <!-- Testimonial Start -->
-    <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
-        <div class="container">
-            <div class="text-center">
-                <h6 class="section-title bg-white text-center text-primary px-3">Testimonial</h6>
-                <h1 class="mb-5">Our Students Say!</h1>
-            </div>
-            <div class="owl-carousel testimonial-carousel position-relative">
-                <div class="testimonial-item text-center">
-                    <img class="border rounded-circle p-2 mx-auto mb-3" src="img/testimonial-1.jpg" style="width: 80px; height: 80px;">
-                    <h5 class="mb-0">Client Name</h5>
-                    <p>Profession</p>
-                    <div class="testimonial-text bg-light text-center p-4">
-                    <p class="mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
-                    </div>
-                </div>
-                <div class="testimonial-item text-center">
-                    <img class="border rounded-circle p-2 mx-auto mb-3" src="img/testimonial-2.jpg" style="width: 80px; height: 80px;">
-                    <h5 class="mb-0">Client Name</h5>
-                    <p>Profession</p>
-                    <div class="testimonial-text bg-light text-center p-4">
-                    <p class="mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
-                    </div>
-                </div>
-                <div class="testimonial-item text-center">
-                    <img class="border rounded-circle p-2 mx-auto mb-3" src="img/testimonial-3.jpg" style="width: 80px; height: 80px;">
-                    <h5 class="mb-0">Client Name</h5>
-                    <p>Profession</p>
-                    <div class="testimonial-text bg-light text-center p-4">
-                    <p class="mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
-                    </div>
-                </div>
-                <div class="testimonial-item text-center">
-                    <img class="border rounded-circle p-2 mx-auto mb-3" src="img/testimonial-4.jpg" style="width: 80px; height: 80px;">
-                    <h5 class="mb-0">Client Name</h5>
-                    <p>Profession</p>
-                    <div class="testimonial-text bg-light text-center p-4">
-                    <p class="mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Testimonial End -->
-        
-
-    
-    <!-- ===== Fin du contenu spécifique ===== -->
-
-    <?php require_once __DIR__ . '/includes/footer.php'; ?>
-    <?php require_once __DIR__ . '/includes/scripts.php'; ?>
-</body>
-
-</html>
+    </section>
+    <section class="et-container et-section"><div class="et-poste-callout"><div><span class="et-eyebrow"><?= etE(etT('Un bureau près de chez vous', 'مكتب قريب ليك')) ?></span><h2><?= etE(etT('Gardons le lien, partout en Tunisie.', 'نبقاو قراب، في كامل تونس.')) ?></h2><p><?= etE(etT('Consultez les adresses des bureaux de poste et choisissez celui qui vous convient.', 'اطّلع على عناوين مكاتب البريد واختر المكتب المناسب ليك.')) ?></p><a class="et-button" href="<?= etE(etPoste('bureaux')) ?>"><?= etE(etT('Consulter les bureaux', 'اطّلع على المكاتب')) ?><i class="bi bi-arrow-right" aria-hidden="true"></i></a></div><img src="<?= etE(etAsset('images/portal/bureau-poste.webp')) ?>" alt="<?= etE(etT('Le hall d’un bureau de poste', 'بهو مكتب بريد')) ?>" loading="lazy" width="640" height="440"></div></section>
+    <section class="et-container et-section et-faq" aria-labelledby="faq-title"><div class="et-section-heading"><span class="et-eyebrow"><?= etE(etT('On vous répond', 'نجيبوك')) ?></span><h2 id="faq-title"><?= etE(etT('Avant de commencer.', 'قبل ما تبدأ.')) ?></h2></div><div><?php $etFaqs = [[etT('Comment accéder aux services de la Poste ?', 'كيفاش ندخل لخدمات البريد؟'), etT('Cliquez sur la photo Poste, puis sur « Bureau de poste ». Connectez-vous dans la section située plus bas pour accéder à vos colis.', 'اضغط على صورة البريد ثمّ على « مكتب البريد ». سجّل الدخول في القسم الموجود أسفل الصفحة للوصول لطرودك.')], [etT('Puis-je suivre un colis sans me connecter ?', 'نجم نتتبّع طرد من غير حساب؟'), etT('Oui. Ouvrez « Suivre un colis » et saisissez votre numéro de suivi. La déclaration d’un envoi demande un compte citoyen.', 'إي. افتح « تتبّع طرد » وأدخل رقم التتبّع. التصريح بإرسال طرد يستحقّ حساب مواطن.')], [etT('Où retrouver mes déclarations ?', 'وين نلقى تصريحاتي؟'), etT('Après connexion, la page « Mes colis » présente vos déclarations et leur état actuel.', 'بعد تسجيل الدخول، صفحة « طرودي » تعرض تصريحاتك وحالتها الحاليّة.')]]; foreach ($etFaqs as $etFaq): ?><details><summary><?= etE($etFaq[0]) ?><i class="bi bi-plus" aria-hidden="true"></i></summary><p><?= etE($etFaq[1]) ?></p></details><?php endforeach; ?></div></section>
+</main>
+<?php require __DIR__ . '/../modules/poste/app/views/shared/footer.php'; ?>
+<dialog class="et-office-dialog" id="office-dialog" aria-labelledby="office-title">
+    <div class="et-office-toolbar"><button class="et-office-close" type="button" data-office-close><i class="bi bi-arrow-left" aria-hidden="true"></i><?= etE(etT('Retour aux services', 'العودة إلى الخدمات')) ?></button><span>E-Tounsi <span lang="ar">إي تونسي</span></span></div>
+    <?php require __DIR__ . '/../modules/poste/app/views/shared/office.php'; ?>
+</dialog>
+</body></html>

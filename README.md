@@ -3,14 +3,14 @@
 
 This project was developed as part of the Projet Technologies Web – 2nd Year Engineering Program at Esprit School of Engineering (Academic Year 2026–2027).
 
-E-Tounsi is a web platform that helps Tunisian citizens complete their administrative procedures online (municipality, STEG, SONEDE, transport, police station), without having to travel or wait in long queues.
+E-Tounsi est une plateforme de services publics tunisiens. Le portail présente cinq espaces : Transport, Municipalité, Assurance publique — CNAM, Poste et Recette des Finances. Le module Poste est relié à la base MySQL et à la gestion des utilisateurs ; l'intégration métier des autres espaces relève des membres concernés.
 
 ## Features
 Municipalité : demandes de documents et réclamations municipales
-CNAM : suivi des factures et réclamations électricité/gaz
+CNAM : espace d'assurance publique
 POSTE : annuaire des bureaux, déclaration, acceptation et suivi des colis
 Transport : informations et services de transport
-Poste de police : démarches administratives (documents, rendez-vous)
+Recette des Finances : espace des démarches fiscales
 Front Office : espace citoyen
 Back Office : espace administrateur (gestion des demandes)
 ## Tech Stack
@@ -18,7 +18,7 @@ Back Office : espace administrateur (gestion des demandes)
 HTML5
 CSS3
 JavaScript
-Bootstrap / Tailwind CSS (templates)
+Bootstrap (templates), CSS et JavaScript natif ; aucune compilation React/TypeScript
 ### Backend
 PHP (architecture MVC)
 MySQL
@@ -61,7 +61,11 @@ Nous remercions nos tuteurs et l'équipe pédagogique d'Esprit School of Enginee
 
 ## Module Poste et gestion des utilisateurs
 
-Le module de Maryem Kochbati est intégré dans [modules/poste](modules/poste/README.md). Son Front Office eLearning et son Back Office Spark Admin utilisent MySQL dans XAMPP et une gestion des comptes commune. Ce module possède un point d’entrée `index.php`, les dossiers `app/core`, `app/controllers`, `app/models`, `app/views`, `config`, `public/assets` et `sql`.
+Le module de Maryem Kochbati est intégré dans [modules/poste](modules/poste/README.md). Ses structures eLearning et Spark Admin sont adaptées au nouveau design E-Tounsi fourni : rouge, blanc cassé, images tunisiennes et portes en bois. Il utilise MySQL dans XAMPP et une gestion des comptes commune. Ce module possède un point d’entrée `index.php`, les dossiers `app/core`, `app/controllers`, `app/models`, `app/views`, `config`, `public/assets` et `sql`.
+
+Le parcours du portail est **Accueil → photo Poste → ouverture des portes → Bureau de poste → connexion → services réels**. Un citoyen retrouve ses colis ; l'administrateur accède à la gestion. Le bouton du bureau fait défiler vers le formulaire. Les autres photos ouvrent leur présentation, sans simuler une fonctionnalité métier.
+
+Le HTML de l'accueil est dans `Views/home.php`, les blocs partagés dans `modules/poste/app/views/shared`, le thème dans `css/etounsi.css` et les interactions dans `js/etounsi.js`. Les six images et les polices sont locales dans `modules/poste/public/assets`. Le [rapport de validation](docs/validation-interface.md) décrit les contrôles. Aucun chatbot n'est intégré.
 
 Les deux rôles sont citoyen et administrateur. L’inscription publique crée un citoyen. L’administrateur gère les utilisateurs, leurs rôles, les bureaux et les colis. Les sessions, les autorisations et les formulaires suivent le workshop de sécurité.
 
@@ -70,7 +74,7 @@ http://localhost/Esprit-PW-2A6-2026-ETounsi/modules/poste/index.php.
 
 Les accès générés se trouvent dans le fichier local modules/poste/config/acces-local.txt. Ce fichier et les paramètres privés de chaque machine sont exclus de Git.
 
-Les ressources eLearning sont attribuées à HTML Codex et celles de Spark Admin à Spark Admin Dev / ThemeWagon. Leurs notices sont conservées dans le module.
+Les ressources eLearning sont attribuées à HTML Codex et celles de Spark Admin à Spark Admin Dev / ThemeWagon. Leurs notices sont conservées dans le module. Les images de la nouvelle interface proviennent de l'archive E-Tounsi-Projet.zip fournie ; les polices Plus Jakarta Sans, Fraunces et Cairo conservent leurs licences OFL.
 
 ## Suivi des tâches Poste et utilisateurs
 

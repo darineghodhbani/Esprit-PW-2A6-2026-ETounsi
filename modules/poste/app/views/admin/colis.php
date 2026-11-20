@@ -13,7 +13,7 @@ $statuses = $data['statuses'];
 </div>
 
 <section class="table-card-custom" aria-label="Liste des colis">
-    <form method="get" class="table-header-control poste-filter" action="">
+    <form method="get" class="table-header-control poste-filter" action="" novalidate>
         <input type="hidden" name="espace" value="admin">
         <input type="hidden" name="page" value="colis">
         <div class="poste-filter-field">

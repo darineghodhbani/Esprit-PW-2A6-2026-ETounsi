@@ -31,7 +31,7 @@ require __DIR__ . '/page-heading.php';
                     </div>
                     <span class="status-badge"><?= e(parcelStatus($colis['statut'])) ?></span>
                     <?php if ($colis['statut'] === 'En attente'): ?>
-                        <form method="post" action="<?= e(frontUrl('historique')) ?>">
+                        <form method="post" action="<?= e(frontUrl('historique')) ?>" novalidate>
                             <input type="hidden" name="csrf" value="<?= e($jeton) ?>">
                             <input type="hidden" name="id_colis" value="<?= e($colis['id_colis']) ?>">
                             <button class="btn btn-outline-primary" type="submit" aria-label="<?= e(tr('Annuler l’envoi ', 'ألغِ الإرسالية ') . $colis['numero_suivi']) ?>"><?= e(tr('Annuler l’envoi', 'ألغِ الإرسالية')) ?></button>

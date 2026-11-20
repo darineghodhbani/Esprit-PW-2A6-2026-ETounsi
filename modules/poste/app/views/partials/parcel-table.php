@@ -24,7 +24,7 @@
                 <td>
                     <div class="poste-table-actions">
                         <?php if ($parcel['statut'] === 'En attente'): ?>
-                            <form method="post" action="?espace=admin&amp;page=colis-accepter" data-poste-save>
+                            <form method="post" action="?espace=admin&amp;page=colis-accepter" data-poste-save novalidate>
                                 <input type="hidden" name="csrf" value="<?= e($csrf) ?>">
                                 <input type="hidden" name="id" value="<?= e($parcel['id_colis']) ?>">
                                 <button class="poste-btn poste-btn-primary poste-btn-sm" type="submit"

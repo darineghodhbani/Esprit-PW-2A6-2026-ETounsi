@@ -1,23 +1,23 @@
 :root {
-    --poste-primary: #c92335;
-    --poste-primary-hover: #a91b2c;
-    --poste-navy: #252a33;
-    --poste-muted: #59616c;
+    --poste-primary: var(--et-red);
+    --poste-primary-hover: var(--et-red-hover);
+    --poste-navy: var(--et-ink);
+    --poste-muted: var(--et-muted);
     --poste-pale: #fbecef;
-    --bs-body-bg: #f7f7f7;
-    --bs-body-font-family: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
-    --bs-body-color: #18233b;
-    --brand-forest-dark: #292d36;
-    --brand-forest-light: #383d46;
-    --brand-lime: #f09ba4;
-    --text-main: #18233b;
-    --text-muted-green: #59616c;
-    --text-sidebar-muted: #c2cde0;
-    --border-light: #dcdfe3;
+    --bs-body-bg: var(--et-paper);
+    --bs-body-font-family: var(--et-font);
+    --bs-body-color: var(--et-ink);
+    --brand-forest-dark: #a61932;
+    --brand-forest-light: #bd2040;
+    --brand-lime: var(--et-yellow);
+    --text-main: var(--et-ink);
+    --text-muted-green: var(--et-muted);
+    --text-sidebar-muted: #ffe1e5;
+    --border-light: var(--et-border);
     --sidebar-width: 247px;
-    --radius-xl: 5px;
-    --radius-lg: 4px;
-    --radius-md: 4px;
+    --radius-xl: 18px;
+    --radius-lg: 14px;
+    --radius-md: 10px;
     --shadow-sm: none;
 }
 
@@ -50,7 +50,7 @@ body { font-family: var(--bs-body-font-family); }
 }
 
 .sidebar-brand small {
-    color: #c2cde0;
+    color: #ffe1e5;
     font-size: .85rem;
     font-weight: 600;
 }
@@ -61,7 +61,7 @@ body.sidebar-minimized .poste-brand-logo {
 }
 
 .sidebar-menu-title { margin-top: 0; letter-spacing: .06em; opacity: 1; }
-.sidebar-menu-link.active { background: #3d343a; }
+.sidebar-menu-link.active { background: #ffffff24; color: #fff; }
 .sidebar-menu-link.active::before {
     left: 0;
     top: .4rem;
@@ -196,7 +196,7 @@ body.sidebar-minimized .poste-brand-logo {
     padding: .55rem .95rem;
     gap: .5rem;
     border: 1px solid transparent;
-    border-radius: 4px;
+    border-radius: var(--et-radius-control);
     font-size: .875rem;
     font-weight: 650;
     line-height: 1.2;
@@ -237,7 +237,7 @@ body.sidebar-minimized .poste-brand-logo {
 .poste-filter label, .poste-field label { display: block; margin-bottom: .375rem; color: var(--poste-navy); font-size: .875rem; font-weight: 650; }
 .poste-filter-field { min-width: min(100%, 13rem); }
 .poste-filter-field:first-of-type { max-width: 25rem; flex: 1 1 16rem; }
-.form-control-custom { min-height: 2.75rem; color: var(--poste-navy); border-color: #c6d0dc; }
+.form-control-custom { min-height: 2.75rem; color: var(--poste-navy); border-color: var(--et-border); border-radius: var(--et-radius-control); }
 .form-control-custom.form-select { padding-right: 2.1rem; }
 .form-control-custom:focus { border-color: #226db7; box-shadow: 0 0 0 2px rgba(34, 109, 183, .18); }
 .form-control-custom.is-invalid { border-color: var(--poste-primary); }

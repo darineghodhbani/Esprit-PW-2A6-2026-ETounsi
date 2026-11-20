@@ -14,7 +14,7 @@ $message = $data['message'];
             <?php foreach ($data['errors'] as $messageErreur): ?><p class="mb-0"><?= e($messageErreur) ?></p><?php endforeach; ?>
         </div>
     <?php endif; ?>
-    <form action="?espace=admin&amp;page=<?= e($action) ?>" method="post" class="poste-table-actions">
+    <form action="?espace=admin&amp;page=<?= e($action) ?>" method="post" class="poste-table-actions" novalidate>
         <input type="hidden" name="csrf" value="<?= e($csrf) ?>">
         <input type="hidden" name="id" value="<?= e($id) ?>">
         <a class="poste-btn poste-btn-outline" href="?espace=admin&amp;page=<?= e($section) ?>">Annuler</a>

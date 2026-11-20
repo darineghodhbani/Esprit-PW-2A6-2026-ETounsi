@@ -2,7 +2,7 @@
 
 ## Overview
 
-Ce module de Maryem Kochbati, équipe Power Girls, permet de consulter les bureaux de poste et de déclarer, suivre et administrer les colis. Il intègre le Front Office eLearning et le Back Office Spark Admin dans une seule structure MVC PHP.
+Ce module de Maryem Kochbati, équipe Power Girls, permet de consulter les bureaux de poste et de déclarer, suivre et administrer les colis. Il conserve la structure MVC PHP et les bases eLearning/Spark Admin avec la nouvelle présentation E-Tounsi fournie dans le prototype.
 
 ## Features
 
@@ -39,12 +39,13 @@ poste/
 │       ├── layouts/            Assemblage du Front et du Back Office
 │       ├── includes/           Blocs communs eLearning
 │       ├── partials/           Blocs communs Spark Admin
+│       ├── shared/             En-tête, pied de page, bureau et connexion partagés avec le portail
 │       ├── admin/              Pages d’administration
 │       └── *.php               Pages citoyennes avec leur HTML
 ├── public/assets/
-│   ├── front/                  CSS et JavaScript du Front Office
+│   ├── front/                  CSS du Front Office initial
 │   ├── back/                   CSS et JavaScript du Back Office
-│   ├── images/                 Logo et image du template
+│   ├── images/                 Logo, image initiale et six photos locales dans portal/
 │   ├── fonts/                  Polices locales
 │   ├── js/                     Bootstrap partagé
 │   └── vendor/                 Icônes partagées
@@ -55,7 +56,11 @@ poste/
 
 Les modèles représentent les entités avec des attributs privés, un constructeur et des getters/setters. Les contrôleurs contiennent les requêtes PDO et les traitements, selon le workshop de sécurité. `HomeController` prépare les pages citoyennes. `AdminController`, `BureauController`, `ColisController` et `UtilisateurController` préparent les vues administratives. `AuthController` gère les comptes et `PosteController` les données postales.
 
-Les vues contiennent le HTML. Les fichiers `public/assets/front/css/style.css` et `public/assets/back/css/main.css` proviennent des templates fournis. Leurs adaptations se trouvent dans les deux fichiers `poste.css`. Le Front Office assemble `head`, `spinner`, `navbar`, la vue, `footer`, puis `scripts`, dans l’ordre de l’atelier.
+Les vues contiennent le HTML. Les fichiers `public/assets/front/css/style.css` et `public/assets/back/css/main.css` proviennent des templates fournis. Leurs adaptations se trouvent dans les deux fichiers `poste.css` et dans le thème commun `../../css/etounsi.css`. Les interactions communes sont dans `../../js/etounsi.js` ; le menu administrateur reste dans `public/assets/back/js/poste.js`. Le Front Office assemble `head`, `spinner`, `navbar`, la vue, `footer`, puis `scripts`, dans l’ordre de l’atelier.
+
+Depuis [l'accueil E-Tounsi](http://localhost/Esprit-PW-2A6-2026-ETounsi/), cliquer sur la photo **Poste**, attendre l'ouverture des portes en bois et choisir **Bureau de poste**. Le bouton descend vers la vraie connexion. La page dédiée `index.php?page=connexion` utilise le même formulaire. Après connexion, les services sont proposés selon le rôle réel. Les autres bureaux du portail sont des présentations ; aucune fausse connexion n'est utilisée.
+
+Cette mise à jour visuelle ne nécessite ni migration de base ni nouvelle installation. Pour une installation déjà fonctionnelle, démarrer Apache/MySQL et recharger la page avec Ctrl+F5 suffit. Les vérifications sont décrites dans [le rapport d'interface](../../docs/validation-interface.md).
 
 ### Notions des cours
 
@@ -122,7 +127,7 @@ Créer une branche par tâche, tester sur XAMPP, puis ouvrir une pull request ve
 
 ## Licence
 
-Les notices tierces sont conservées dans `public/assets/front/LICENSE.txt`, `public/assets/back/SPARK-README.md`, `public/assets/fonts/Cairo-OFL.txt` et `public/assets/vendor/bootstrap-icons/LICENSE.txt`.
+Les notices tierces sont conservées dans `public/assets/front/LICENSE.txt`, `public/assets/back/SPARK-README.md`, `public/assets/fonts/Cairo-OFL.txt`, `Jakarta-OFL.txt`, `Fraunces-OFL.txt` et `public/assets/vendor/bootstrap-icons/LICENSE.txt`. Les photos de la nouvelle interface proviennent de l'archive E-Tounsi-Projet.zip fournie par l'équipe.
 
 ## Acknowledgments
 

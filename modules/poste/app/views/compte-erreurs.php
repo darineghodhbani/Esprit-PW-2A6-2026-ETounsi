@@ -2,7 +2,7 @@
     <p class="alert alert-danger" role="alert"><?= e($erreur) ?></p>
 <?php endif; ?>
 <?php if (!empty($erreurs)): ?>
-    <div class="alert alert-danger" role="alert">
+    <div class="alert alert-danger" role="alert" id="erreur-compte">
         <p class="mb-0"><?= e(tr('Vérifiez les champs indiqués ci-dessous.', 'تحقّق من الخانات المشار إليها أدناه.')) ?></p>
         <?php if (isset($erreurs['general'])): ?>
             <p class="mb-0"><?= e($erreurs['general']) ?></p>
