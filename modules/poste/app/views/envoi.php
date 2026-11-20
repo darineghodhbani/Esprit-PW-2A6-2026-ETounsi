@@ -1,5 +1,5 @@
 <?php
-$intro = tr('Choisissez le bureau de départ pour déclarer votre envoi.', 'اختر مكتب الإرسال للتصريح بإرساليتك.');
+$intro = tr('Choisissez le bureau de départ. Votre déclaration recevra une référence et sera vérifiée par l’administration.', 'اختر مكتب الإرسال. ستحصل على رقم تتبّع وستراجع الإدارة تصريحك.');
 require __DIR__ . '/page-heading.php';
 ?>
 <div class="container py-5">

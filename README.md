@@ -8,7 +8,7 @@ E-Tounsi is a web platform that helps Tunisian citizens complete their administr
 ## Features
 Municipalité : demandes de documents et réclamations municipales
 CNAM : suivi des factures et réclamations électricité/gaz
-POSTE : annuaire des bureaux, déclaration et suivi des colis
+POSTE : annuaire des bureaux, déclaration, acceptation et suivi des colis
 Transport : informations et services de transport
 Poste de police : démarches administratives (documents, rendez-vous)
 Front Office : espace citoyen
@@ -74,6 +74,6 @@ Les ressources eLearning sont attribuées à HTML Codex et celles de Spark Admin
 
 ## Suivi des tâches Poste et utilisateurs
 
-Le [tableau GitHub Poste et utilisateurs](https://github.com/users/kochbatimaryem574-maker/projects/1) suit les contributions de Maryem Kochbati. Les issues #2, #3 et #4 concernent les fonctionnalités et la sécurité. L’issue #7 concerne le rangement MVC pour la validation et l’issue #9 le rôle administrateur unique et les footers. Elles sont attribuées à kochbatimaryem574-maker et leur avancement est indiqué dans le tableau.
+Le [tableau GitHub Poste et utilisateurs](https://github.com/users/kochbatimaryem574-maker/projects/1) suit les contributions de Maryem Kochbati. Les issues #2, #3 et #4 concernent les fonctionnalités et la sécurité. L’issue #7 concerne le rangement MVC pour la validation et l’issue #9 le rôle administrateur unique et les footers. L’issue #11 suit l’acceptation et le traitement des colis. Elles sont attribuées à kochbatimaryem574-maker et leur avancement est indiqué dans le tableau.
 
 La vue **Avancement Poste** présente ces tâches sous forme de tableau. Le projet est public, sous le compte de Maryem, et accessible depuis ce lien pour la validation.

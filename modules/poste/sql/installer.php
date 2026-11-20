@@ -51,6 +51,15 @@ try {
         echo "Le rôle Administrateur regroupe tous les accès du Back Office.\n";
     }
 
+    $migration->execute(['nom' => 'acceptation-colis-20261120']);
+    if (!$migration->fetch()) {
+        $base->exec("ALTER TABLE Colis MODIFY statut
+            ENUM('En attente', 'Accepté', 'En transit', 'Livré', 'Annulé') NOT NULL DEFAULT 'En attente'");
+        $base->prepare('INSERT INTO Migration (nom) VALUES (:nom)')
+            ->execute(['nom' => 'acceptation-colis-20261120']);
+        echo "Le statut Accepté est disponible pour les colis.\n";
+    }
+
     $cheminAcces = dirname(__DIR__) . '/config/acces-local.txt';
     $ancienAdmin = $base->prepare('SELECT id_citoyen FROM Citoyen WHERE email = :email');
     $ancienAdmin->execute(['email' => 'super.admin@example.test']);

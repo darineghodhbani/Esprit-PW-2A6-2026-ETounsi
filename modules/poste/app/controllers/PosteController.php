@@ -5,7 +5,7 @@ require_once __DIR__ . '/../models/Colis.php';
 
 class PosteController
 {
-    public const STATUSES = ['En attente', 'En transit', 'Livré', 'Annulé'];
+    public const STATUSES = ['En attente', 'Accepté', 'En transit', 'Livré', 'Annulé'];
 
     private const SELECT_COLIS =
         'SELECT c.id_colis, c.id_bureau_depart, c.id_citoyen, c.numero_suivi,
@@ -155,14 +155,30 @@ class PosteController
         }
     }
 
-    public function updateParcelStatus($id, $statut)
+    public static function statutsSuivants($statut)
+    {
+        $transitions = [
+            'En attente' => ['Accepté', 'Annulé'],
+            'Accepté' => ['En transit', 'Annulé'],
+            'En transit' => ['Livré'],
+        ];
+        return $transitions[$statut] ?? [];
+    }
+
+    public function updateParcelStatus($id, $statut, $statutActuel)
     {
         if (!in_array($statut, self::STATUSES, true)) {
             throw new InvalidArgumentException('Statut de colis invalide.');
         }
-        $requete = $this->connexion->prepare('UPDATE Colis SET statut = :statut WHERE id_colis = :id');
-        $requete->execute(['statut' => $statut, 'id' => $id]);
-        return $requete->rowCount() === 1 || $this->findParcel($id) !== null;
+        if (!in_array($statut, self::statutsSuivants($statutActuel), true)) {
+            return false;
+        }
+        // Une déclaration annulée ou déjà traitée ne peut pas être écrasée.
+        $requete = $this->connexion->prepare(
+            'UPDATE Colis SET statut = :statut WHERE id_colis = :id AND statut = :statut_actuel'
+        );
+        $requete->execute(['statut' => $statut, 'id' => $id, 'statut_actuel' => $statutActuel]);
+        return $requete->rowCount() === 1;
     }
 
     public function cancelParcel($id, $idCitoyen)

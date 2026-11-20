@@ -7,7 +7,7 @@ $statuses = $data['statuses'];
 <div class="page-header poste-page-header">
     <div>
         <h1 class="page-title"><?= e($title) ?></h1>
-        <p class="page-subtitle">Retrouvez les envois, consultez leur statut et mettez-le à jour.</p>
+        <p class="page-subtitle">Acceptez les déclarations en attente, puis suivez leur acheminement jusqu’à la livraison.</p>
     </div>
     <a class="poste-btn poste-btn-primary" href="?espace=admin&amp;page=colis-form"><i class="bi bi-plus-lg" aria-hidden="true"></i> Enregistrer un colis</a>
 </div>

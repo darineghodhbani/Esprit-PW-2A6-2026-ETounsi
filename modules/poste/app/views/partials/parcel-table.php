@@ -23,8 +23,21 @@
                 <?php endif; ?>
                 <td>
                     <div class="poste-table-actions">
-                        <a class="poste-btn poste-btn-outline poste-btn-sm" href="?espace=admin&amp;page=colis-form&amp;id=<?= e($parcel['id_colis']) ?>"
-                           aria-label="Modifier le statut du colis <?= e($parcel['numero_suivi']) ?>">Modifier le statut</a>
+                        <?php if ($parcel['statut'] === 'En attente'): ?>
+                            <form method="post" action="?espace=admin&amp;page=colis-accepter" data-poste-save>
+                                <input type="hidden" name="csrf" value="<?= e($csrf) ?>">
+                                <input type="hidden" name="id" value="<?= e($parcel['id_colis']) ?>">
+                                <button class="poste-btn poste-btn-primary poste-btn-sm" type="submit"
+                                        aria-label="Accepter le colis <?= e($parcel['numero_suivi']) ?>">Accepter</button>
+                            </form>
+                        <?php endif; ?>
+                        <?php if (PosteController::statutsSuivants($parcel['statut']) !== []): ?>
+                            <a class="poste-btn poste-btn-outline poste-btn-sm" href="?espace=admin&amp;page=colis-form&amp;id=<?= e($parcel['id_colis']) ?>"
+                               aria-label="Modifier le statut du colis <?= e($parcel['numero_suivi']) ?>">Modifier le statut</a>
+                        <?php else: ?>
+                            <a class="poste-btn poste-btn-outline poste-btn-sm" href="?espace=admin&amp;page=colis-form&amp;id=<?= e($parcel['id_colis']) ?>"
+                               aria-label="Consulter le colis <?= e($parcel['numero_suivi']) ?>">Consulter</a>
+                        <?php endif; ?>
                         <?php if ($section === 'colis'): ?>
                             <a class="poste-btn poste-btn-remove poste-btn-sm" href="?espace=admin&amp;page=colis-suppression&amp;id=<?= e($parcel['id_colis']) ?>"
                                aria-label="Supprimer le colis <?= e($parcel['numero_suivi']) ?>"><i class="bi bi-trash3" aria-hidden="true"></i> Supprimer</a>

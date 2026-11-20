@@ -90,6 +90,23 @@ class ColisController extends Controller
         $this->redirect('colis', 'Le colis ' . $parcel['numero_suivi'] . ' a été enregistré.');
     }
 
+    public function accepter()
+    {
+        if (!$this->csrfValid()) {
+            return;
+        }
+        $id = $this->id($_POST);
+        $parcel = $this->find($id);
+        if ($parcel === null) {
+            return;
+        }
+        if (!gestionPoste()->updateParcelStatus($id, 'Accepté', 'En attente')) {
+            $this->problem(409, 'Déclaration déjà traitée', 'Ce colis n’est plus en attente. Rechargez la liste des colis.', 'colis');
+            return;
+        }
+        $this->redirect('colis', 'Le colis ' . $parcel['numero_suivi'] . ' a été accepté.');
+    }
+
     public function confirmDelete()
     {
         $parcel = $this->find($this->id($_GET));
@@ -127,13 +144,21 @@ class ColisController extends Controller
             return;
         }
 
-        $status = $this->text($_POST, 'statut');
-        if (!in_array($status, PosteController::STATUSES, true)) {
-            $this->renderForm($parcel, ['statut' => 'Choisissez un statut dans la liste.']);
+        if ($this->text($_POST, 'statut_actuel') !== $parcel['statut']) {
+            $this->renderForm($parcel, ['statut' => 'Le statut a changé depuis l’ouverture du formulaire. Vérifiez son état actuel.'], 409);
             return;
         }
-        if (!gestionPoste()->updateParcelStatus($id, $status)) {
-            $this->redirect('colis', 'Le changement de statut n’a pas été enregistré. Vérifiez le colis.', 'warning');
+        $status = $this->text($_POST, 'statut');
+        if (!in_array($status, PosteController::statutsSuivants($parcel['statut']), true)) {
+            $this->renderForm($parcel, ['statut' => 'Choisissez une étape proposée pour ce colis.']);
+            return;
+        }
+        if (!gestionPoste()->updateParcelStatus($id, $status, $parcel['statut'])) {
+            $parcel = $this->find($id);
+            if ($parcel !== null) {
+                $this->renderForm($parcel, ['statut' => 'Le colis vient d’être modifié. Vérifiez son état avant de réessayer.'], 409);
+            }
+            return;
         }
 
         $this->redirect('colis', 'Le statut du colis a été mis à jour.');
@@ -151,14 +176,17 @@ class ColisController extends Controller
         return $parcel;
     }
 
-    private function renderForm($parcel, $errors = [])
+    private function renderForm($parcel, $errors = [], $code = 422)
     {
         if ($errors !== []) {
-            http_response_code(422);
+            http_response_code($code);
         }
 
         $editing = !empty($parcel['id_colis']);
         $title = 'Modifier le statut';
+        if ($editing && PosteController::statutsSuivants($parcel['statut']) === []) {
+            $title = 'Consulter le colis';
+        }
         $offices = [];
         $citizens = [];
         if (!$editing) {
@@ -170,7 +198,7 @@ class ColisController extends Controller
         $this->render('colis-form', $title, 'colis', [
             'parcel' => $parcel,
             'editing' => $editing,
-            'statuses' => PosteController::STATUSES,
+            'statuses' => $editing ? PosteController::statutsSuivants($parcel['statut']) : [],
             'offices' => $offices,
             'citizens' => $citizens,
             'errors' => $errors,
