@@ -1,17 +1,25 @@
 <?php
-// Point d'entrée du site : toutes les pages passent par ici.
-// Exemple : index.php?page=about  → affiche la page "À propos"
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/config/session.php';
+
 require_once __DIR__ . '/Controllers/HomeController.php';
 
-$controller = new HomeController();
-$page = isset($_GET['page']) ? $_GET['page'] : 'home';
+$auth = new AuthController();
+$auth->refreshSession();
+
+$controller = new HomeController($auth);
+$page = isset($_GET['page']) ? (string) $_GET['page'] : 'home';
 
 switch ($page) {
-    case 'home':        $controller->home(); break;
-    case 'about':       $controller->about(); break;
-    case 'courses':     $controller->courses(); break;
-    case 'team':        $controller->team(); break;
-    case 'testimonial': $controller->testimonial(); break;
-    case 'contact':     $controller->contact(); break;
-    default:            $controller->notFound(); break;
+    case 'home':          $controller->home(); break;
+    case 'administratif': $controller->administratif(); break;
+
+    case 'login':         $controller->login(); break;
+    case 'register':      $controller->register(); break;
+    case 'logout':        $controller->logout(); break;
+    case 'profil':        $controller->profil(); break;
+
+    default:              $controller->notFound(); break;
 }
