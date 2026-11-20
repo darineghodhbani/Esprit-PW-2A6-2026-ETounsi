@@ -8,12 +8,41 @@ class HomeController
         require __DIR__ . '/../Views/' . $view . '.php';
     }
 
-    public function home()        { $this->render('home', 'E-Tounsi - Accueil', 'home'); }
-    public function service()     { $this->render('service', 'E-Tounsi - Services', 'service'); }
+    public function home()
+    {
+        $language = etLang();
+        $pageTitle = etT('Vos services publics, en toute simplicité', 'خدماتك العموميّة بكلّ سهولة');
+        $currentPage = 'home';
+        $utilisateur = utilisateurConnecte();
+        $jeton = csrfToken();
+        $etModules = etServices();
+        $etServiceKey = 'poste';
+        $etService = $etModules['poste'];
+        require __DIR__ . '/../Views/home.php';
+    }
+
+    public function service()
+    {
+        $language = etLang();
+        $currentPage = 'service';
+        $etModules = etServices();
+        $etServiceKey = is_string($_GET['service'] ?? null) ? $_GET['service'] : 'poste';
+        if (!isset($etModules[$etServiceKey])) {
+            http_response_code(404);
+            $pageTitle = etT('Service introuvable', 'الخدمة غير موجودة');
+        } else {
+            $etService = $etModules[$etServiceKey];
+            $pageTitle = $etService['nom'];
+        }
+        $utilisateur = utilisateurConnecte();
+        $jeton = csrfToken();
+        $etOfficePage = true;
+        require __DIR__ . '/../Views/service.php';
+    }
     public function about()       { $this->render('about', 'E-Tounsi - À propos', 'about'); }
     public function courses()     { $this->render('courses', 'E-Tounsi - Services', 'courses'); }
     public function team()        { $this->render('team', 'E-Tounsi - Notre équipe', 'team'); }
     public function testimonial() { $this->render('testimonial', 'E-Tounsi - Témoignages', 'testimonial'); }
-    public function contact()     { $this->render('contact', 'E-Tounsi - Contact', 'contact'); }
+    public function contact()     { $this->render('contact', etT('Contacts utiles', 'روابط مفيدة'), 'contact'); }
     public function notFound()    { $this->render('404', 'E-Tounsi - Page introuvable', '404'); }
 }

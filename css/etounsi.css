@@ -240,8 +240,14 @@ p {
   align-items: center;
   white-space: nowrap;
 }
-.et-navigation > a:hover {
+.et-navigation > a:hover,
+.et-navigation > a.active {
   color: var(--et-red);
+}
+.et-navigation > a.active {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 7px;
 }
 .et-header-actions {
   display: flex;

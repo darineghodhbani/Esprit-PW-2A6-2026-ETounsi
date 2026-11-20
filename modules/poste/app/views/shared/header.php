@@ -1,6 +1,9 @@
 <?php
 $etConnected = $utilisateur ?? null;
 $etModule = !defined('ETOUNSI_PORTAIL');
+$etCurrentPage = $currentPage ?? '';
+$etAccueilActive = !$etModule && $etCurrentPage === 'home';
+$etContactActive = !$etModule && $etCurrentPage === 'contact';
 $etOther = etLang() === 'fr' ? 'ar' : 'fr';
 $etLanguageParams = $_GET;
 unset($etLanguageParams['csrf']);
@@ -15,15 +18,21 @@ $etLanguageParams['lang'] = $etOther;
         </a>
         <button class="et-menu-toggle" type="button" data-menu-toggle aria-controls="et-navigation" aria-expanded="false" aria-label="<?= etE(etT('Ouvrir le menu', 'افتح القائمة')) ?>"><i class="bi bi-list" aria-hidden="true"></i></button>
         <nav class="et-navigation" id="et-navigation" aria-label="<?= etE(etT('Navigation principale', 'التنقّل الرئيسي')) ?>">
-            <a href="<?= etE(etHome()) ?>"><?= etE(etT('Accueil', 'الرئيسية')) ?></a>
+            <a href="<?= etE(etHome()) ?>" class="<?= $etAccueilActive ? 'active' : '' ?>"
+                <?php if ($etAccueilActive): ?>aria-current="page"<?php endif; ?>><?= etE(etT('Accueil', 'الرئيسية')) ?></a>
             <?php if ($etModule): ?>
-                <a href="<?= etE(etPoste()) ?>"><?= etE(etT('Services postaux', 'الخدمات البريدية')) ?></a>
-                <a href="<?= etE(etPoste('suivi')) ?>"><?= etE(etT('Suivre un colis', 'تتبّع طرد')) ?></a>
-                <a href="<?= etE(etPoste('bureaux')) ?>"><?= etE(etT('Bureaux', 'المكاتب')) ?></a>
+                <a href="<?= etE(etPoste()) ?>" class="<?= $etCurrentPage === 'accueil' ? 'active' : '' ?>"
+                    <?php if ($etCurrentPage === 'accueil'): ?>aria-current="page"<?php endif; ?>><?= etE(etT('Services postaux', 'الخدمات البريدية')) ?></a>
+                <a href="<?= etE(etPoste('suivi')) ?>" class="<?= $etCurrentPage === 'suivi' ? 'active' : '' ?>"
+                    <?php if ($etCurrentPage === 'suivi'): ?>aria-current="page"<?php endif; ?>><?= etE(etT('Suivre un colis', 'تتبّع طرد')) ?></a>
+                <a href="<?= etE(etPoste('bureaux')) ?>" class="<?= $etCurrentPage === 'bureaux' ? 'active' : '' ?>"
+                    <?php if ($etCurrentPage === 'bureaux'): ?>aria-current="page"<?php endif; ?>><?= etE(etT('Bureaux', 'المكاتب')) ?></a>
             <?php else: ?>
                 <a href="<?= etE(etHome('#services')) ?>"><?= etE(etT('Nos services', 'خدماتنا')) ?></a>
                 <a href="<?= etE(etHome('#comment')) ?>"><?= etE(etT('Comment ça marche', 'كيف يعمل الموقع')) ?></a>
-                <a href="<?= etE(etHome('#contact')) ?>"><?= etE(etT('Contact', 'اتصل بنا')) ?></a>
+                <a href="<?= etE(etBase() . 'index.php?page=contact&lang=' . etLang()) ?>"
+                    class="<?= $etContactActive ? 'active' : '' ?>"
+                    <?php if ($etContactActive): ?>aria-current="page"<?php endif; ?>><?= etE(etT('Contact', 'اتصل بنا')) ?></a>
             <?php endif; ?>
         </nav>
         <div class="et-header-actions">

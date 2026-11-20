@@ -4,6 +4,8 @@
 
 Le brief de conception fourni le 20 novembre 2026, E-Tounsi-Projet.zip et la vidéo définissent l'apparence. Le code Poste déjà validé reste l'autorité pour les données et les règles métier. Cette adaptation concerne la présentation du portail, l'entrée des cinq bureaux et le module Poste. Les fonctionnalités des autres membres ne sont ni recréées ni déclarées terminées.
 
+Le contrôle du 21 novembre avec le workshop Sessions précise que les données d'utilisateur/session et la validation du service du portail sont préparées dans `Controllers/HomeController.php`, avant les vues. La page Contact présente uniquement des liens vers les services réels. La navigation marque la page courante, sans confondre ses ancres avec des pages distinctes. Le bilan et les limites de groupe sont dans `docs/verification-premiere-validation.md`.
+
 | Domaine | Source de vérité | Conséquence dans l'interface |
 |---|---|---|
 | Comptes et rôles | `modules/poste/app/core/securite.php`, `app/controllers/AuthController.php` | Session commune ; citoyen et administrateur ; contrôles toujours sur le serveur |
