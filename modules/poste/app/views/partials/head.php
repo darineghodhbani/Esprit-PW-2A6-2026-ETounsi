@@ -5,5 +5,7 @@
     <link rel="stylesheet" href="public/assets/back/css/bootstrap.min.css">
     <link rel="stylesheet" href="public/assets/vendor/bootstrap-icons/bootstrap-icons.css">
     <link rel="stylesheet" href="public/assets/back/css/main.css">
+    <link rel="stylesheet" href="../../css/etounsi.css">
     <link rel="stylesheet" href="public/assets/back/css/poste.css">
+    <script src="../../js/etounsi.js" defer></script>
 </head>

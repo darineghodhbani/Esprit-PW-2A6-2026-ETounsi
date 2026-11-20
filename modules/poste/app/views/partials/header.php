@@ -15,7 +15,7 @@
             <i class="bi bi-person" aria-hidden="true"></i>
             <span><?= e($compteConnecte['nom']) ?><small><?= e($roleConnecte) ?></small></span>
         </a>
-        <form method="post" action="<?= e(frontUrl('deconnexion')) ?>">
+        <form method="post" action="<?= e(frontUrl('deconnexion')) ?>" novalidate>
             <input type="hidden" name="csrf" value="<?= e($csrf) ?>">
             <button class="poste-btn poste-btn-quiet" type="submit" aria-label="Se déconnecter"><i class="bi bi-box-arrow-right" aria-hidden="true"></i><span>Déconnexion</span></button>
         </form>

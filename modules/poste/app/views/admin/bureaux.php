@@ -11,7 +11,7 @@ $query = $data['query'];
 </div>
 
 <section class="table-card-custom" aria-label="Annuaire des bureaux">
-    <form method="get" class="table-header-control poste-filter" action="">
+    <form method="get" class="table-header-control poste-filter" action="" novalidate>
         <input type="hidden" name="espace" value="admin">
         <input type="hidden" name="page" value="bureaux">
         <div class="poste-filter-field">

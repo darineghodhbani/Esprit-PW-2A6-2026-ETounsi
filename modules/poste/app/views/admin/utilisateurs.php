@@ -11,7 +11,7 @@ $roles = $data['roles'];
     <a class="poste-btn poste-btn-primary" href="?espace=admin&amp;page=utilisateur-form"><i class="bi bi-plus-lg" aria-hidden="true"></i> Ajouter un utilisateur</a>
 </div>
 <section class="table-card-custom" aria-label="Comptes utilisateurs">
-    <form method="get" class="table-header-control poste-filter" action="">
+    <form method="get" class="table-header-control poste-filter" action="" novalidate>
         <input type="hidden" name="espace" value="admin">
         <input type="hidden" name="page" value="utilisateurs">
         <div class="poste-filter-field">

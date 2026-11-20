@@ -1,18 +1,1 @@
-<footer class="container-fluid bg-dark text-light footer">
-    <div class="container footer-wrap py-4">
-        <div>
-            <span class="footer-brand">E‑Tounsi <span lang="ar">إي تونسي</span></span>
-            <p class="mb-0"><?= e(tr('Services postaux', 'الخدمات البريدية')) ?></p>
-            <small><?= e(tr('Intégration du module Poste : Maryem Kochbati', 'إدماج الخدمات البريدية: Maryem Kochbati')) ?></small>
-        </div>
-        <div class="footer-links">
-            <?php if ($utilisateur !== null && $utilisateur['role'] === 'admin'): ?>
-                <a href="<?= e(adminUrl()) ?>"><?= e(tr('Administration', 'الإدارة')) ?></a>
-            <?php else: ?>
-                <a href="<?= e(frontUrl('profil')) ?>"><?= e(tr('Mon espace', 'فضائي')) ?></a>
-            <?php endif; ?>
-            <small><?= e(tr('Template eLearning par', 'قالب eLearning من')) ?> <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a></small>
-        </div>
-    </div>
-</footer>
-<a href="#contenu" class="btn btn-primary back-to-top" aria-label="<?= e(tr('Retour en haut', 'العودة إلى الأعلى')) ?>" hidden><i class="bi bi-arrow-up" aria-hidden="true"></i></a>
+<?php require __DIR__ . '/../shared/footer.php'; ?>
