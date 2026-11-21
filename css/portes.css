@@ -1,4 +1,10 @@
 /* Porte photographique : deux battants articulés, comme l'exemple fourni. */
+.et-office-dialog .et-office-toolbar {
+  padding-block: 0;
+}
+.et-office-dialog .et-office-toolbar > * {
+  margin-block-start: 20px;
+}
 .et-office .et-office-entry.et-office-entry--photo {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -18,8 +24,8 @@
 .et-door-stage {
   display: block;
   position: relative;
-  width: min(100vw, 53.345svh);
-  aspect-ratio: 877 / 1644;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   isolation: isolate;
   background: #eadcc6;
@@ -144,24 +150,12 @@
   letter-spacing: -.4px;
 }
 .et-door-definitions { position: absolute; pointer-events: none; }
-.et-door-skip {
-  position: absolute;
-  inset-inline-end: 26px;
-  bottom: 25px;
-  min-height: 44px;
-  padding: 10px 17px;
-  border: 1px solid var(--et-border);
-  border-radius: 30px;
-  background: var(--et-white);
-  color: var(--et-ink);
-  font: 600 12px/1.4 var(--et-font);
-  box-shadow: 0 3px 12px #29211b12;
-}
-.et-door-skip:hover { color: var(--et-red); background: var(--et-paper); }
 .et-office.et-door-opening .et-office-welcome { visibility: hidden; }
+.et-office.et-door-opening .et-office-photo {
+  transition: none;
+}
 @media (max-width: 650px) {
-  .et-door-stage { width: min(100vw, 53.345svh); }
-  .et-door-skip { inset-inline-end: 16px; bottom: 18px; font-size: 11px; }
+  .et-office-dialog .et-office-toolbar > * { margin-block-start: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .et-door-camera,
