@@ -1,25 +1,22 @@
 <?php
+session_start();
+require_once __DIR__ . '/app/i18n.php';
 
-declare(strict_types=1);
+require_once __DIR__ . '/app/Controllers/CitoyenController.php';
+require_once __DIR__ . '/app/Controllers/Controller.php';
+require_once __DIR__ . '/app/Controllers/HomeController.php';
+require_once __DIR__ . '/app/Controllers/PagesController.php';
+require_once __DIR__ . '/app/Controllers/DashboardController.php';
+require_once __DIR__ . '/app/routes.php';
 
-require_once __DIR__ . '/config/session.php';
+$page = $_GET['page'] ?? 'home';
 
-require_once __DIR__ . '/Controllers/HomeController.php';
-
-$auth = new AuthController();
-$auth->refreshSession();
-
-$controller = new HomeController($auth);
-$page = isset($_GET['page']) ? (string) $_GET['page'] : 'home';
-
-switch ($page) {
-    case 'home':          $controller->home(); break;
-    case 'administratif': $controller->administratif(); break;
-
-    case 'login':         $controller->login(); break;
-    case 'register':      $controller->register(); break;
-    case 'logout':        $controller->logout(); break;
-    case 'profil':        $controller->profil(); break;
-
-    default:              $controller->notFound(); break;
+if (!isset($routes[$page])) {
+    http_response_code(404);
+    echo 'Page introuvable.';
+    exit;
 }
+
+[$controllerName, $methode] = $routes[$page];
+$controller = new $controllerName();
+$controller->$methode();

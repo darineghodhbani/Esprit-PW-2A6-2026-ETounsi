@@ -1,0 +1,51 @@
+@font-face {
+  font-family: Manrope;
+  src: url("../fonts/manrope-latin.woff2") format("woff2");
+  font-weight: 200 800;
+  font-display: swap;
+}
+@font-face {
+  font-family: Manrope;
+  src: url("../fonts/manrope-latin-ext.woff2") format("woff2");
+  font-weight: 200 800;
+  font-display: swap;
+  unicode-range: U+0100-02FF, U+1E00-1EFF, U+2000-206F;
+}
+@font-face {
+  font-family: "Noto Sans Arabic";
+  src: url("../fonts/noto-sans-arabic.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+:root {
+  --color-brand: #c92039;
+  --color-brand-strong: #a8172c;
+  --color-surface: #faf7f2;
+  --color-surface-raised: #fff;
+  --color-text: #17283d;
+  --color-text-muted: #526071;
+  --color-border: #ddd5ca;
+  --color-cnam: #284a74;
+  --color-transport: #4c623f;
+  --color-municipalite: #365f90;
+  --color-poste: #b7790a;
+  --color-finances: #915136;
+  --color-success: #245b3d;
+  --color-error: #a8172c;
+  --color-warning: #785007;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --radius-field: 12px;
+  --radius-panel: 20px;
+  --radius-pill: 999px;
+  --font-body: Manrope, "Segoe UI", sans-serif;
+  --font-arabic: "Noto Sans Arabic", Tahoma, sans-serif;
+  --container: 1280px;
+  --shadow-soft: 0 8px 32px rgb(23 40 61 / 5%);
+}

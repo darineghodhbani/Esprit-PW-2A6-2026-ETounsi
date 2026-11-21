@@ -1,4 +1,19 @@
-.vscode/
+# Système
 .DS_Store
 Thumbs.db
-donnees.txt
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Brouillon / prototype de design (non versionné, ne pas supprimer localement)
+E_Tounsi_Dossier/
+
+# Fichiers uploadés par les utilisateurs (on garde le dossier, pas le contenu)
+uploads/*
+!uploads/cnam/
+uploads/cnam/*
+!uploads/cnam/.gitkeep

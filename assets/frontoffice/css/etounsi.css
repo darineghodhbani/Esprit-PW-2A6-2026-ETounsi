@@ -1,0 +1,35 @@
+#spinner {
+    position: fixed; inset: 0; z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--color-surface);
+    transition: opacity .4s;
+}
+#spinner.hide { opacity: 0; pointer-events: none; }
+.spinner-circle {
+    width: 48px; height: 48px; border-radius: 50%;
+    border: 5px solid #eee7df; border-top-color: var(--color-brand);
+    animation: et-spin 1s linear infinite;
+}
+@keyframes et-spin { to { transform: rotate(360deg); } }
+
+#backToTop {
+    position: fixed; right: 24px; bottom: 24px; z-index: 30;
+    display: none; width: 46px; height: 46px;
+    border: none; border-radius: 50%;
+    background: var(--color-brand); color: #fff; font-size: 1.1rem;
+    cursor: pointer; box-shadow: var(--shadow-soft);
+}
+#backToTop:hover { background: var(--color-brand-strong); }
+
+#page-transition {
+    position: fixed; inset: 0; z-index: 9000;
+    background: var(--color-surface);
+    opacity: 0; pointer-events: none;
+    transition: opacity .38s ease;
+}
+#page-transition.active {
+    opacity: 1; pointer-events: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+    #page-transition { transition: none; }
+}

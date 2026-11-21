@@ -1,0 +1,265 @@
+.site-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 20;
+  background: var(--color-surface);
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  width: calc(100% - 96px);
+  max-width: 1440px;
+  margin-inline: auto;
+  border-bottom: 1px solid rgb(221 213 202 / 65%);
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.625rem;
+  font-weight: 750;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+}
+
+.brand-logo {
+  display: block;
+  width: 32px;
+  height: 40px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.main-nav {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.main-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  position: relative;
+}
+
+.main-nav a[aria-current="page"] {
+  color: var(--color-brand);
+}
+
+.main-nav a[aria-current="page"]::after {
+  content: "";
+  position: absolute;
+  inset-block-end: 2px;
+  inset-inline-start: 0;
+  width: 16px;
+  height: 2px;
+  background: var(--color-brand);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.language-switch {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.language-switch .icon {
+  width: 17px;
+  height: 17px;
+}
+
+.mobile-menu {
+  display: none !important;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.site-footer {
+  padding-block: 48px 24px;
+  border-top: 1px solid var(--color-border);
+}
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  padding-block-end: 48px;
+}
+
+.footer-top p {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin-block-start: 16px;
+}
+
+.footer-top nav {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 56px;
+}
+
+.footer-top nav a {
+  font-size: 0.75rem;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-muted);
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--color-border);
+  padding-block-start: 20px;
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-text-muted);
+  font-size: 0.625rem;
+}
+
+.footer-separator {
+  padding-inline: 8px;
+}
+
+.catalogue-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-block: 32px;
+}
+
+.catalogue-grid .service-card {
+  min-height: 280px;
+}
+
+.catalogue-grid h3 {
+  font-size: 1.4rem;
+}
+
+@media (max-width: 1100px) {
+  .site-header {
+    width: calc(100% - 48px);
+  }
+  .main-nav {
+    gap: 20px;
+  }
+  .header-actions {
+    gap: 16px;
+  }
+  .services-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 800px) {
+  .site-header {
+    height: 80px;
+  }
+  .main-nav {
+    gap: 16px;
+  }
+  .main-nav a {
+    font-size: 0.6875rem;
+  }
+  .header-actions {
+    gap: 12px;
+  }
+  .header-actions .account-button span {
+    display: none;
+  }
+  .header-actions .account-button {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 760px) {
+  .site-header {
+    width: calc(100% - 40px);
+    height: 76px;
+    gap: 16px;
+  }
+  .wordmark {
+    font-size: 1.4rem;
+    gap: 6px;
+  }
+  .brand-logo {
+    width: 26px;
+    height: 33px;
+  }
+  .main-nav {
+    display: flex;
+    position: absolute;
+    inset-block-start: 76px;
+    inset-inline: 0;
+    padding: 16px 20px;
+    background: var(--color-surface);
+    z-index: 20;
+    box-shadow: var(--shadow-soft);
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  .main-nav[data-collapsed="true"] {
+    display: none;
+  }
+  .main-nav a {
+    font-size: 0.875rem;
+    min-height: 48px;
+  }
+  .main-nav a[aria-current="page"]::after {
+    display: none;
+  }
+  .mobile-menu {
+    display: inline-flex !important;
+  }
+  .header-actions {
+    gap: 10px;
+  }
+  .language-switch {
+    gap: 4px;
+    font-size: 0.75rem;
+  }
+  .language-switch .icon {
+    display: none;
+  }
+  .account-button .icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 600px) {
+  .services-grid,
+  .catalogue-grid {
+    grid-template-columns: 1fr;
+  }
+  .footer-top {
+    flex-direction: column;
+    padding-block-end: 24px;
+    gap: 24px;
+  }
+  .footer-top nav {
+    column-gap: 16px;
+  }
+  .footer-bottom {
+    font-size: 9px;
+    gap: 16px;
+  }
+  .site-footer {
+    padding-block-start: 32px;
+  }
+}
