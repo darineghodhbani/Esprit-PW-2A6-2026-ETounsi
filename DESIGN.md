@@ -1,7 +1,7 @@
 ---
 version: alpha
 name: E-Tounsi
-description: Portail tunisien aux portes en bois, avec un espace Poste PHP MVC.
+description: Portail tunisien aux portes rouges du prototype, avec un espace Poste PHP MVC.
 colors:
   primary: "#c91f3c"
   primary-hover: "#aa1832"
@@ -71,7 +71,7 @@ components:
 
 ### Creative North Star
 
-La rue tunisienne du prototype fourni : façades claires, portes brunes cintrées, palmiers et tramway. Le portail ouvre une porte sur un bureau réel dans sa représentation. La photo et la transition portent l'identité ; les formulaires restent simples.
+La rue tunisienne du prototype fourni : façades claires, palmiers et tramway. L'entrée reprend les deux portes rouges à contours et poignées dorés du premier fichier. Le portail ouvre une porte sur un bureau réel dans sa représentation ; les formulaires restent simples.
 
 ### Product context and register
 
@@ -85,7 +85,7 @@ Registre mixte : accueil illustré et expressif, puis utilité calme dans les fo
 
 ## Colors
 
-Le rouge sert aux actions principales et à l'identité. Le blanc cassé est le fond ; les cartes de saisie sont blanches. Le jaune signale les étapes et accompagne les photos. Le brun concerne uniquement les portes. Les états des colis gardent leurs badges textuels et leurs couleurs distinctes.
+Le rouge sert aux actions principales, à l'identité et aux deux battants de l'entrée. Le blanc cassé est le fond ; les cartes de saisie sont blanches. Le jaune signale les étapes et dessine les détails des portes. Les états des colis gardent leurs badges textuels et leurs couleurs distinctes.
 
 L'accueil commun présente les cinq services à égalité : titres du bandeau en blanc, boutons et cartes sans icônes décoratives, FAQ généraliste et appel à choisir un service. Le pied de page parle de la plateforme entière. Les crédits eLearning sont conservés sur les seules pages qui utilisent encore ce template ; le nouveau portail utilise son thème propre.
 
@@ -107,7 +107,7 @@ La bande comporte cinq photos dans une seule ligne sur ordinateur. Sur télépho
 
 ## Elevation & Depth
 
-Les cartes utilisent une bordure fine. Une ombre légère détache la recherche et le menu du compte. Les images possèdent un voile sombre pour la lisibilité. Les portes utilisent la photographie d'origine comme texture, deux battants et une perspective. Aucun flou décoratif n'est appliqué aux données.
+Les cartes utilisent une bordure fine. Une ombre légère détache la recherche et le menu du compte. Les images possèdent un voile sombre pour la lisibilité. Les portes utilisent deux panneaux rouges en CSS et une perspective de 1600 px, comme le prototype initial. Aucun flou décoratif n'est appliqué aux données.
 
 ## Shapes
 
@@ -139,7 +139,7 @@ L'accueil commun et sa navigation utilisent des libellés de texte sans icônes 
 
 ### Motion
 
-Survol des photos : 500 ms. L'entrée suit la vidéo fournie : la porte photographiée remplit l'écran, ses deux battants ouvrent de 83° avec un léger décalage, puis la caméra avance dans le bureau et rejoint son intérieur par un fondu. L'ensemble dure 9600 ms et démarre automatiquement au choix du service, sans commande Pause, Rejouer, progression ou Passer. Le même composant est partagé par les cinq services et garde leur propre photo intérieure. Le retour aux services et Échap permettent de quitter. Les changements courants utilisent 150–200 ms. La préférence `prefers-reduced-motion` rend l'entrée immédiate. Les images sont locales et la fermeture annule le mouvement en cours. Les mots de passe et l'état d'ouverture sont réinitialisés à la fermeture.
+Survol des photos : 500 ms. L'entrée reprend les portes rouges du premier prototype fourni : attente initiale de 150 ms, ouverture symétrique à −105°/+105° en 1400 ms avec ease-in-out, puis intérieur révélé. La photo passe doucement de scale(1.25) à scale(1) sur 2200 ms. Aucun contrôle de lecture n'est affiché. Le composant est partagé par les cinq services et garde leur propre photo intérieure. Le retour aux services et Échap permettent de quitter ; la fermeture annule les délais en cours. La préférence `prefers-reduced-motion` rend l'entrée immédiate. Les mots de passe sont réinitialisés à la fermeture.
 
 ### Content and data visualization
 

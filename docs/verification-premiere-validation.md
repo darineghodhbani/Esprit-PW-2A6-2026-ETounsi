@@ -56,7 +56,7 @@ Le socle PHP et les validations suivent les méthodes des cours. Certaines API d
 
 Ces compléments ne traitent ni l'authentification ni les données métier. Les formulaires sont validés en PHP et restent utilisables sans JavaScript. Il n'y a ni React, ni compilation TypeScript, ni framework backend ajouté.
 
-L'animation de porte fournie ensuite est adaptée dans `js/portes.js` avec `requestAnimationFrame()` pour le mouvement progressif et `ResizeObserver` pour ses dimensions. Elle reste un complément visuel issu de la vidéo fournie, distinct du socle PHP du cours. Elle démarre automatiquement au choix d'un service, sans boutons de lecture ; ses états sont annulés au retour ou avec Échap et le mouvement réduit donne un accès immédiat.
+L'entrée revient aux deux portes rouges du premier prototype fourni. `js/portes.js` utilise les fonctions, le DOM, `classList` et `setTimeout()` ; les transitions sont en CSS. Les calculs de caméra et `ResizeObserver` de l'essai photographique sont retirés. L'ouverture démarre au choix d'un service, sans boutons de lecture ; les délais sont annulés au retour ou avec Échap et le mouvement réduit donne un accès immédiat.
 
 ## 3. Corrections réalisées pendant ce contrôle
 

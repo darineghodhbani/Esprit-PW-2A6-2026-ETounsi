@@ -1,164 +1,68 @@
-/* Porte photographique : deux battants articulés, comme l'exemple fourni. */
-.et-office-dialog .et-office-toolbar {
-  padding-block: 0;
-}
-.et-office-dialog .et-office-toolbar > * {
-  margin-block-start: 20px;
-}
-.et-office .et-office-entry.et-office-entry--photo {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  place-items: center;
-  overflow: hidden;
-  background: #ece2d1;
-  perspective: none;
+/* Deux battants rouges et détails dorés du premier prototype fourni. */
+.et-office-dialog .et-office-toolbar { padding-block: 0; }
+.et-office-dialog .et-office-toolbar > * { margin-block-start: 20px; }
+.et-office .et-office-entry--red {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  background: transparent;
+  perspective: 1600px;
   opacity: 1;
   visibility: visible;
   transition: none;
-}
-.et-office.is-open .et-office-entry.et-office-entry--photo {
-  opacity: 0;
-  visibility: hidden;
   pointer-events: none;
 }
-.et-door-stage {
-  display: block;
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  isolation: isolate;
-  background: #eadcc6;
-}
-.et-door-artboard {
+.et-office-entry--red .et-door-left,
+.et-office-entry--red .et-door-right {
   position: absolute;
   top: 0;
-  left: 0;
-  display: block;
-  width: 877px;
-  height: 1644px;
-  transform: scale(var(--et-door-scale, .5));
-  transform-origin: 0 0;
-  pointer-events: none;
-}
-.et-door-camera {
-  display: block;
-  position: absolute;
-  top: 0;
-  left: -80px;
-  width: 957px;
-  height: 1644px;
-  transform-origin: 518px 990px;
-  will-change: transform;
-}
-.et-door-photo,
-.et-door-leaf-photo,
-.et-door-frame {
-  display: block;
-  position: absolute;
-  inset: 0;
-  width: 957px;
-  height: 1644px;
-  max-width: none;
-  user-select: none;
-  pointer-events: none;
-}
-.et-door-photo {
-  object-fit: cover;
-  object-position: center;
-  clip-path: url(#et-door-opening);
-}
-.et-door-interior-shade {
-  display: block;
-  position: absolute;
-  inset: 0;
-  background: #21150b;
-  opacity: .42;
-  clip-path: url(#et-door-opening);
-}
-.et-door-space {
-  position: absolute;
-  inset: 0;
-  display: block;
-  perspective: 1800px;
-  perspective-origin: 518px 920px;
-  transform-style: preserve-3d;
-}
-.et-office-entry--photo .et-door-left,
-.et-office-entry--photo .et-door-right {
-  display: block;
-  position: absolute;
-  inset: 0;
-  width: 957px;
-  height: 1644px;
-  transform-style: preserve-3d;
-  transform: rotateY(0);
-  transition: none;
-  will-change: transform;
-  background: none;
-  border: 0;
-  box-shadow: none;
-}
-.et-office-entry--photo .et-door-left { transform-origin: 207px 920px; }
-.et-office-entry--photo .et-door-right { transform-origin: 825px 920px; }
-.et-door-leaf-photo { backface-visibility: hidden; }
-.et-door-clip-left { clip-path: url(#et-door-left-clip); }
-.et-door-clip-right { clip-path: url(#et-door-right-clip); }
-.et-door-leaf-shade {
-  display: block;
-  position: absolute;
-  inset: 0;
-  background: #211204;
-  opacity: 0;
-  transform: translateZ(.4px);
+  bottom: 0;
+  width: 50%;
+  background: var(--et-red);
+  border: 0 solid var(--et-yellow);
   backface-visibility: hidden;
+  transform: rotateY(0);
+  transition: transform 1400ms ease-in-out;
 }
-.et-door-edge {
-  display: block;
+.et-office-entry--red .et-door-left {
+  left: 0;
+  transform-origin: left center;
+  border-right-width: 4px;
+}
+.et-office-entry--red .et-door-right {
+  right: 0;
+  transform-origin: right center;
+  border-left-width: 4px;
+}
+.et-red-door-outline {
   position: absolute;
-  top: 322px;
-  width: 13px;
-  height: 1146px;
-  background: linear-gradient(90deg, #3c2616, #76502d 40%, #4b301a);
+  inset: 24px;
+  border: 4px solid rgb(237 201 83 / 70%);
+  border-radius: 9999px 9999px 0 0;
 }
-.et-door-edge-left { left: 517px; transform: rotateY(90deg); transform-origin: left center; }
-.et-door-edge-right { left: 504px; transform: rotateY(-90deg); transform-origin: right center; }
-.et-office-entry--photo .et-door-plaque {
+.et-red-door-handle {
   position: absolute;
-  top: 169px;
-  left: 358px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 318px;
-  height: 65px;
-  max-width: none;
-  padding: 0 10px;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-  transform: none;
-  background: linear-gradient(105deg, #d8bd80, #e1c98e 55%, #d2b677);
-  color: #141d19;
-  font: 600 43px/1.05 var(--et-heading);
-  letter-spacing: -1px;
-  text-align: center;
-  white-space: normal;
+  top: 50%;
+  width: 12px;
+  height: 40px;
+  border-radius: 9999px;
+  background: var(--et-yellow);
 }
-.et-office-entry--photo .et-door-plaque.et-door-plaque-long {
-  font-size: 25px;
-  letter-spacing: -.4px;
-}
-.et-door-definitions { position: absolute; pointer-events: none; }
-.et-office.et-door-opening .et-office-welcome { visibility: hidden; }
-.et-office.et-door-opening .et-office-photo {
-  transition: none;
-}
+.et-door-left .et-red-door-handle { right: 24px; }
+.et-door-right .et-red-door-handle { left: 24px; }
+.et-office.et-door-reveal .et-office-entry--red .et-door-left { transform: rotateY(-105deg); }
+.et-office.et-door-reveal .et-office-entry--red .et-door-right { transform: rotateY(105deg); }
+.et-office:not(.et-door-reveal) .et-office-photo { transform: scale(1.25); }
+.et-office.et-door-reveal .et-office-photo { transform: scale(1); }
+.et-office .et-office-photo { transition: transform 2200ms ease-out; }
+.et-office.et-door-reveal .et-office-welcome { opacity: 1; transform: translateY(0); }
+.et-office.is-open .et-office-entry--red { visibility: hidden; }
 @media (max-width: 650px) {
   .et-office-dialog .et-office-toolbar > * { margin-block-start: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .et-door-camera,
-  .et-office-entry--photo .et-door-left,
-  .et-office-entry--photo .et-door-right { will-change: auto; }
+  .et-office-entry--red .et-door-left,
+  .et-office-entry--red .et-door-right,
+  .et-office .et-office-photo { transition: none; }
 }

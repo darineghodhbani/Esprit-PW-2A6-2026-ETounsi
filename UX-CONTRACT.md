@@ -34,7 +34,7 @@ Table Selection et Date ne s'appliquent pas : aucune sélection multiple ni sais
 | Parcours | Comportement et retour | Origine |
 |---|---|---|
 | Recherche portail | Filtre local des cinq services, synonymes, champ q dans l'URL, effacement explicite, annonce sans résultat | Brief et `shared/portail.php` |
-| Entrée d'un service | Lien réel de repli ; dialogue natif plein écran, ouverture automatique des battants puis avancée de caméra et fondu sur 9,6 secondes ; aucun contrôle de lecture ; intérieur propre au service, retour et Échap qui annulent | Vidéo et référence fournies, `js/portes.js` et `js/etounsi.js` |
+| Entrée d'un service | Lien réel de repli ; dialogue natif plein écran, deux portes rouges du prototype initial, ouverture automatique en 1400 ms après 150 ms ; photo de bureau en recul doux sur 2200 ms ; aucun contrôle de lecture ; retour et Échap qui annulent | Premier prototype fourni, `js/portes.js` et `js/etounsi.js` |
 | Poste → Bureau de poste | Défilement vers la section d'accès et focus de cette section | Brief ; `shared/office.php` |
 | Connexion | Formulaire commun, CSRF existant ; aucun résultat de démonstration | HomeController connexion |
 | Visiteur déjà connecté | Affichage des actions de son rôle ; profil et déconnexion accessibles dans le menu du compte | `utilisateurConnecte()` et contrôleurs existants |

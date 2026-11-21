@@ -1,5 +1,5 @@
 <?php $etIsPoste = ($etServiceKey ?? 'poste') === 'poste'; ?>
-<noscript><style>.et-office-entry.et-office-entry--photo{display:none}.et-office-welcome{opacity:1;transform:none}</style></noscript>
+<noscript><style>.et-office-entry{display:none}.et-office-welcome{opacity:1;transform:none}</style></noscript>
 <div class="et-office" data-office-panel data-office-page="<?= !empty($etOfficePage) ? 'true' : 'false' ?>" data-service="<?= etE($etServiceKey ?? 'poste') ?>">
     <section class="et-office-hall" aria-labelledby="office-title">
         <img class="et-office-photo" data-office-photo src="<?= etE(etAsset('images/portal/' . ($etService['image'] ?? 'bureau-poste') . '.webp')) ?>" alt="<?= etE(etT('Intérieur du bureau', 'داخل المكتب')) ?>">
@@ -11,27 +11,10 @@
             <p data-office-description><?= etE($etService['description'] ?? '') ?></p>
             <a class="et-button et-button-light" href="#office-access" data-office-scroll><span data-office-cta><?= etE(($etServiceKey ?? 'poste') === 'poste' ? etT('Bureau de poste', 'مكتب البريد') : etT('Découvrir ce service', 'اكتشف الخدمة')) ?></span><i class="bi bi-arrow-down" aria-hidden="true"></i></a>
         </div>
-        <div class="et-office-entry et-office-entry--photo" data-poste-interior="<?= etE(etAsset('images/portal/portes/interieur-poste.webp')) ?>">
-            <svg width="0" height="0" class="et-door-definitions" aria-hidden="true">
-                <defs>
-                    <clipPath id="et-door-opening" clipPathUnits="userSpaceOnUse"><path d="M207 1468V454C287 370 382 327 517 321C641 323 746 368 825 453V1468Z"/></clipPath>
-                    <clipPath id="et-door-left-clip" clipPathUnits="userSpaceOnUse"><path d="M207 1468V454C287 370 382 327 517 321V1468Z"/></clipPath>
-                    <clipPath id="et-door-right-clip" clipPathUnits="userSpaceOnUse"><path d="M517 321C641 323 746 368 825 453V1468H517Z"/></clipPath>
-                    <mask id="et-door-stone-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="957" height="1644"><rect width="957" height="1644" fill="white"/><path d="M207 1468V454C287 370 382 327 517 321C641 323 746 368 825 453V1468Z" fill="black"/></mask>
-                </defs>
-            </svg>
-            <span class="et-door-stage" aria-hidden="true">
-                <span class="et-door-artboard"><span class="et-door-camera">
-                    <img class="et-door-photo" data-door-interior src="<?= etE(etAsset('images/portal/' . ($etService['image'] ?? 'bureau-poste') . '.webp')) ?>" alt="" draggable="false">
-                    <span class="et-door-interior-shade"></span>
-                    <span class="et-door-space">
-                        <span class="et-door-left"><img class="et-door-leaf-photo et-door-clip-left" src="<?= etE(etAsset('images/portal/portes/porte-fermee.webp')) ?>" alt="" draggable="false"><span class="et-door-leaf-shade et-door-clip-left" data-door-shade-left></span><span class="et-door-edge et-door-edge-left"></span></span>
-                        <span class="et-door-right"><img class="et-door-leaf-photo et-door-clip-right" src="<?= etE(etAsset('images/portal/portes/porte-fermee.webp')) ?>" alt="" draggable="false"><span class="et-door-leaf-shade et-door-clip-right" data-door-shade-right></span><span class="et-door-edge et-door-edge-right"></span></span>
-                    </span>
-                    <svg class="et-door-frame" viewBox="0 0 957 1644"><image href="<?= etE(etAsset('images/portal/portes/porte-fermee.webp')) ?>" width="957" height="1644" mask="url(#et-door-stone-mask)"/></svg>
-                    <span class="et-door-plaque" data-door-label><?= etE($etService['nom'] ?? etT('Poste', 'البريد')) ?></span>
-                </span></span>
-            </span>
+        <div class="et-office-entry et-office-entry--red" aria-hidden="true">
+            <div class="et-door-left"><span class="et-red-door-outline"></span><span class="et-red-door-handle"></span></div>
+            <div class="et-door-right"><span class="et-red-door-outline"></span><span class="et-red-door-handle"></span></div>
+            <span class="et-visually-hidden" data-door-label><?= etE($etService['nom'] ?? etT('Poste', 'البريد')) ?></span>
         </div>
         <span class="et-visually-hidden" role="status" aria-live="polite" data-door-status data-opening="<?= etE(etT('La porte s’ouvre.', 'الباب بصدد الفتح.')) ?>" data-open="<?= etE(etT('Le bureau est ouvert.', 'المكتب مفتوح.')) ?>"></span>
     </section>
