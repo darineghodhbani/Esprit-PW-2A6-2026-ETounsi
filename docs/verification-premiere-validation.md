@@ -56,6 +56,8 @@ Le socle PHP et les validations suivent les méthodes des cours. Certaines API d
 
 Ces compléments ne traitent ni l'authentification ni les données métier. Les formulaires sont validés en PHP et restent utilisables sans JavaScript. Il n'y a ni React, ni compilation TypeScript, ni framework backend ajouté.
 
+L'animation de porte fournie ensuite est adaptée dans `js/portes.js` avec `requestAnimationFrame()` pour le mouvement progressif et `ResizeObserver` pour ses dimensions. Elle reste un complément visuel issu de la référence fournie, distinct du socle PHP du cours. Ses états sont annulés à la fermeture et l'animation peut être passée.
+
 ## 3. Corrections réalisées pendant ce contrôle
 
 1. La préparation de l'utilisateur, du jeton CSRF, du service demandé et de la réponse 404 est déplacée de `Views/home.php` et `Views/service.php` vers `Controllers/HomeController.php`. Les vues n'appellent plus indirectement une lecture SQL.

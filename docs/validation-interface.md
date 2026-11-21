@@ -69,3 +69,11 @@ L'ancien `modules/poste/public/assets/front/js/poste.js` a été retiré : ses i
 Les quatre autres bureaux présentent le service ; leurs traitements métier ne sont pas ajoutés dans cette tâche Poste. Les anciennes pages d'équipe restent disponibles. Le Back Office conserve sa langue française et le traitement existant des erreurs serveur.
 
 Les tests ont été réalisés dans Chrome sur ce PC, avec dimensions mobiles simulées. Ils ne remplacent pas une vérification sur un téléphone physique, un lecteur d'écran ou une certification d'accessibilité. Aucun test Safari/Firefox ni contrôle exhaustif du zoom navigateur à 200 % n'est revendiqué ; le reflow à 720 px a été contrôlé.
+
+## Mise à jour : accueil commun et porte photographique
+
+L'accueil présente maintenant les cinq services sans icônes décoratives, avec le texte du bandeau en blanc, une FAQ générale et un footer commun. Le bloc réservé aux bureaux de poste devient un appel à choisir son service. Les crédits du template initial restent sur les pages qui emploient encore ce template ; ils ne sont pas affichés sur le nouveau portail indépendant.
+
+La porte de la démonstration locale fournie est enregistrée en WebP dans les assets. `css/portes.css` et `js/portes.js` portent l'animation partagée : deux pivots décalés, éclairage, caméra et fondu sur 7,2 secondes. Chaque service garde son intérieur et son libellé. Le bouton texte « Passer l'animation », le mouvement réduit, la fermeture pendant le chargement et la réouverture ont été vérifiés.
+
+Contrôles de cette mise à jour : accueil FR/AR à 1440/768/390/320 px, cinq services et intérieurs, recherche/effacement, footer, texte blanc, absence de débordement, accès citoyen réel et historique, aucune exception JavaScript ni ressource en erreur. Les captures de la porte fermée, à mi-ouverture et des bureaux ont été inspectées. L'accessibilité automatisée ciblée de l'accueil et les audits de thème restent sans anomalie relevée. Le CRUD utilisateurs et la sécurité Front Office ont également été réexécutés pour la validation, avec nettoyage des seules données de test.

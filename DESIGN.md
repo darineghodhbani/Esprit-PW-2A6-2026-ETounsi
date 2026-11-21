@@ -43,7 +43,9 @@ components:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.foreground}"
   service-ribbon:
-    textColor: "{colors.sun}"
+    textColor: "{colors.surface}"
+  step-marker:
+    backgroundColor: "{colors.sun}"
   office:
     backgroundColor: "{colors.wood}"
   form:
@@ -84,6 +86,8 @@ Registre mixte : accueil illustré et expressif, puis utilité calme dans les fo
 ## Colors
 
 Le rouge sert aux actions principales et à l'identité. Le blanc cassé est le fond ; les cartes de saisie sont blanches. Le jaune signale les étapes et accompagne les photos. Le brun concerne uniquement les portes. Les états des colis gardent leurs badges textuels et leurs couleurs distinctes.
+
+L'accueil commun présente les cinq services à égalité : titres du bandeau en blanc, boutons et cartes sans icônes décoratives, FAQ généraliste et appel à choisir un service. Le pied de page parle de la plateforme entière. Les crédits eLearning sont conservés sur les seules pages qui utilisent encore ce template ; le nouveau portail utilise son thème propre.
 
 Correspondance : primary → `--et-red`, primary-hover → `--et-red-hover`, background → `--et-paper`, surface → `--et-white`, foreground → `--et-ink`, muted → `--et-muted`, border → `--et-border`, sun → `--et-yellow`, sun-soft → `--et-yellow-soft`, focus → `--et-focus`, danger → `--et-danger`, success → `--et-success`, wood → `--et-wood`.
 
@@ -131,11 +135,11 @@ Le bureau utilise `dialog.showModal()` ; le navigateur gère l'inactivité du fo
 
 ### Iconography
 
-Bootstrap Icons local est l'unique famille des surfaces intégrées. Les icônes sont accompagnées d'un texte ; les contrôles isolés ont un nom accessible. Le logo PNG existant de la présentation est conservé.
+L'accueil commun et sa navigation utilisent des libellés de texte sans icônes décoratives ; le logo PNG de la présentation est conservé. Les écrans métier conservent Bootstrap Icons local, avec un texte ou un nom accessible.
 
 ### Motion
 
-Survol des photos : 500 ms. Portes : 1650 ms, puis fondu et entrée douce dans le bureau. Les changements courants utilisent 150–200 ms. La préférence `prefers-reduced-motion` supprime les transitions et le défilement animé. Les mots de passe et l'état d'ouverture sont réinitialisés à la fermeture.
+Survol des photos : 500 ms. La porte photographiée de la référence locale ouvre ses deux battants de 83° avec un léger décalage, un éclairage et une avance progressive de caméra sur 7200 ms. Le bouton « Passer l'animation » rejoint immédiatement le bureau. Le même composant est partagé par les cinq services et garde leur propre photo intérieure. Les changements courants utilisent 150–200 ms. La préférence `prefers-reduced-motion` rend l'entrée immédiate. Les images sont locales et la fermeture annule le mouvement en cours. Les mots de passe et l'état d'ouverture sont réinitialisés à la fermeture.
 
 ### Content and data visualization
 

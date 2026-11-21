@@ -15,7 +15,7 @@ Le contrôle du 21 novembre avec le workshop Sessions précise que les données 
 | Vie privée et session | `modules/poste/app/core/securite.php` | CSRF, cookies et restrictions CSP inchangés ; aucun stockage local de secret |
 | Données | `modules/poste/config/database.php`, `sql/database.sql` | Même base, tables et champs ; aucune migration requise |
 | Facturation | Aucun paiement dans le module | Aucun formulaire de paiement ajouté |
-| Attribution | Notices eLearning/Spark et licences OFL locales | Notices conservées, crédit du template initial dans le footer |
+| Attribution | Notices eLearning/Spark et licences OFL locales | Notices conservées ; lien eLearning sur les écrans qui l'utilisent, footer général sur le nouveau portail indépendant |
 
 ## Project UI Resolution
 
@@ -34,7 +34,7 @@ Table Selection et Date ne s'appliquent pas : aucune sélection multiple ni sais
 | Parcours | Comportement et retour | Origine |
 |---|---|---|
 | Recherche portail | Filtre local des cinq services, synonymes, champ q dans l'URL, effacement explicite, annonce sans résultat | Brief et `shared/portail.php` |
-| Entrée d'un service | Lien réel de repli ; si JS actif, dialogue natif plein écran, portes brunes puis intérieur | Brief et `js/etounsi.js` |
+| Entrée d'un service | Lien réel de repli ; dialogue natif plein écran, porte photo et animation souple commune sur 7,2 secondes, puis intérieur propre au service ; bouton texte pour passer, fermeture qui annule | Référence locale fournie, `js/portes.js` et `js/etounsi.js` |
 | Poste → Bureau de poste | Défilement vers la section d'accès et focus de cette section | Brief ; `shared/office.php` |
 | Connexion | Formulaire commun, CSRF existant ; aucun résultat de démonstration | HomeController connexion |
 | Visiteur déjà connecté | Affichage des actions de son rôle ; profil et déconnexion accessibles dans le menu du compte | `utilisateurConnecte()` et contrôleurs existants |

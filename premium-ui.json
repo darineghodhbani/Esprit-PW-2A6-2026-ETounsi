@@ -3,6 +3,8 @@
   "sourceRoots": [
     "css/etounsi.css",
     "js/etounsi.js",
+    "css/portes.css",
+    "js/portes.js",
     "modules/poste/app/views",
     "modules/poste/public/assets/back/css/poste.css",
     "modules/poste/public/assets/back/js/poste.js"
