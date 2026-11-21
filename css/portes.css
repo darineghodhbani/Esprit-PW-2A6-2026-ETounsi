@@ -1,0 +1,170 @@
+/* Porte photographique : deux battants articulés, comme l'exemple fourni. */
+.et-office .et-office-entry.et-office-entry--photo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
+  overflow: hidden;
+  background: #ece2d1;
+  perspective: none;
+  opacity: 1;
+  visibility: visible;
+  transition: none;
+}
+.et-office.is-open .et-office-entry.et-office-entry--photo {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.et-door-stage {
+  display: block;
+  position: relative;
+  width: min(100vw, 53.345svh);
+  aspect-ratio: 877 / 1644;
+  overflow: hidden;
+  isolation: isolate;
+  background: #eadcc6;
+}
+.et-door-artboard {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 877px;
+  height: 1644px;
+  transform: scale(var(--et-door-scale, .5));
+  transform-origin: 0 0;
+  pointer-events: none;
+}
+.et-door-camera {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: -80px;
+  width: 957px;
+  height: 1644px;
+  transform-origin: 518px 990px;
+  will-change: transform;
+}
+.et-door-photo,
+.et-door-leaf-photo,
+.et-door-frame {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 957px;
+  height: 1644px;
+  max-width: none;
+  user-select: none;
+  pointer-events: none;
+}
+.et-door-photo {
+  object-fit: cover;
+  object-position: center;
+  clip-path: url(#et-door-opening);
+}
+.et-door-interior-shade {
+  display: block;
+  position: absolute;
+  inset: 0;
+  background: #21150b;
+  opacity: .42;
+  clip-path: url(#et-door-opening);
+}
+.et-door-space {
+  position: absolute;
+  inset: 0;
+  display: block;
+  perspective: 1800px;
+  perspective-origin: 518px 920px;
+  transform-style: preserve-3d;
+}
+.et-office-entry--photo .et-door-left,
+.et-office-entry--photo .et-door-right {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 957px;
+  height: 1644px;
+  transform-style: preserve-3d;
+  transform: rotateY(0);
+  transition: none;
+  will-change: transform;
+  background: none;
+  border: 0;
+  box-shadow: none;
+}
+.et-office-entry--photo .et-door-left { transform-origin: 207px 920px; }
+.et-office-entry--photo .et-door-right { transform-origin: 825px 920px; }
+.et-door-leaf-photo { backface-visibility: hidden; }
+.et-door-clip-left { clip-path: url(#et-door-left-clip); }
+.et-door-clip-right { clip-path: url(#et-door-right-clip); }
+.et-door-leaf-shade {
+  display: block;
+  position: absolute;
+  inset: 0;
+  background: #211204;
+  opacity: 0;
+  transform: translateZ(.4px);
+  backface-visibility: hidden;
+}
+.et-door-edge {
+  display: block;
+  position: absolute;
+  top: 322px;
+  width: 13px;
+  height: 1146px;
+  background: linear-gradient(90deg, #3c2616, #76502d 40%, #4b301a);
+}
+.et-door-edge-left { left: 517px; transform: rotateY(90deg); transform-origin: left center; }
+.et-door-edge-right { left: 504px; transform: rotateY(-90deg); transform-origin: right center; }
+.et-office-entry--photo .et-door-plaque {
+  position: absolute;
+  top: 169px;
+  left: 358px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 318px;
+  height: 65px;
+  max-width: none;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transform: none;
+  background: linear-gradient(105deg, #d8bd80, #e1c98e 55%, #d2b677);
+  color: #141d19;
+  font: 600 43px/1.05 var(--et-heading);
+  letter-spacing: -1px;
+  text-align: center;
+  white-space: normal;
+}
+.et-office-entry--photo .et-door-plaque.et-door-plaque-long {
+  font-size: 25px;
+  letter-spacing: -.4px;
+}
+.et-door-definitions { position: absolute; pointer-events: none; }
+.et-door-skip {
+  position: absolute;
+  inset-inline-end: 26px;
+  bottom: 25px;
+  min-height: 44px;
+  padding: 10px 17px;
+  border: 1px solid var(--et-border);
+  border-radius: 30px;
+  background: var(--et-white);
+  color: var(--et-ink);
+  font: 600 12px/1.4 var(--et-font);
+  box-shadow: 0 3px 12px #29211b12;
+}
+.et-door-skip:hover { color: var(--et-red); background: var(--et-paper); }
+.et-office.et-door-opening .et-office-welcome { visibility: hidden; }
+@media (max-width: 650px) {
+  .et-door-stage { width: min(100vw, 53.345svh); }
+  .et-door-skip { inset-inline-end: 16px; bottom: 18px; font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .et-door-camera,
+  .et-office-entry--photo .et-door-left,
+  .et-office-entry--photo .et-door-right { will-change: auto; }
+}

@@ -16,7 +16,7 @@ $etLanguageParams['lang'] = $etOther;
             <img src="<?= etE(etAsset('images/logo-etounsi.png')) ?>" width="39" height="54" alt="">
             <span>E-Tounsi<small lang="ar" dir="rtl">إي تونسي</small></span>
         </a>
-        <button class="et-menu-toggle" type="button" data-menu-toggle aria-controls="et-navigation" aria-expanded="false" aria-label="<?= etE(etT('Ouvrir le menu', 'افتح القائمة')) ?>"><i class="bi bi-list" aria-hidden="true"></i></button>
+        <button class="et-menu-toggle" type="button" data-menu-toggle aria-controls="et-navigation" aria-expanded="false" aria-label="<?= etE(etT('Ouvrir le menu', 'افتح القائمة')) ?>"><?= etE(etT('Menu', 'القائمة')) ?></button>
         <nav class="et-navigation" id="et-navigation" aria-label="<?= etE(etT('Navigation principale', 'التنقّل الرئيسي')) ?>">
             <a href="<?= etE(etHome()) ?>" class="<?= $etAccueilActive ? 'active' : '' ?>"
                 <?php if ($etAccueilActive): ?>aria-current="page"<?php endif; ?>><?= etE(etT('Accueil', 'الرئيسية')) ?></a>
@@ -38,10 +38,10 @@ $etLanguageParams['lang'] = $etOther;
         <div class="et-header-actions">
             <a class="et-language" href="?<?= etE(http_build_query($etLanguageParams)) ?>" lang="<?= etE($etOther) ?>"><?= $etOther === 'ar' ? 'العربية' : 'FR' ?></a>
             <?php if ($etConnected === null): ?>
-                <a class="et-button et-button-small" href="<?= etE(etPoste('connexion')) ?>"><i class="bi bi-person" aria-hidden="true"></i><span><?= etE(etT('Se connecter', 'تسجيل الدخول')) ?></span></a>
+                <a class="et-button et-button-small" href="<?= etE(etPoste('connexion')) ?>"><?= etE(etT('Se connecter', 'تسجيل الدخول')) ?></a>
             <?php else: ?>
                 <details class="et-account-menu">
-                    <summary class="et-button et-button-small"><i class="bi bi-person" aria-hidden="true"></i><span><?= etE(etT('Mon espace', 'فضائي')) ?></span><i class="bi bi-chevron-down" aria-hidden="true"></i></summary>
+                    <summary class="et-button et-button-small"><?= etE(etT('Mon espace', 'فضائي')) ?></summary>
                     <div>
                         <strong><?= etE($etConnected['nom']) ?></strong>
                         <a href="<?= etE($etConnected['role'] === 'admin' ? etPoste('dashboard', true) : etPoste('historique')) ?>"><?= etE($etConnected['role'] === 'admin' ? etT('Administration', 'الإدارة') : etT('Mes colis', 'طرودي')) ?></a>

@@ -113,6 +113,10 @@ let etOpener = null;
 let etDoorTimer;
 function etOpenDoors(panel) {
   clearTimeout(etDoorTimer);
+  if (typeof window.etOuvrirPortes === "function") {
+    window.etOuvrirPortes(panel);
+    return;
+  }
   panel.classList.remove("is-open");
   // Deux images successives laissent d'abord voir la porte fermée.
   etDoorTimer = window.setTimeout(
@@ -167,6 +171,7 @@ if (etDialog && typeof etDialog.showModal === "function") {
     });
   etDialog.addEventListener("close", function () {
     clearTimeout(etDoorTimer);
+    if (typeof window.etFermerPortes === "function") window.etFermerPortes(panel);
     document.body.classList.remove("et-modal-open");
     panel.classList.remove("is-open");
     panel.querySelectorAll("input[name=password]").forEach(function (input) {

@@ -446,7 +446,7 @@ p {
 }
 .et-hero h1 em {
   font-style: normal;
-  color: var(--et-yellow);
+  color: var(--et-white);
 }
 .et-hero-copy > p {
   font-size: 15px;
@@ -568,7 +568,7 @@ p {
   margin-bottom: 32px;
 }
 .et-section-heading h2,
-.et-poste-callout h2,
+.et-services-callout h2,
 .et-access-copy h2,
 .et-other-service h2 {
   font: 600 clamp(30px, 3vw, 42px)/1.16 var(--et-heading);
@@ -657,10 +657,7 @@ p {
   inset-inline: 22px;
 }
 .et-service-label > .bi {
-  font-size: 22px;
-  display: block;
-  margin-bottom: 16px;
-  color: var(--et-yellow);
+  display: none;
 }
 .et-service-label h3 {
   font: 600 21px/1.23 var(--et-heading);
@@ -750,7 +747,7 @@ p {
   width: calc(100% - 30px);
   border-top: 1px dashed #c8c0ad;
 }
-.et-poste-callout {
+.et-services-callout {
   display: grid;
   grid-template-columns: 1fr 1fr;
   background: var(--et-yellow-soft);
@@ -758,15 +755,15 @@ p {
   border-radius: var(--et-radius-card);
   overflow: hidden;
 }
-.et-poste-callout > div {
+.et-services-callout > div {
   padding: 48px;
 }
-.et-poste-callout p {
+.et-services-callout p {
   color: var(--et-muted);
   margin-bottom: 24px;
   font-size: 14px;
 }
-.et-poste-callout > img {
+.et-services-callout > img {
   width: 100%;
   height: 100%;
   max-height: 440px;
@@ -885,6 +882,21 @@ p {
 .et-back-top:hover {
   color: var(--et-white);
   background: var(--et-red-hover);
+}
+.et-header .et-menu-toggle {
+  padding: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.et-search-clear {
+  width: auto;
+  min-width: 44px;
+  padding-inline: 10px;
+  border-radius: 8px;
+  font-size: 11px;
+}
+.et-back-top {
+  font-size: 11px;
 }
 
 /* Le bureau s'ouvre dans un dialogue natif : clavier, Échap et fond inactif. */
@@ -1681,7 +1693,7 @@ html[dir="rtl"] .bi-arrow-left {
   .et-access-layout {
     gap: 50px;
   }
-  .et-poste-callout > div {
+  .et-services-callout > div {
     padding: 38px;
   }
 }
@@ -1923,7 +1935,7 @@ html[dir="rtl"] .bi-arrow-left {
   }
   .et-section-heading h2,
   .et-access-copy h2,
-  .et-poste-callout h2 {
+  .et-services-callout h2 {
     font-size: 31px;
   }
   .et-section-heading p {
@@ -1965,16 +1977,16 @@ html[dir="rtl"] .bi-arrow-left {
     font-size: 12px;
     max-width: 275px;
   }
-  .et-poste-callout {
+  .et-services-callout {
     grid-template-columns: 1fr;
   }
-  .et-poste-callout > div {
+  .et-services-callout > div {
     padding: 28px;
   }
-  .et-poste-callout p {
+  .et-services-callout p {
     font-size: 12px;
   }
-  .et-poste-callout > img {
+  .et-services-callout > img {
     height: 240px;
   }
   .et-faq {

@@ -5,4 +5,6 @@
 <link rel="icon" type="image/png" href="<?= etE(etAsset('images/logo-etounsi.png')) ?>">
 <link rel="stylesheet" href="<?= etE(etAsset('vendor/bootstrap-icons/bootstrap-icons.css')) ?>">
 <link rel="stylesheet" href="<?= etE(etBase()) ?>css/etounsi.css">
+<link rel="stylesheet" href="<?= etE(etBase()) ?>css/portes.css">
+<script src="<?= etE(etBase()) ?>js/portes.js" defer></script>
 <script src="<?= etE(etBase()) ?>js/etounsi.js" defer></script>

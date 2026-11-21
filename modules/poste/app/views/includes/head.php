@@ -8,4 +8,6 @@
 <link href="public/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
 <link href="public/assets/front/css/poste.css" rel="stylesheet">
 <link href="../../css/etounsi.css" rel="stylesheet">
+<link href="../../css/portes.css" rel="stylesheet">
+<script src="../../js/portes.js" defer></script>
 <script src="../../js/etounsi.js" defer></script>
