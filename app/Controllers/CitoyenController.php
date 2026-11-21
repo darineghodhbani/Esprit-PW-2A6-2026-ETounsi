@@ -4,6 +4,24 @@ require_once __DIR__ . '/../Models/Citoyen.php';
 
 class CitoyenController {
 
+    public const CAPTCHA_SITE_KEY   = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
+    public const CAPTCHA_SECRET_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
+
+    public function verifierCaptcha(): bool {
+        if (!isset($_POST['g-recaptcha-response']) || $_POST['g-recaptcha-response'] == '') {
+            return false;
+        }
+
+        $url = 'https://www.google.com/recaptcha/api/siteverify'
+             . '?secret=' . self::CAPTCHA_SECRET_KEY
+             . '&response=' . urlencode($_POST['g-recaptcha-response']);
+
+        $reponse = file_get_contents($url);
+        $resultat = json_decode($reponse, true);
+
+        return $resultat['success'] == true;
+    }
+
     public function signup(): void {
         $erreurs = [];
         $old = ['nom' => '', 'prenom' => '', 'email' => '', 'telephone' => ''];
@@ -33,6 +51,9 @@ class CitoyenController {
             }
             if ($mdp != $mdp2) {
                 $erreurs['mot_de_passe2'] = 'Les deux mots de passe ne correspondent pas.';
+            }
+            if (!$this->verifierCaptcha()) {
+                $erreurs['captcha'] = 'Veuillez cocher la case « Je ne suis pas un robot ».';
             }
 
             if (count($erreurs) == 0) {
@@ -65,6 +86,9 @@ class CitoyenController {
             }
             if ($mdp == '') {
                 $erreurs['mot_de_passe'] = 'Le mot de passe est obligatoire.';
+            }
+            if (!$this->verifierCaptcha()) {
+                $erreurs['captcha'] = 'Veuillez cocher la case « Je ne suis pas un robot ».';
             }
 
             if (count($erreurs) == 0) {

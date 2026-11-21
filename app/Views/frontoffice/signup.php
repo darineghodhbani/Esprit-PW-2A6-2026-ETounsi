@@ -73,6 +73,13 @@
                         <?php endif; ?>
                     </div>
 
+                    <div class="field">
+                        <div class="g-recaptcha" data-sitekey="<?php echo CitoyenController::CAPTCHA_SITE_KEY; ?>"></div>
+                        <?php if (isset($erreurs['captcha'])): ?>
+                            <p class="field-error"><?php echo $erreurs['captcha']; ?></p>
+                        <?php endif; ?>
+                    </div>
+
                     <button class="button button-brand button-full" type="submit"><?php echo t('signup.submit'); ?></button>
                     <a class="button button-outline button-full" href="index.php?page=login"><?php echo t('signup.have'); ?></a>
                 </form>
@@ -83,5 +90,6 @@
     <?php require_once __DIR__ . '/includes/footer.php'; ?>
     <?php require_once __DIR__ . '/includes/scripts.php'; ?>
     <script src="assets/frontoffice/js/validation.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </body>
 </html>
