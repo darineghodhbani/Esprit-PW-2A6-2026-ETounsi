@@ -2,7 +2,7 @@
 
 // Les mêmes battants photographiques ouvrent chaque bureau ; l'intérieur vient du service choisi.
 (function () {
-  const duree = 7200;
+  const duree = 9600;
   const mouvementReduit = window.matchMedia("(prefers-reduced-motion: reduce)");
   const animations = new WeakMap();
   const panneaux = new Set();
@@ -36,7 +36,6 @@
       ombreInterieur: entree.querySelector(".et-door-interior-shade"),
       interieur: entree.querySelector("[data-door-interior]"),
       plaque: entree.querySelector("[data-door-label]"),
-      passer: entree.querySelector("[data-door-skip]"),
       accueil: panneau.querySelector(".et-office-welcome"),
       statut: panneau.querySelector("[data-door-status]"),
       frame: 0,
@@ -46,12 +45,17 @@
       actif: false,
     };
     function dimensionner() {
-      etat.scene.style.setProperty("--et-door-scale", String(etat.scene.clientWidth / 877));
+      const largeur = etat.scene.clientWidth;
+      const hauteur = etat.scene.clientHeight;
+      const echelle = Math.max(largeur / 877, hauteur / 1644);
+      const cadre = entree.querySelector(".et-door-artboard");
+      etat.scene.style.setProperty("--et-door-scale", String(echelle));
+      cadre.style.left = (largeur - 877 * echelle) / 2 + "px";
+      cadre.style.top = Math.min(0, Math.max(hauteur - 1644 * echelle, hauteur / 2 - 930 * echelle)) + "px";
     }
     etat.observer = new ResizeObserver(dimensionner);
     etat.observer.observe(etat.scene);
     dimensionner();
-    etat.passer.addEventListener("click", function () { terminer(etat); });
     animations.set(panneau, etat);
     panneaux.add(panneau);
     return etat;
@@ -59,18 +63,20 @@
 
   function dessiner(etat, temps) {
     etat.temps = Math.min(duree, Math.max(0, temps));
-    const gauche = progression(etat.temps, 480, 4700);
-    const droite = progression(etat.temps, 640, 4890);
-    const avance = progression(etat.temps, 2400, 6400);
+    const gauche = progression(etat.temps, 600, 3500);
+    const droite = progression(etat.temps, 740, 3700);
+    const avance = progression(etat.temps, 3000, 7900);
     const ouverture = (gauche + droite) / 2;
     etat.gauche.style.transform = "rotateY(" + gauche * 83 + "deg)";
     etat.droite.style.transform = "rotateY(" + -droite * 83 + "deg)";
     etat.ombreGauche.style.opacity = String(gauche * .29);
     etat.ombreDroite.style.opacity = String(droite * .22);
     etat.ombreInterieur.style.opacity = String(.42 * (1 - ouverture) + .03);
-    etat.camera.style.transform = "scale(" + (1 + avance * .115) + ") translateY(" + -avance * 12 + "px)";
+    etat.camera.style.transform = "scale(" + (1 + avance * 1.3) + ") translateY(" + -avance * 18 + "px)";
+    etat.panneau.querySelector("[data-office-photo]").style.transform = "scale(" + (1.015 + progression(etat.temps, 2400, 9200) * .085) + ")";
     // Le dernier fondu relie la porte au grand intérieur déjà présent dans la page.
-    etat.entree.style.opacity = String(1 - progression(etat.temps, 6250, duree));
+    etat.entree.style.opacity = String(1 - progression(etat.temps, 7000, 8400));
+    if (etat.temps >= 8400) etat.entree.style.pointerEvents = "none";
   }
 
   function arreter(etat) {
@@ -81,7 +87,6 @@
   }
 
   function terminer(etat) {
-    const rendreFocus = document.activeElement === etat.passer;
     arreter(etat);
     etat.version++;
     dessiner(etat, duree);
@@ -92,7 +97,6 @@
     etat.panneau.classList.add("is-open");
     etat.panneau.dataset.doorState = "open";
     etat.statut.textContent = etat.statut.dataset.open;
-    if (rendreFocus) etat.panneau.querySelector("[data-office-scroll]").focus({preventScroll:true});
   }
 
   function avancer(etat, maintenant) {
@@ -127,7 +131,9 @@
     window.etFermerPortes(panneau);
     const version = etat.version;
     const imageBureau = panneau.querySelector("[data-office-photo]");
-    etat.interieur.src = imageBureau.src;
+    etat.interieur.src = panneau.dataset.service === "poste"
+      ? etat.entree.dataset.posteInterior
+      : imageBureau.src;
     etat.plaque.classList.toggle("et-door-plaque-long", etat.plaque.textContent.trim().length > 15);
     panneau.classList.add("et-door-opening");
     panneau.dataset.doorState = "opening";

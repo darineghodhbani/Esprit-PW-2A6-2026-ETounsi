@@ -139,7 +139,7 @@ L'accueil commun et sa navigation utilisent des libellés de texte sans icônes 
 
 ### Motion
 
-Survol des photos : 500 ms. La porte photographiée de la référence locale ouvre ses deux battants de 83° avec un léger décalage, un éclairage et une avance progressive de caméra sur 7200 ms. Le bouton « Passer l'animation » rejoint immédiatement le bureau. Le même composant est partagé par les cinq services et garde leur propre photo intérieure. Les changements courants utilisent 150–200 ms. La préférence `prefers-reduced-motion` rend l'entrée immédiate. Les images sont locales et la fermeture annule le mouvement en cours. Les mots de passe et l'état d'ouverture sont réinitialisés à la fermeture.
+Survol des photos : 500 ms. L'entrée suit la vidéo fournie : la porte photographiée remplit l'écran, ses deux battants ouvrent de 83° avec un léger décalage, puis la caméra avance dans le bureau et rejoint son intérieur par un fondu. L'ensemble dure 9600 ms et démarre automatiquement au choix du service, sans commande Pause, Rejouer, progression ou Passer. Le même composant est partagé par les cinq services et garde leur propre photo intérieure. Le retour aux services et Échap permettent de quitter. Les changements courants utilisent 150–200 ms. La préférence `prefers-reduced-motion` rend l'entrée immédiate. Les images sont locales et la fermeture annule le mouvement en cours. Les mots de passe et l'état d'ouverture sont réinitialisés à la fermeture.
 
 ### Content and data visualization
 

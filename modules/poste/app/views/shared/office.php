@@ -11,7 +11,7 @@
             <p data-office-description><?= etE($etService['description'] ?? '') ?></p>
             <a class="et-button et-button-light" href="#office-access" data-office-scroll><span data-office-cta><?= etE(($etServiceKey ?? 'poste') === 'poste' ? etT('Bureau de poste', 'مكتب البريد') : etT('Découvrir ce service', 'اكتشف الخدمة')) ?></span><i class="bi bi-arrow-down" aria-hidden="true"></i></a>
         </div>
-        <div class="et-office-entry et-office-entry--photo">
+        <div class="et-office-entry et-office-entry--photo" data-poste-interior="<?= etE(etAsset('images/portal/portes/interieur-poste.webp')) ?>">
             <svg width="0" height="0" class="et-door-definitions" aria-hidden="true">
                 <defs>
                     <clipPath id="et-door-opening" clipPathUnits="userSpaceOnUse"><path d="M207 1468V454C287 370 382 327 517 321C641 323 746 368 825 453V1468Z"/></clipPath>
@@ -32,7 +32,6 @@
                     <span class="et-door-plaque" data-door-label><?= etE($etService['nom'] ?? etT('Poste', 'البريد')) ?></span>
                 </span></span>
             </span>
-            <button type="button" class="et-door-skip" data-door-skip><?= etE(etT('Passer l’animation', 'تجاوز الحركة')) ?></button>
         </div>
         <span class="et-visually-hidden" role="status" aria-live="polite" data-door-status data-opening="<?= etE(etT('La porte s’ouvre.', 'الباب بصدد الفتح.')) ?>" data-open="<?= etE(etT('Le bureau est ouvert.', 'المكتب مفتوح.')) ?>"></span>
     </section>

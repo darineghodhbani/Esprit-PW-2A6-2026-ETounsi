@@ -74,7 +74,7 @@ Le parcours du portail est **Accueil → photo Poste → ouverture des portes �
 
 Le HTML de l'accueil est dans `Views/home.php`, les blocs partagés dans `modules/poste/app/views/shared`, le thème dans `css/etounsi.css` et les interactions dans `js/etounsi.js`. Les six images et les polices sont locales dans `modules/poste/public/assets`. Le [rapport de validation](docs/validation-interface.md) décrit les contrôles. Aucun chatbot n'est intégré.
 
-L'accueil, ses questions et son footer concernent toute la plateforme. La porte photographique et son mouvement progressif sont partagés entre les cinq services dans `css/portes.css` et `js/portes.js`, d'après la démonstration locale fournie. Le bouton **Passer l'animation** rejoint directement le bureau ; la préférence de mouvement réduit rend l'entrée immédiate. Les images sont enregistrées dans le projet, sans dépendance au serveur de démonstration.
+L'accueil, ses questions et son footer concernent toute la plateforme. La porte photographique et son mouvement progressif sont partagés entre les cinq services dans `css/portes.css` et `js/portes.js`, d'après la vidéo fournie : ouverture automatique en plein écran puis entrée dans le bureau, sans boutons de lecture. Le retour aux services et Échap permettent de quitter ; la préférence de mouvement réduit rend l'entrée immédiate. Les images sont enregistrées dans le projet, sans dépendance au serveur de démonstration.
 
 Les deux rôles sont citoyen et administrateur. L’inscription publique crée un citoyen. L’administrateur gère les utilisateurs, leurs rôles, les bureaux et les colis. Les sessions, les autorisations et les formulaires suivent le workshop de sécurité.
 
