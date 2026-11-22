@@ -77,25 +77,7 @@ class BureauPostalController extends Controller {
     }
 
     public function addBack(): void {
-        CitoyenController::requireAdmin();
-        $erreurs = [];
-        $old = ['nom' => '', 'adresse' => '', 'ville' => ''];
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $old = self::clean($_POST);
-            $erreurs = $this->verifierBureau($old);
-            if (count($erreurs) == 0) {
-                $bureau = new BureauPostal(null, $old['nom'], $old['adresse'], $old['ville']);
-                $this->ajouterBureau($bureau);
-                $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le bureau a été ajouté.'];
-                header('Location: index.php?page=admin-bureaux', true, 303);
-                exit;
-            }
-            http_response_code(422);
-        }
-        $this->renderBack('poste/addBureau', [
-            'title' => 'Ajouter un bureau', 'currentPage' => 'admin-bureaux', 'section' => 'bureaux',
-            'old' => $old, 'erreurs' => $erreurs,
-        ]);
+        $this->renderBack('poste/addBureau');
     }
 
     public function updateBack(): void {

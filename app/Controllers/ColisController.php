@@ -233,33 +233,7 @@ class ColisController extends Controller {
     }
 
     public function addBack(): void {
-        CitoyenController::requireAdmin();
-        $erreurs = [];
-        $old = self::clean([]);
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $old = self::clean($_POST);
-            $erreurs = $this->verifierColis($old, true);
-            if (count($erreurs) == 0) {
-                $colis = new Colis(null, (int) $old['id_bureau_depart'], (int) $old['id_citoyen']);
-                try {
-                    $resultat = $this->ajouterColis($colis);
-                    $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le colis ' . $resultat['numero_suivi'] . ' a été enregistré.'];
-                    header('Location: index.php?page=admin-colis', true, 303);
-                    exit;
-                } catch (PDOException $e) {
-                    if ($e->getCode() !== '23000') throw $e;
-                    $erreurs['id_bureau_depart'] = 'Vérifiez le bureau de départ et le compte citoyen.';
-                    http_response_code(409);
-                }
-            } else {
-                http_response_code(422);
-            }
-        }
-        $this->renderBack('poste/addColis', [
-            'title' => 'Enregistrer un colis', 'currentPage' => 'admin-colis', 'section' => 'colis',
-            'old' => $old, 'erreurs' => $erreurs, 'statuts' => [],
-            'bureaux' => (new BureauPostalController())->listerBureaux(), 'citoyens' => $this->listerCitoyens(),
-        ]);
+        $this->renderBack('poste/addColis');
     }
 
     public function updateBack(): void {

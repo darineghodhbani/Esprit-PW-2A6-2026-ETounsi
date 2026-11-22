@@ -37,3 +37,13 @@ function m(array $item, string $field): string {
 function e($value): string {
     return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
+
+function invalidClass(array $erreurs, string $champ): string {
+    return isset($erreurs[$champ]) ? ' is-invalid' : '';
+}
+
+function errorFor(array $erreurs, string $champ): string {
+    if (!isset($erreurs[$champ])) return '';
+    return '<div class="invalid-feedback d-block server-error" id="erreur-' . e($champ) . '" role="alert">'
+        . e($erreurs[$champ]) . '</div>';
+}

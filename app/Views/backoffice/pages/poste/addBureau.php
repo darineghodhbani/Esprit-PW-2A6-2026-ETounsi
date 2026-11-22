@@ -1,3 +1,34 @@
+<?php
+require_once __DIR__ . '/../../../../Controllers/CitoyenController.php';
+require_once __DIR__ . '/../../../../Controllers/BureauPostalController.php';
+
+CitoyenController::requireAdmin();
+
+$bureauC = new BureauPostalController();
+$erreurs = [];
+$old = ['nom' => '', 'adresse' => '', 'ville' => ''];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $old = BureauPostalController::clean($_POST);
+    if (!csrfValide($_POST['csrf'] ?? '')) {
+        $erreurs['global'] = 'Jeton de sécurité invalide. Veuillez réessayer.';
+    } else {
+        $erreurs = $bureauC->verifierBureau($old);
+    }
+    if (count($erreurs) == 0) {
+        $bureau = new BureauPostal(null, $old['nom'], $old['adresse'], $old['ville']);
+        $bureauC->ajouterBureau($bureau);
+        $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le bureau a été ajouté.'];
+        header('Location: index.php?page=admin-bureaux', true, 303);
+        exit;
+    }
+    http_response_code(isset($erreurs['global']) ? 403 : 422);
+}
+
+$title = 'Ajouter un bureau';
+$currentPage = 'admin-bureaux';
+$section = 'bureaux';
+$csrfToken = csrfToken();
+?>
 <div class="page-header">
   <div>
     <h1 class="page-title">Ajouter un bureau</h1>
@@ -12,37 +43,34 @@
 </div>
 
 <div class="card border-light shadow-sm p-4 mb-4">
+  <?php if (isset($erreurs['global'])): ?>
+    <div class="alert alert-danger" role="alert"><?php echo e($erreurs['global']); ?></div>
+  <?php endif; ?>
   <form method="post" action="index.php?page=admin-bureau-add" novalidate data-validate-form data-poste-save>
-    <input type="hidden" name="csrf" value="<?php echo e(csrfToken()); ?>">
+    <input type="hidden" name="csrf" value="<?php echo e($csrfToken); ?>">
     <div class="row g-3">
       <div class="col-12 col-md-6">
         <label for="nom" class="form-label-custom">Nom du bureau</label>
-        <input type="text" class="form-control-custom<?php if (isset($erreurs['nom'])) echo ' is-invalid'; ?>" id="nom" name="nom"
+        <input type="text" class="form-control-custom<?php echo invalidClass($erreurs, 'nom'); ?>" id="nom" name="nom"
                value="<?php echo e($old['nom']); ?>" data-validate="required|max:100" required maxlength="100"
                <?php if (isset($erreurs['nom'])): ?>aria-invalid="true" aria-describedby="erreur-nom"<?php endif; ?>>
-        <?php if (isset($erreurs['nom'])): ?>
-          <div class="invalid-feedback d-block server-error" id="erreur-nom" role="alert"><?php echo e($erreurs['nom']); ?></div>
-        <?php endif; ?>
+        <?php echo errorFor($erreurs, 'nom'); ?>
       </div>
 
       <div class="col-12 col-md-6">
         <label for="adresse" class="form-label-custom">Adresse</label>
-        <input type="text" class="form-control-custom<?php if (isset($erreurs['adresse'])) echo ' is-invalid'; ?>" id="adresse" name="adresse"
+        <input type="text" class="form-control-custom<?php echo invalidClass($erreurs, 'adresse'); ?>" id="adresse" name="adresse"
                value="<?php echo e($old['adresse']); ?>" data-validate="required|max:200" required maxlength="200"
                <?php if (isset($erreurs['adresse'])): ?>aria-invalid="true" aria-describedby="erreur-adresse"<?php endif; ?>>
-        <?php if (isset($erreurs['adresse'])): ?>
-          <div class="invalid-feedback d-block server-error" id="erreur-adresse" role="alert"><?php echo e($erreurs['adresse']); ?></div>
-        <?php endif; ?>
+        <?php echo errorFor($erreurs, 'adresse'); ?>
       </div>
 
       <div class="col-12 col-md-6">
         <label for="ville" class="form-label-custom">Ville</label>
-        <input type="text" class="form-control-custom<?php if (isset($erreurs['ville'])) echo ' is-invalid'; ?>" id="ville" name="ville"
+        <input type="text" class="form-control-custom<?php echo invalidClass($erreurs, 'ville'); ?>" id="ville" name="ville"
                value="<?php echo e($old['ville']); ?>" data-validate="required|max:80" required maxlength="80"
                <?php if (isset($erreurs['ville'])): ?>aria-invalid="true" aria-describedby="erreur-ville"<?php endif; ?>>
-        <?php if (isset($erreurs['ville'])): ?>
-          <div class="invalid-feedback d-block server-error" id="erreur-ville" role="alert"><?php echo e($erreurs['ville']); ?></div>
-        <?php endif; ?>
+        <?php echo errorFor($erreurs, 'ville'); ?>
       </div>
 
       <div class="col-12 d-flex gap-2 flex-wrap">

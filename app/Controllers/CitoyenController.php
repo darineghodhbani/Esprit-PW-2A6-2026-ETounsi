@@ -178,30 +178,7 @@ class CitoyenController extends Controller {
     }
 
     public function addBack(): void {
-        self::requireAdmin();
-        $erreurs = [];
-        $old = self::clean([]);
-        $old['role'] = 'citoyen';
-        $old['actif'] = '1';
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $old = self::clean($_POST);
-            $erreurs = $this->verifierCitoyen($old);
-            if (count($erreurs) == 0) {
-                $citoyen = new Citoyen(null, $old['nom'], $old['email'], $old['password'], $old['role'], (int) $old['actif']);
-                $resultat = $this->ajouterCitoyen($citoyen, $old['confirmation']);
-                $erreurs = $resultat['erreurs'];
-                if (count($erreurs) == 0) {
-                    $_SESSION['flash'] = ['type' => 'success', 'message' => 'L’utilisateur a été ajouté.'];
-                    header('Location: index.php?page=admin-utilisateurs', true, 303);
-                    exit;
-                }
-            }
-            http_response_code(422);
-        }
-        $this->renderBack('utilisateurs/addUser', [
-            'title' => 'Ajouter un utilisateur', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs',
-            'old' => $old, 'erreurs' => $erreurs, 'roles' => self::ROLES,
-        ]);
+        $this->renderBack('utilisateurs/addUser');
     }
 
     public function updateBack(): void {

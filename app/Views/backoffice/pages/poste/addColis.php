@@ -1,3 +1,44 @@
+<?php
+require_once __DIR__ . '/../../../../Controllers/CitoyenController.php';
+require_once __DIR__ . '/../../../../Controllers/ColisController.php';
+require_once __DIR__ . '/../../../../Controllers/BureauPostalController.php';
+
+CitoyenController::requireAdmin();
+
+$colisC = new ColisController();
+$erreurs = [];
+$old = ColisController::clean([]);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $old = ColisController::clean($_POST);
+    if (!csrfValide($_POST['csrf'] ?? '')) {
+        $erreurs['global'] = 'Jeton de sécurité invalide. Veuillez réessayer.';
+    } else {
+        $erreurs = $colisC->verifierColis($old, true);
+    }
+    if (count($erreurs) == 0) {
+        $colis = new Colis(null, (int) $old['id_bureau_depart'], (int) $old['id_citoyen']);
+        try {
+            $resultat = $colisC->ajouterColis($colis);
+            $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le colis ' . $resultat['numero_suivi'] . ' a été enregistré.'];
+            header('Location: index.php?page=admin-colis', true, 303);
+            exit;
+        } catch (PDOException $e) {
+            if ($e->getCode() !== '23000') throw $e;
+            $erreurs['id_bureau_depart'] = 'Vérifiez le bureau de départ et le compte citoyen.';
+            http_response_code(409);
+        }
+    } else {
+        http_response_code(isset($erreurs['global']) ? 403 : 422);
+    }
+}
+
+$bureaux = (new BureauPostalController())->listerBureaux();
+$citoyens = $colisC->listerCitoyens();
+$title = 'Enregistrer un colis';
+$currentPage = 'admin-colis';
+$section = 'colis';
+$csrfToken = csrfToken();
+?>
 <div class="page-header">
   <div>
     <h1 class="page-title">Ajouter un colis</h1>
@@ -12,6 +53,9 @@
 </div>
 
 <div class="card border-light shadow-sm p-4 mb-4">
+  <?php if (isset($erreurs['global'])): ?>
+    <div class="alert alert-danger" role="alert"><?php echo e($erreurs['global']); ?></div>
+  <?php endif; ?>
   <?php if (count($bureaux) == 0): ?>
     <p class="alert alert-warning">Ajoutez un bureau de poste avant d’enregistrer un colis.</p>
     <a class="btn-custom btn-custom-primary" href="index.php?page=admin-bureau-add">Ajouter un bureau</a>
@@ -20,11 +64,11 @@
   <?php else: ?>
     <p class="text-main">Le code de suivi sera généré automatiquement et le statut initial sera « En attente ».</p>
   <form method="post" action="index.php?page=admin-colis-add" novalidate data-validate-form data-poste-save>
-    <input type="hidden" name="csrf" value="<?php echo e(csrfToken()); ?>">
+    <input type="hidden" name="csrf" value="<?php echo e($csrfToken); ?>">
     <div class="row g-3">
       <div class="col-12 col-md-6">
         <label for="id_bureau_depart" class="form-label-custom">Bureau de départ</label>
-        <select class="form-select-custom<?php if (isset($erreurs['id_bureau_depart'])) echo ' is-invalid'; ?>" id="id_bureau_depart" name="id_bureau_depart" data-validate="required" required
+        <select class="form-select-custom<?php echo invalidClass($erreurs, 'id_bureau_depart'); ?>" id="id_bureau_depart" name="id_bureau_depart" data-validate="required" required
                 <?php if (isset($erreurs['id_bureau_depart'])): ?>aria-invalid="true" aria-describedby="erreur-id_bureau_depart"<?php endif; ?>>
           <option value="">-- Choisir un bureau --</option>
           <?php foreach ($bureaux as $b): ?>
@@ -33,14 +77,12 @@
             </option>
           <?php endforeach; ?>
         </select>
-        <?php if (isset($erreurs['id_bureau_depart'])): ?>
-          <div class="invalid-feedback d-block server-error" id="erreur-id_bureau_depart" role="alert"><?php echo e($erreurs['id_bureau_depart']); ?></div>
-        <?php endif; ?>
+        <?php echo errorFor($erreurs, 'id_bureau_depart'); ?>
       </div>
 
       <div class="col-12 col-md-6">
         <label for="id_citoyen" class="form-label-custom">Compte citoyen</label>
-        <select class="form-select-custom<?php if (isset($erreurs['id_citoyen'])) echo ' is-invalid'; ?>" id="id_citoyen" name="id_citoyen" data-validate="required" required
+        <select class="form-select-custom<?php echo invalidClass($erreurs, 'id_citoyen'); ?>" id="id_citoyen" name="id_citoyen" data-validate="required" required
                 <?php if (isset($erreurs['id_citoyen'])): ?>aria-invalid="true" aria-describedby="erreur-id_citoyen"<?php endif; ?>>
           <option value="">-- Choisir un citoyen --</option>
           <?php foreach ($citoyens as $c): ?>
@@ -49,9 +91,7 @@
             </option>
           <?php endforeach; ?>
         </select>
-        <?php if (isset($erreurs['id_citoyen'])): ?>
-          <div class="invalid-feedback d-block server-error" id="erreur-id_citoyen" role="alert"><?php echo e($erreurs['id_citoyen']); ?></div>
-        <?php endif; ?>
+        <?php echo errorFor($erreurs, 'id_citoyen'); ?>
       </div>
 
       <div class="col-12 d-flex gap-2 flex-wrap">
