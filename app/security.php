@@ -47,6 +47,7 @@ function utilisateurConnecte() {
         return null;
     }
     $_SESSION['nom'] = $utilisateur['nom'];
+    $_SESSION['prenom'] = $utilisateur['prenom'];
     $_SESSION['role'] = $utilisateur['role'];
     return $utilisateur;
 }
@@ -100,6 +101,7 @@ function connecterUtilisateur($utilisateur) {
 }
 
 function deconnecterUtilisateur($raison = 'Déconnexion de la session.') {
+    $langue = $_SESSION['lang'] ?? 'fr';
     if (!empty($_SESSION['user_id'])) auditEvenement('LOGOUT', $raison, (int) $_SESSION['user_id']);
     $_SESSION = [];
     if (ini_get('session.use_cookies')) {
@@ -114,9 +116,10 @@ function deconnecterUtilisateur($raison = 'Déconnexion de la session.') {
         ]);
     }
     session_destroy();
-    // Une nouvelle session vide permet de présenter un formulaire de connexion protégé.
+    // Une nouvelle session permet de présenter un formulaire de connexion protégé.
     session_id('');
     session_start();
+    $_SESSION['lang'] = in_array($langue, ['fr', 'ar'], true) ? $langue : 'fr';
 }
 
 

@@ -114,7 +114,7 @@ class Citoyen {
 
     public function modifierCitoyen(Citoyen $citoyen, $id, $confirmation) {
         return $this->enregistrer($id, $citoyen->getNom(), $citoyen->getEmail(), $citoyen->getMotDePasse(),
-            $confirmation, $citoyen->getRole(), $citoyen->getActif(), $citoyen->getVersionSession());
+            $confirmation, $citoyen->getRole(), $citoyen->getActif(), $citoyen->getVersionSession(), $citoyen->getPrenom(), $citoyen->getTelephone());
     }
 
     public function supprimerCitoyen($id) {
@@ -290,11 +290,12 @@ class Citoyen {
                     $version++;
                 }
                 $requete = $db->prepare(
-                    'UPDATE citoyen SET nom = :nom, email = :email, mot_de_passe = :mot_de_passe,
-                     role = :role, actif = :actif, version_session = :version WHERE id_citoyen = :id'
+                    'UPDATE citoyen SET nom = :nom, prenom = :prenom, telephone = :telephone, email = :email,
+                     mot_de_passe = :mot_de_passe, role = :role, actif = :actif, version_session = :version WHERE id_citoyen = :id'
                 );
                 $requete->execute([
-                    'nom' => $nom, 'email' => $email, 'mot_de_passe' => $motDePasse,
+                    'nom' => $nom, 'prenom' => $prenom ?? $compte['prenom'],
+                    'telephone' => $telephone ?? $compte['telephone'], 'email' => $email, 'mot_de_passe' => $motDePasse,
                     'role' => $role, 'actif' => (int) $actif, 'version' => $version, 'id' => $id,
                 ]);
             }

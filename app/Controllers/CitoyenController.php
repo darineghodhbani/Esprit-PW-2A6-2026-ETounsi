@@ -7,6 +7,7 @@ require_once __DIR__ . '/../Models/Citoyen.php';
 class CitoyenController extends Controller {
     private $modele;
     public const ROLES = ['citoyen' => 'Citoyen', 'admin' => 'Administrateur'];
+    public const ETATS = ['1' => 'Actif', '0' => 'Désactivé'];
     public const CAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
     public const CAPTCHA_SECRET_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
 
@@ -63,9 +64,13 @@ class CitoyenController extends Controller {
             }
         }
         if ($d['password'] !== $d['confirmation']) $erreurs[$champConfirmation] = 'Les mots de passe doivent être identiques.';
+        if (mb_strlen($d['prenom']) < 2 || mb_strlen($d['prenom']) > 50 || preg_match('/[<>\x00-\x1F]/u', $d['prenom'])) {
+            $erreurs['prenom'] = 'Saisissez un prénom de 2 à 50 caractères, sans balises ni caractères de contrôle.';
+        }
         if ($inscription) {
-            if (mb_strlen($d['prenom']) < 2 || mb_strlen($d['prenom']) > 50) $erreurs['prenom'] = 'Le prénom doit contenir 2 à 50 caractères.';
             if ($d['telephone'] !== '' && (strlen($d['telephone']) !== 8 || !ctype_digit($d['telephone']))) $erreurs['telephone'] = 'Le téléphone doit contenir 8 chiffres.';
+        } elseif (!preg_match('/^[2-9][0-9]{7}$/D', $d['telephone'])) {
+            $erreurs['telephone'] = 'Le téléphone doit contenir 8 chiffres et commencer par un chiffre de 2 à 9.';
         }
         return $erreurs;
     }
@@ -165,16 +170,7 @@ class CitoyenController extends Controller {
     }
 
     public function listBack(): void {
-        self::requireAdmin();
-        $recherche = posteText($_GET, 'q');
-        $liste = [];
-        foreach ($this->listerCitoyens() as $citoyen) {
-            if (posteMatches($recherche, $citoyen['nom'] . ' ' . $citoyen['email'])) $liste[] = $citoyen;
-        }
-        $this->renderBack('utilisateurs/userList', [
-            'title' => 'Gestion des utilisateurs', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs',
-            'liste' => $liste, 'recherche' => $recherche, 'roles' => self::ROLES,
-        ]);
+        $this->renderBack('utilisateurs/userList');
     }
 
     public function addBack(): void {
@@ -182,76 +178,10 @@ class CitoyenController extends Controller {
     }
 
     public function updateBack(): void {
-        $compteConnecte = exigerRole(['admin']);
-        $id = posteId($_GET) ?? posteId($_POST);
-        $old = $id === null ? null : $this->recupererCitoyen($id);
-        if (!$old) { $this->introuvable(); return; }
-        $erreurs = [];
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $old = self::clean($_POST);
-            $old['id'] = $id;
-            $erreurs = $this->verifierCitoyen($old, false);
-            if (count($erreurs) == 0) {
-                $version = $id === $compteConnecte['id'] ? $compteConnecte['version_session'] : null;
-                $citoyen = new Citoyen($id, $old['nom'], $old['email'], $old['password'], $old['role'], (int) $old['actif'], null, null, $version);
-                $resultat = $this->modifierCitoyen($citoyen, $id, $old['confirmation']);
-                $erreurs = $resultat['erreurs'];
-                if (count($erreurs) == 0) {
-                    if ($id === $compteConnecte['id']) {
-                        $compte = $resultat['utilisateur'];
-                        if (!$compte || $compte['actif'] !== 1 || $compte['role'] !== 'admin') {
-                            deconnecterUtilisateur();
-                            header('Location: ' . frontUrl('connexion'), true, 303);
-                            exit;
-                        }
-                        connecterUtilisateur($compte);
-                    }
-                    $_SESSION['flash'] = ['type' => 'success', 'message' => 'L’utilisateur a été mis à jour.'];
-                    header('Location: index.php?page=admin-utilisateurs', true, 303);
-                    exit;
-                }
-            }
-            http_response_code(422);
-        }
-        $this->renderBack('utilisateurs/updateUser', [
-            'title' => 'Modifier un utilisateur', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs',
-            'old' => $old, 'erreurs' => $erreurs, 'roles' => self::ROLES,
-        ]);
+        $this->renderBack('utilisateurs/updateUser');
     }
 
     public function deleteBack(): void {
-        self::requireAdmin();
-        $id = $_SERVER['REQUEST_METHOD'] === 'POST' ? posteId($_POST) : posteId($_GET);
-        $citoyen = $id === null ? null : $this->recupererCitoyen($id);
-        if (!$citoyen) { $this->introuvable(); return; }
-        $erreurs = [];
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $resultat = $this->supprimerCitoyen($id);
-            $erreurs = $resultat['erreurs'];
-            if (count($erreurs) == 0) {
-                if ($id === (int) $_SESSION['user_id']) {
-                    deconnecterUtilisateur();
-                    header('Location: ' . frontUrl('connexion'), true, 303);
-                    exit;
-                }
-                $_SESSION['flash'] = ['type' => 'success', 'message' => 'L’utilisateur a été supprimé.'];
-                header('Location: index.php?page=admin-utilisateurs', true, 303);
-                exit;
-            }
-            http_response_code(409);
-        }
-        $this->renderBack('commun/supprimer', [
-            'title' => 'Supprimer l’utilisateur', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs', 'erreurs' => $erreurs,
-            'old' => ['id' => $id, 'reference' => $citoyen['nom'] . ' — ' . $citoyen['email'], 'action' => 'deleteUser',
-                'message' => 'Le compte sera supprimé si aucune donnée métier ne lui est associée. Vous pouvez le désactiver pour conserver son historique.'],
-        ]);
-    }
-
-    private function introuvable(): void {
-        http_response_code(404);
-        $this->renderBack('commun/problem', [
-            'title' => 'Utilisateur introuvable', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs',
-            'message' => 'Ce compte n’existe plus ou le lien est incorrect.',
-        ]);
+        require __DIR__ . '/../Views/backoffice/pages/utilisateurs/deleteUser.php';
     }
 }

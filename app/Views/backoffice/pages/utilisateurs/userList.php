@@ -1,3 +1,20 @@
+<?php
+require_once __DIR__ . '/../../../../Controllers/CitoyenController.php';
+
+CitoyenController::requireAdmin();
+$citoyenC = new CitoyenController();
+$recherche = posteText($_GET, 'q');
+$liste = [];
+foreach ($citoyenC->listerCitoyens() as $citoyen) {
+    $texte = $citoyen['nom'] . ' ' . $citoyen['prenom'] . ' ' . $citoyen['email'] . ' ' . $citoyen['telephone'];
+    if (posteMatches($recherche, $texte)) $liste[] = $citoyen;
+}
+$roles = CitoyenController::ROLES;
+$title = 'Gestion des utilisateurs';
+$currentPage = 'admin-utilisateurs';
+$section = 'utilisateurs';
+$csrfToken = csrfToken();
+?>
 <div class="page-header poste-page-header">
     <div>
         <h1 class="page-title"><?php echo e($title); ?></h1>
@@ -11,7 +28,7 @@
         <input type="hidden" name="page" value="utilisateurs">
         <div class="poste-filter-field">
             <label for="q">Rechercher un utilisateur</label>
-            <input class="form-control-custom" id="q" name="q" type="search" maxlength="120" value="<?php echo e($recherche); ?>" placeholder="Nom ou adresse e-mail">
+            <input class="form-control-custom" id="q" name="q" type="search" maxlength="120" value="<?php echo e($recherche); ?>" placeholder="Nom, prénom, e-mail ou téléphone">
         </div>
         <button class="btn-custom btn-custom-light" type="submit"><i class="bi bi-search" aria-hidden="true"></i> Rechercher</button>
         <?php if ($recherche !== ''): ?><a class="btn-custom btn-custom-light" href="?espace=admin&amp;page=userList">Effacer</a><?php endif; ?>
@@ -22,12 +39,14 @@
         <div class="table-responsive" tabindex="0" role="region" aria-label="Tableau des utilisateurs">
             <table class="table-custom">
                 <caption class="visually-hidden">Utilisateurs de l’application</caption>
-                <thead><tr><th scope="col">Nom</th><th scope="col">Adresse e-mail</th><th scope="col">Rôle</th><th scope="col">État</th><th scope="col">Actions</th></tr></thead>
+                <thead><tr><th scope="col">Nom</th><th scope="col">Prénom</th><th scope="col">Adresse e-mail</th><th scope="col">Téléphone</th><th scope="col">Rôle</th><th scope="col">État</th><th scope="col">Actions</th></tr></thead>
                 <tbody>
                     <?php foreach ($liste as $citoyen): ?>
                         <tr>
                             <th scope="row"><?php echo e($citoyen['nom']); ?></th>
+                            <td><?php echo e($citoyen['prenom']); ?></td>
                             <td><?php echo e($citoyen['email']); ?></td>
+                            <td><?php echo e($citoyen['telephone']); ?></td>
                             <td><?php echo e($roles[$citoyen['role']]); ?></td>
                             <td>
                                 <?php if ((int) $citoyen['actif'] === 1): ?>
@@ -39,7 +58,11 @@
                             <td>
                                 <div class="poste-table-actions">
                                     <a class="btn-custom btn-custom-light btn-custom-sm" href="?espace=admin&amp;page=updateUser&amp;id=<?php echo e($citoyen['id']); ?>" aria-label="Modifier <?php echo e($citoyen['nom']); ?>">Modifier</a>
-                                    <a class="btn-custom btn-custom-danger btn-custom-sm" href="?espace=admin&amp;page=deleteUser&amp;id=<?php echo e($citoyen['id']); ?>" aria-label="Supprimer <?php echo e($citoyen['nom']); ?>"><i class="bi bi-trash3" aria-hidden="true"></i> Supprimer</a>
+                                    <form method="post" action="index.php?page=deleteUser" data-confirm="Supprimer cet utilisateur ?">
+                                        <input type="hidden" name="csrf" value="<?php echo e($csrfToken); ?>">
+                                        <input type="hidden" name="id" value="<?php echo e($citoyen['id']); ?>">
+                                        <button class="btn-custom btn-custom-danger btn-custom-sm" type="submit" aria-label="Supprimer <?php echo e($citoyen['nom']); ?>"><i class="bi bi-trash3" aria-hidden="true"></i> Supprimer</button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
