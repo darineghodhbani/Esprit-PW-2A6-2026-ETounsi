@@ -275,9 +275,9 @@ UNION ALL SELECT 2, 'Legalisation de signature', 'Exemple de service municipal.'
 UNION ALL SELECT 3, 'Certificat de residence', 'Exemple de service municipal.', 3 WHERE @initialiser_demo = 1;
 
 
--- Module Municipalité et droits des agents.
 -- Module Municipalité E-Tounsi (tables dédiées, sans toucher aux autres modules).
 -- À importer après database/etounsi.sql dans la base de l'application.
+SET NAMES utf8mb4;
 ALTER TABLE citoyen MODIFY role ENUM('citoyen','agent','admin') NOT NULL DEFAULT 'citoyen';
 
 CREATE TABLE IF NOT EXISTS municipalite_service (

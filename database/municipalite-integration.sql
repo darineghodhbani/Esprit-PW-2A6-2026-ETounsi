@@ -1,5 +1,6 @@
 -- Module Municipalité E-Tounsi (tables dédiées, sans toucher aux autres modules).
 -- À importer après database/etounsi.sql dans la base de l'application.
+SET NAMES utf8mb4;
 ALTER TABLE citoyen MODIFY role ENUM('citoyen','agent','admin') NOT NULL DEFAULT 'citoyen';
 
 CREATE TABLE IF NOT EXISTS municipalite_service (

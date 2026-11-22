@@ -62,7 +62,7 @@ class MunicipaliteModuleController extends Controller {
         $this->renderFront('municipalite/services',compact('services','currentPage','title'));
     }
     public function nouveau(): void {
-        $id=filter_input(INPUT_GET,'id',FILTER_VALIDATE_INT)?:0;
+        $id=filter_var($_GET['id']??null,FILTER_VALIDATE_INT)?:0;
         $st=$this->db()->prepare('SELECT * FROM municipalite_service WHERE id_service=? AND actif=1'); $st->execute([$id]); $service=$st->fetch();
         if(!$service){$this->flash('danger','Service municipal introuvable.');$this->redirect('municipalite-services');}
         $currentPage='municipalite-services'; $title=$service['libelle'].' · E-Tounsi';

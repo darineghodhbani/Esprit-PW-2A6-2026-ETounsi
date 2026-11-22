@@ -1,7 +1,10 @@
 <section class="poste-hero" aria-labelledby="municipalite-title">
   <span class="poste-hero-label">E-Tounsi · Municipalité</span><h1 class="page-title" id="municipalite-title">Démarches municipales</h1>
   <p>Choisissez un service pour déposer une demande ou prendre rendez-vous. Retrouvez ensuite le récépissé, le paiement et les notifications dans votre suivi.</p>
-  <div class="d-flex flex-wrap gap-2"><a class="btn-custom btn-custom-primary" href="index.php?page=municipalite-suivi">Mes demandes et notifications</a></div>
+  <div class="d-flex flex-wrap gap-2">
+    <a class="btn-custom btn-custom-primary" href="index.php?page=municipalite-suivi">Mes demandes et notifications</a>
+    <?php if (($utilisateur['role'] ?? '') === 'admin'): ?><a class="btn-custom btn-custom-light" href="index.php?page=admin-municipalite-agents">Accès des agents municipaux</a><?php endif; ?>
+  </div>
 </section>
 <section class="module-page" style="--module-accent:#365F90" aria-label="Services municipaux">
 <div class="planned-services">

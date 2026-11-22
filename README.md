@@ -165,3 +165,5 @@ Pour une installation neuve, importez `database/etounsi.sql`, puis `database/mun
 Un administrateur peut créer ou modifier un compte avec le rôle global Agent, puis lui attribuer les droits municipaux « consultation » et « traitement » depuis **Back Office → Municipalité → Accès des agents municipaux**. Le traitement inclut la consultation. Les permissions sont vérifiées côté serveur et leurs changements sont inscrits au journal d’audit. Les Agents CNAM ne reçoivent aucun droit municipal automatiquement.
 
 Le paiement par carte reste en mode de démonstration locale tant qu’un fournisseur de paiement n’est pas configuré. Aucune donnée de carte bancaire réelle n’est enregistrée par cette démonstration.
+
+Les sélecteurs Gouvernorat / Délégation reposent sur `app/Data/municipalite-delegations.php` (découpage INS) et `assets/frontoffice/js/municipalite.js`. Pour réappliquer le schéma et réinstaller le contenu UTF-8 des services, lancez `php scripts/migrate-municipalite.php` depuis le dossier du projet.
