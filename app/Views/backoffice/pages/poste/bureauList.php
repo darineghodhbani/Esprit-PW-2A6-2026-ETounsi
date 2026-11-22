@@ -1,21 +1,3 @@
-<?php
-require_once __DIR__ . '/../../../../Controllers/CitoyenController.php';
-require_once __DIR__ . '/../../../../Controllers/BureauPostalController.php';
-require_once __DIR__ . '/../../../../Controllers/ColisController.php';
-CitoyenController::requireAdmin();
-
-$bureauC = new BureauPostalController();
-$colisC = new ColisController();
-$liste = $bureauC->listerBureaux();
-$nbBureaux = $bureauC->compterBureaux();
-$nbVilles = $bureauC->compterVilles();
-$nbColis = $colisC->compterColis();
-
-$title = 'E-Tounsi Admin - Bureaux de poste';
-$currentPage = 'admin-bureaux';
-$section = 'bureaux';
-$csrfToken = csrfToken();
-?>
 <div class="page-header">
   <div>
     <h1 class="page-title">Bureaux de poste</h1>

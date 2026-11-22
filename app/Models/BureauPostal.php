@@ -6,7 +6,7 @@ class BureauPostal {
     private ?string $adresse;
     private ?string $ville;
 
-    public function __construct(?int $id = null, ?string $nom = null, ?string $adresse = null, ?string $ville = null) {
+    public function __construct(?int $id, ?string $nom, ?string $adresse, ?string $ville) {
         $this->id = $id;
         $this->nom = $nom;
         $this->adresse = $adresse;

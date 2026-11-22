@@ -1,19 +1,3 @@
-<?php
-require_once __DIR__ . '/../../../../Controllers/CitoyenController.php';
-require_once __DIR__ . '/../../../../Controllers/ColisController.php';
-CitoyenController::requireAdmin();
-
-$colisC = new ColisController();
-$liste = $colisC->listerColis();
-$nbEnAttente = $colisC->compterColis('En attente');
-$nbEnAcheminement = $colisC->compterColis('Accepté') + $colisC->compterColis('En transit');
-$nbLivres = $colisC->compterColis('Livré');
-
-$title = 'E-Tounsi Admin - Colis';
-$currentPage = 'admin-colis';
-$section = 'colis';
-$csrfToken = csrfToken();
-?>
 <div class="page-header">
   <div>
     <h1 class="page-title">Colis</h1>

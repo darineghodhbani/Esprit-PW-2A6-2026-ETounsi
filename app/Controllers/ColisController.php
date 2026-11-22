@@ -6,73 +6,108 @@ require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../Models/Colis.php';
 
 class ColisController extends Controller {
-    public const STATUTS = Colis::STATUTS;
+    public const STATUTS = ['En attente', 'Accepté', 'En transit', 'Livré', 'Annulé'];
 
     public function listerColis() {
-        $sql = "SELECT c.*, b.nom AS bureau, b.ville FROM colis c
-                JOIN bureau_postal b ON c.id_bureau_depart = b.id_bureau
-                ORDER BY c.created_at DESC, c.id_colis DESC";
-        $db = Database::getConnection();
-        return $db->query($sql)->fetchAll();
+        try {
+            $sql = "SELECT c.*, b.nom AS bureau, b.ville FROM colis c
+                    JOIN bureau_postal b ON c.id_bureau_depart = b.id_bureau
+                    ORDER BY c.created_at DESC, c.id_colis DESC";
+            $db = Database::getConnection();
+            return $db->query($sql)->fetchAll();
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 
     public function compterColis($statut = null) {
         $db = Database::getConnection();
-        if ($statut === null) {
-            $sql = "SELECT COUNT(*) FROM colis";
-            return (int) $db->query($sql)->fetchColumn();
+        try {
+            if ($statut === null) {
+                $sql = "SELECT COUNT(*) FROM colis";
+                return (int) $db->query($sql)->fetchColumn();
+            }
+            $sql = "SELECT COUNT(*) FROM colis WHERE statut = :statut";
+            $query = $db->prepare($sql);
+            $query->execute(['statut' => $statut]);
+            return (int) $query->fetchColumn();
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
         }
-        $sql = "SELECT COUNT(*) FROM colis WHERE statut = :statut";
-        $query = $db->prepare($sql);
-        $query->execute(['statut' => $statut]);
-        return (int) $query->fetchColumn();
     }
 
     public function listerColisCitoyen($idCitoyen) {
-        $sql = "SELECT c.*, b.nom AS bureau, b.ville FROM colis c
-                JOIN bureau_postal b ON c.id_bureau_depart = b.id_bureau
-                WHERE c.id_citoyen = :id_citoyen ORDER BY c.created_at DESC, c.id_colis DESC";
-        $db = Database::getConnection();
-        $query = $db->prepare($sql);
-        $query->execute(['id_citoyen' => $idCitoyen]);
-        return $query->fetchAll();
+        try {
+            $sql = "SELECT c.*, b.nom AS bureau, b.ville FROM colis c
+                    JOIN bureau_postal b ON c.id_bureau_depart = b.id_bureau
+                    WHERE c.id_citoyen = :id_citoyen ORDER BY c.created_at DESC, c.id_colis DESC";
+            $db = Database::getConnection();
+            $query = $db->prepare($sql);
+            $query->execute(['id_citoyen' => $idCitoyen]);
+            return $query->fetchAll();
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 
     public function recupererColis($id) {
-        $sql = "SELECT c.*, b.nom AS bureau, b.ville FROM colis c
-                JOIN bureau_postal b ON c.id_bureau_depart = b.id_bureau WHERE c.id_colis = :id";
-        $db = Database::getConnection();
-        $query = $db->prepare($sql);
-        $query->execute(['id' => $id]);
-        $colis = $query->fetch();
-        return $colis === false ? null : $colis;
+        try {
+            $sql = "SELECT c.*, b.nom AS bureau, b.ville FROM colis c
+                    JOIN bureau_postal b ON c.id_bureau_depart = b.id_bureau WHERE c.id_colis = :id";
+            $db = Database::getConnection();
+            $query = $db->prepare($sql);
+            $query->execute(['id' => $id]);
+            $colis = $query->fetch();
+            return $colis === false ? null : $colis;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 
     public function recupererColisCitoyen($id, $idCitoyen) {
-        $sql = "SELECT c.*, b.nom AS bureau, b.ville FROM colis c
-                JOIN bureau_postal b ON c.id_bureau_depart = b.id_bureau
-                WHERE c.id_colis = :id AND c.id_citoyen = :id_citoyen";
-        $db = Database::getConnection();
-        $query = $db->prepare($sql);
-        $query->execute(['id' => $id, 'id_citoyen' => $idCitoyen]);
-        $colis = $query->fetch();
-        return $colis === false ? null : $colis;
+        try {
+            $sql = "SELECT c.*, b.nom AS bureau, b.ville FROM colis c
+                    JOIN bureau_postal b ON c.id_bureau_depart = b.id_bureau
+                    WHERE c.id_colis = :id AND c.id_citoyen = :id_citoyen";
+            $db = Database::getConnection();
+            $query = $db->prepare($sql);
+            $query->execute(['id' => $id, 'id_citoyen' => $idCitoyen]);
+            $colis = $query->fetch();
+            return $colis === false ? null : $colis;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 
     public function chercherColis($numero) {
-        $sql = "SELECT c.*, b.nom AS bureau, b.ville FROM colis c
-                JOIN bureau_postal b ON c.id_bureau_depart = b.id_bureau WHERE c.numero_suivi = :numero";
-        $db = Database::getConnection();
-        $query = $db->prepare($sql);
-        $query->execute(['numero' => strtoupper(trim($numero))]);
-        $colis = $query->fetch();
-        return $colis === false ? null : $colis;
+        try {
+            $sql = "SELECT c.*, b.nom AS bureau, b.ville FROM colis c
+                    JOIN bureau_postal b ON c.id_bureau_depart = b.id_bureau WHERE c.numero_suivi = :numero";
+            $db = Database::getConnection();
+            $query = $db->prepare($sql);
+            $query->execute(['numero' => strtoupper(trim($numero))]);
+            $colis = $query->fetch();
+            return $colis === false ? null : $colis;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 
     public function listerCitoyens() {
         $sql = "SELECT id_citoyen, nom, prenom FROM citoyen WHERE role = 'citoyen' AND actif = 1 ORDER BY nom";
         $db = Database::getConnection();
-        return $db->query($sql)->fetchAll();
+        try {
+            return $db->query($sql)->fetchAll();
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 
     public function ajouterColis(Colis $colis) {
@@ -80,7 +115,8 @@ class ColisController extends Controller {
                 VALUES (:id_bureau, :id_citoyen, :numero, :statut, :nom, :date_declaration)";
         $db = Database::getConnection();
         if ($colis->getNomCitoyen() === null) {
-            $query = $db->prepare('SELECT nom, prenom FROM citoyen WHERE id_citoyen = :id');
+            $sqlCitoyen = 'SELECT nom, prenom FROM citoyen WHERE id_citoyen = :id';
+            $query = $db->prepare($sqlCitoyen);
             $query->execute(['id' => $colis->getIdCitoyen()]);
             $citoyen = $query->fetch();
             $colis->setNomCitoyen(trim(($citoyen['prenom'] ?? '') . ' ' . ($citoyen['nom'] ?? '')));
@@ -115,49 +151,74 @@ class ColisController extends Controller {
     }
 
     public function modifierColis(Colis $colis, $id, $statutActuel) {
-        if (!in_array($colis->getStatut(), self::statutsSuivants($statutActuel), true)) return false;
-        $sql = "UPDATE colis SET statut = :statut WHERE id_colis = :id AND statut = :statut_actuel";
-        $db = Database::getConnection();
-        $query = $db->prepare($sql);
-        $query->execute(['statut' => $colis->getStatut(), 'id' => $id, 'statut_actuel' => $statutActuel]);
-        return $query->rowCount() === 1;
+        try {
+            if (!in_array($colis->getStatut(), self::statutsSuivants($statutActuel), true)) return false;
+            $sql = "UPDATE colis SET statut = :statut WHERE id_colis = :id AND statut = :statut_actuel";
+            $db = Database::getConnection();
+            $query = $db->prepare($sql);
+            $query->execute(['statut' => $colis->getStatut(), 'id' => $id, 'statut_actuel' => $statutActuel]);
+            return $query->rowCount() === 1;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 
     public function modifierColisCitoyen(Colis $colis, $id) {
-        $sql = "UPDATE colis SET id_bureau_depart = :id_bureau, nom_citoyen = :nom, date_declaration = :date_declaration
-                WHERE id_colis = :id AND id_citoyen = :id_citoyen AND statut = :statut";
-        $db = Database::getConnection();
-        $query = $db->prepare($sql);
-        $query->execute([
-            'id_bureau' => $colis->getIdBureau(), 'nom' => $colis->getNomCitoyen(),
-            'date_declaration' => $colis->getDateDeclaration(), 'id' => $id,
-            'id_citoyen' => $colis->getIdCitoyen(), 'statut' => 'En attente',
-        ]);
-        return $query->rowCount() === 1;
+        try {
+            $sql = "UPDATE colis SET id_bureau_depart = :id_bureau, nom_citoyen = :nom, date_declaration = :date_declaration
+                    WHERE id_colis = :id AND id_citoyen = :id_citoyen AND statut = :statut";
+            $db = Database::getConnection();
+            $query = $db->prepare($sql);
+            $query->execute([
+                'id_bureau' => $colis->getIdBureau(), 'nom' => $colis->getNomCitoyen(),
+                'date_declaration' => $colis->getDateDeclaration(), 'id' => $id,
+                'id_citoyen' => $colis->getIdCitoyen(), 'statut' => 'En attente',
+            ]);
+            return $query->rowCount() === 1;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 
     public function supprimerColis($id) {
         $sql = "DELETE FROM colis WHERE id_colis = :id";
         $db = Database::getConnection();
-        $query = $db->prepare($sql);
-        $query->execute(['id' => $id]);
-        return $query->rowCount() === 1;
+        try {
+            $query = $db->prepare($sql);
+            $query->execute(['id' => $id]);
+            return $query->rowCount() === 1;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 
     public function supprimerColisCitoyen($id, $idCitoyen) {
         $sql = "DELETE FROM colis WHERE id_colis = :id AND id_citoyen = :id_citoyen AND statut = :statut";
         $db = Database::getConnection();
-        $query = $db->prepare($sql);
-        $query->execute(['id' => $id, 'id_citoyen' => $idCitoyen, 'statut' => 'En attente']);
-        return $query->rowCount() === 1;
+        try {
+            $query = $db->prepare($sql);
+            $query->execute(['id' => $id, 'id_citoyen' => $idCitoyen, 'statut' => 'En attente']);
+            return $query->rowCount() === 1;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 
     public function annulerColis($id, $idCitoyen) {
         $sql = "UPDATE colis SET statut = :annule WHERE id_colis = :id AND id_citoyen = :id_citoyen AND statut = :attente";
         $db = Database::getConnection();
-        $query = $db->prepare($sql);
-        $query->execute(['annule' => 'Annulé', 'id' => $id, 'id_citoyen' => $idCitoyen, 'attente' => 'En attente']);
-        return $query->rowCount() === 1;
+        try {
+            $query = $db->prepare($sql);
+            $query->execute(['annule' => 'Annulé', 'id' => $id, 'id_citoyen' => $idCitoyen, 'attente' => 'En attente']);
+            return $query->rowCount() === 1;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
     }
 
     public static function statutsSuivants($statut) {
@@ -321,19 +382,161 @@ class ColisController extends Controller {
     }
 
     public function listBack(): void {
-        $this->renderBack('poste/colisList');
+        CitoyenController::requireAdmin();
+
+        $liste = $this->listerColis();
+        $nbEnAttente = $this->compterColis('En attente');
+        $nbEnAcheminement = $this->compterColis('Accepté') + $this->compterColis('En transit');
+        $nbLivres = $this->compterColis('Livré');
+
+        $title = 'E-Tounsi Admin - Colis';
+        $currentPage = 'admin-colis';
+        $section = 'colis';
+        $csrfToken = csrfToken();
+
+        $this->renderBack('poste/colisList', [
+            'title' => $title,
+            'currentPage' => $currentPage,
+            'section' => $section,
+            'csrfToken' => $csrfToken,
+            'liste' => $liste,
+            'nbEnAttente' => $nbEnAttente,
+            'nbEnAcheminement' => $nbEnAcheminement,
+            'nbLivres' => $nbLivres,
+        ]);
     }
 
     public function addBack(): void {
-        $this->renderBack('poste/addColis');
+        CitoyenController::requireAdmin();
+
+        $erreurs = [];
+        $old = self::clean([]);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $old = self::clean($_POST);
+            if (!csrfValide($_POST['csrf'] ?? '')) {
+                $erreurs['global'] = 'Jeton de sécurité invalide. Veuillez réessayer.';
+            } else {
+                $erreurs = $this->verifierColis($old, true);
+            }
+            if (count($erreurs) == 0) {
+                $colis = new Colis(null, (int) $old['id_bureau_depart'], (int) $old['id_citoyen'], null, null, null, null);
+                try {
+                    $resultat = $this->ajouterColis($colis);
+                    $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le colis ' . $resultat['numero_suivi'] . ' a été enregistré.'];
+                    header('Location: index.php?page=admin-colis', true, 303);
+                    exit;
+                } catch (PDOException $e) {
+                    if ($e->getCode() !== '23000') throw $e;
+                    $erreurs['id_bureau_depart'] = 'Vérifiez le bureau de départ et le compte citoyen.';
+                    http_response_code(409);
+                }
+            } else {
+                http_response_code(isset($erreurs['global']) ? 403 : 422);
+            }
+        }
+
+        $bureaux = (new BureauPostalController())->listerBureaux();
+        $citoyens = $this->listerCitoyens();
+        $title = 'Enregistrer un colis';
+        $currentPage = 'admin-colis';
+        $section = 'colis';
+        $csrfToken = csrfToken();
+
+        $this->renderBack('poste/addColis', [
+            'title' => $title,
+            'currentPage' => $currentPage,
+            'section' => $section,
+            'csrfToken' => $csrfToken,
+            'old' => $old,
+            'erreurs' => $erreurs,
+            'bureaux' => $bureaux,
+            'citoyens' => $citoyens,
+        ]);
     }
 
     public function updateBack(): void {
-        $this->renderBack('poste/updateColis');
+        CitoyenController::requireAdmin();
+
+        $title = 'Modifier le statut du colis';
+        $currentPage = 'admin-colis';
+        $section = 'colis';
+
+        $id = posteId($_GET) ?? posteId($_POST);
+        $old = $id === null ? null : $this->recupererColis($id);
+        if (!$old) {
+            http_response_code(404);
+            $title = 'Colis introuvable';
+            $message = 'Cet élément n’existe plus ou le lien est incorrect.';
+            $this->renderBack('commun/problem', ['title' => $title, 'currentPage' => $currentPage, 'section' => $section, 'message' => $message]);
+            return;
+        }
+        $erreurs = [];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $statut = posteText($_POST, 'statut');
+            if (!csrfValide($_POST['csrf'] ?? '')) {
+                http_response_code(403);
+                $erreurs['global'] = 'Jeton de sécurité invalide. Veuillez réessayer.';
+            } elseif (posteText($_POST, 'statut_actuel') !== $old['statut']) {
+                http_response_code(409);
+                $erreurs['statut'] = 'Le statut a changé depuis l’ouverture du formulaire. Vérifiez son état actuel.';
+            } elseif (!in_array($statut, ColisController::statutsSuivants($old['statut']), true)) {
+                http_response_code(422);
+                $erreurs['statut'] = 'Choisissez une étape proposée pour ce colis.';
+            } else {
+                $colis = new Colis($id, null, null, null, $statut, null, null);
+                if ($this->modifierColis($colis, $id, $old['statut'])) {
+                    $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le statut du colis a été mis à jour.'];
+                    header('Location: index.php?page=admin-colis', true, 303);
+                    exit;
+                }
+                http_response_code(409);
+                $erreurs['statut'] = 'Ce colis vient d’être modifié. Rechargez son état avant de réessayer.';
+                $old = $this->recupererColis($id);
+                if (!$old) {
+                    http_response_code(404);
+                    $title = 'Colis introuvable';
+                    $message = 'Cet élément n’existe plus ou le lien est incorrect.';
+                    $this->renderBack('commun/problem', ['title' => $title, 'currentPage' => $currentPage, 'section' => $section, 'message' => $message]);
+                    return;
+                }
+            }
+        }
+
+        $statuts = ColisController::statutsSuivants($old['statut']);
+        $statutChoisi = posteText($_POST, 'statut');
+        $csrfToken = csrfToken();
+
+        $this->renderBack('poste/updateColis', [
+            'title' => $title,
+            'currentPage' => $currentPage,
+            'section' => $section,
+            'csrfToken' => $csrfToken,
+            'id' => $id,
+            'old' => $old,
+            'erreurs' => $erreurs,
+            'statuts' => $statuts,
+            'statutChoisi' => $statutChoisi,
+        ]);
     }
 
     public function deleteBack(): void {
-        require __DIR__ . '/../Views/backoffice/pages/poste/deleteColis.php';
+        CitoyenController::requireAdmin();
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrfValide($_POST['csrf'] ?? '')) {
+
+            $id = posteId($_POST);
+            $supprime = $id !== null && $this->supprimerColis($id);
+            $_SESSION['flash'] = [
+                'type' => $supprime ? 'success' : 'warning',
+                'message' => $supprime ? 'Le colis a été supprimé.' : 'Colis introuvable ou identifiant invalide.',
+            ];
+        } else {
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') auditEvenement('ACCESS_DENIED', 'Jeton CSRF invalide pour la page ' . pageAudit() . '.');
+            $_SESSION['flash'] = ['type' => 'danger', 'message' => 'Action refusée (jeton de sécurité invalide).'];
+        }
+
+        header('Location: index.php?page=admin-colis', true, 303);
+        exit;
     }
 
     public function accepter(): void {
@@ -341,7 +544,7 @@ class ColisController extends Controller {
         $id = posteId($_POST);
         $old = $id === null ? null : $this->recupererColis($id);
         if (!$old) { $this->introuvable(); return; }
-        $colis = new Colis($id, null, null, null, 'Accepté');
+        $colis = new Colis($id, null, null, null, 'Accepté', null, null);
         if (!$this->modifierColis($colis, $id, 'En attente')) {
             http_response_code(409);
             $this->renderBack('commun/problem', [

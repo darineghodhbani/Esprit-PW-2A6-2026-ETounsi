@@ -1,34 +1,3 @@
-<?php
-require_once __DIR__ . '/../../../../Controllers/CitoyenController.php';
-require_once __DIR__ . '/../../../../Controllers/BureauPostalController.php';
-
-CitoyenController::requireAdmin();
-
-$bureauC = new BureauPostalController();
-$erreurs = [];
-$old = ['nom' => '', 'adresse' => '', 'ville' => ''];
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $old = BureauPostalController::clean($_POST);
-    if (!csrfValide($_POST['csrf'] ?? '')) {
-        $erreurs['global'] = 'Jeton de sécurité invalide. Veuillez réessayer.';
-    } else {
-        $erreurs = $bureauC->verifierBureau($old);
-    }
-    if (count($erreurs) == 0) {
-        $bureau = new BureauPostal(null, $old['nom'], $old['adresse'], $old['ville']);
-        $bureauC->ajouterBureau($bureau);
-        $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le bureau a été ajouté.'];
-        header('Location: index.php?page=admin-bureaux', true, 303);
-        exit;
-    }
-    http_response_code(isset($erreurs['global']) ? 403 : 422);
-}
-
-$title = 'Ajouter un bureau';
-$currentPage = 'admin-bureaux';
-$section = 'bureaux';
-$csrfToken = csrfToken();
-?>
 <div class="page-header">
   <div>
     <h1 class="page-title">Ajouter un bureau</h1>

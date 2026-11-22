@@ -1,8 +1,6 @@
 <?php
 
 class Colis {
-    public const STATUTS = ['En attente', 'Accepté', 'En transit', 'Livré', 'Annulé'];
-
     private ?int $id;
     private ?int $idBureau;
     private ?int $idCitoyen;
@@ -11,7 +9,7 @@ class Colis {
     private ?string $nomCitoyen;
     private ?string $dateDeclaration;
 
-    public function __construct(?int $id = null, ?int $idBureau = null, ?int $idCitoyen = null, ?string $numeroSuivi = null, ?string $statut = null, ?string $nomCitoyen = null, ?string $dateDeclaration = null) {
+    public function __construct(?int $id, ?int $idBureau, ?int $idCitoyen, ?string $numeroSuivi, ?string $statut, ?string $nomCitoyen, ?string $dateDeclaration) {
         $this->id = $id;
         $this->idBureau = $idBureau;
         $this->idCitoyen = $idCitoyen;

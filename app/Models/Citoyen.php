@@ -11,7 +11,7 @@ class Citoyen {
     private ?string $telephone;
     private ?int $versionSession;
 
-    public function __construct(?int $id = null, ?string $nom = null, ?string $email = null, ?string $motDePasse = null, ?string $role = null, ?int $actif = null, ?string $prenom = null, ?string $telephone = null, ?int $versionSession = null) {
+    public function __construct(?int $id, ?string $nom, ?string $email, ?string $motDePasse, ?string $role, ?int $actif, ?string $prenom, ?string $telephone, ?int $versionSession) {
         $this->id = $id;
         $this->nom = $nom;
         $this->email = $email;
