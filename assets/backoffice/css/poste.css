@@ -54,3 +54,6 @@
 .audit-table th:nth-child(5) { width: 22%; }
 .audit-table th:nth-child(6) { width: 14%; }
 .footer-custom a { color: var(--brand-forest-dark); }
+.poste-admin .badge-table.success { color: #166534; }
+.poste-admin .badge-table.pending { color: #9a3412; }
+.poste-admin .badge-table.failed { color: #991b1b; }

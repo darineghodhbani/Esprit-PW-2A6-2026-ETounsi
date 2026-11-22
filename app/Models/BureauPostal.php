@@ -68,6 +68,12 @@ class BureauPostal {
         return (int) $db->query($sql)->fetchColumn();
     }
 
+    public function compterVilles() {
+        $sql = "SELECT COUNT(DISTINCT ville) FROM bureau_postal";
+        $db = Database::getConnection();
+        return (int) $db->query($sql)->fetchColumn();
+    }
+
     public function ajouterBureau(BureauPostal $bureau) {
         $sql = "INSERT INTO bureau_postal (nom, adresse, ville) VALUES (:nom, :adresse, :ville)";
         $db = Database::getConnection();

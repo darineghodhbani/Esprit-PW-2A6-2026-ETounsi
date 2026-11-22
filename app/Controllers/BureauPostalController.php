@@ -23,6 +23,10 @@ class BureauPostalController extends Controller {
         return $this->modele->compterBureaux();
     }
 
+    public function compterVilles() {
+        return $this->modele->compterVilles();
+    }
+
     public function ajouterBureau(BureauPostal $bureau) {
         return $this->modele->ajouterBureau($bureau);
     }
@@ -64,16 +68,7 @@ class BureauPostalController extends Controller {
     }
 
     public function listBack(): void {
-        CitoyenController::requireAdmin();
-        $recherche = posteText($_GET, 'q');
-        $liste = [];
-        foreach ($this->listerBureaux() as $bureau) {
-            if (posteMatches($recherche, $bureau['nom'] . ' ' . $bureau['adresse'] . ' ' . $bureau['ville'])) $liste[] = $bureau;
-        }
-        $this->renderBack('poste/bureauList', [
-            'title' => 'Bureaux de poste', 'currentPage' => 'admin-bureaux', 'section' => 'bureaux',
-            'liste' => $liste, 'total' => $this->compterBureaux(), 'recherche' => $recherche,
-        ]);
+        $this->renderBack('poste/bureauList');
     }
 
     public function addBack(): void {

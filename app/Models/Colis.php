@@ -87,6 +87,18 @@ class Colis {
         return $db->query($sql)->fetchAll();
     }
 
+    public function compterColis($statut = null) {
+        $db = Database::getConnection();
+        if ($statut === null) {
+            $sql = "SELECT COUNT(*) FROM colis";
+            return (int) $db->query($sql)->fetchColumn();
+        }
+        $sql = "SELECT COUNT(*) FROM colis WHERE statut = :statut";
+        $query = $db->prepare($sql);
+        $query->execute(['statut' => $statut]);
+        return (int) $query->fetchColumn();
+    }
+
     public function listerColisCitoyen($idCitoyen) {
         $sql = "SELECT c.*, b.nom AS bureau, b.ville FROM colis c
                 JOIN bureau_postal b ON c.id_bureau_depart = b.id_bureau

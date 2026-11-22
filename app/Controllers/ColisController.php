@@ -17,6 +17,10 @@ class ColisController extends Controller {
         return $this->modele->listerColis();
     }
 
+    public function compterColis($statut = null) {
+        return $this->modele->compterColis($statut);
+    }
+
     public function listerColisCitoyen($idCitoyen) {
         return $this->modele->listerColisCitoyen($idCitoyen);
     }
@@ -217,19 +221,7 @@ class ColisController extends Controller {
     }
 
     public function listBack(): void {
-        CitoyenController::requireAdmin();
-        $recherche = posteText($_GET, 'q');
-        $filtreStatut = posteText($_GET, 'statut');
-        if (!in_array($filtreStatut, self::STATUTS, true)) $filtreStatut = '';
-        $liste = [];
-        foreach ($this->listerColis() as $colis) {
-            $texte = $colis['numero_suivi'] . ' ' . $colis['bureau'] . ' ' . $colis['ville'] . ' ' . $colis['nom_citoyen'];
-            if (($filtreStatut === '' || $colis['statut'] === $filtreStatut) && posteMatches($recherche, $texte)) $liste[] = $colis;
-        }
-        $this->renderBack('poste/colisList', [
-            'title' => 'Gestion des colis', 'currentPage' => 'admin-colis', 'section' => 'colis',
-            'liste' => $liste, 'recherche' => $recherche, 'filtreStatut' => $filtreStatut, 'statuts' => self::STATUTS,
-        ]);
+        $this->renderBack('poste/colisList');
     }
 
     public function addBack(): void {
