@@ -10,34 +10,25 @@
 </div>
 
 <div class="row g-4 mb-4">
-  <div class="col-12 col-md-3">
+  <div class="col-12 col-md-4">
     <div class="card card-stat">
       <div class="card-header">
         <span class="stat-label">Total des comptes</span>
         <span class="stat-icone stat-gris"><i class="bi bi-people-fill"></i></span>
       </div>
-      <div class="stat-value"><?php echo $nbCitoyens + $nbAgents + $nbAdmins; ?></div>
+      <div class="stat-value"><?php echo $nbCitoyens + $nbAdmins; ?></div>
     </div>
   </div>
-  <div class="col-12 col-md-3">
+  <div class="col-12 col-md-4">
     <div class="card card-stat">
       <div class="card-header">
         <span class="stat-label">Citoyens</span>
-        <span class="stat-icone stat-gris"><i class="bi bi-person-fill"></i></span>
+        <span class="stat-icone stat-jaune"><i class="bi bi-person-fill"></i></span>
       </div>
       <div class="stat-value"><?php echo $nbCitoyens; ?></div>
     </div>
   </div>
-  <div class="col-12 col-md-3">
-    <div class="card card-stat">
-      <div class="card-header">
-        <span class="stat-label">Agents</span>
-        <span class="stat-icone stat-jaune"><i class="bi bi-person-badge-fill"></i></span>
-      </div>
-      <div class="stat-value"><?php echo $nbAgents; ?></div>
-    </div>
-  </div>
-  <div class="col-12 col-md-3">
+  <div class="col-12 col-md-4">
     <div class="card card-stat">
       <div class="card-header">
         <span class="stat-label">Administrateurs</span>
@@ -72,7 +63,7 @@
                             <td><?php echo e($citoyen['prenom']); ?></td>
                             <td><?php echo e($citoyen['email']); ?></td>
                             <td><?php echo e($citoyen['telephone']); ?></td>
-                            <td><?php echo e($roles[$citoyen['role']]); ?></td>
+                            <td><?php echo e($roles[$citoyen['role']] ?? $citoyen['role']); ?></td>
                             <td>
                                 <?php if ((int) $citoyen['actif'] === 1): ?>
                                     <span class="poste-status poste-status-delivered">Actif</span>

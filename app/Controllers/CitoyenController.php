@@ -8,7 +8,7 @@ require_once __DIR__ . '/../GoogleSignIn.php';
 require_once __DIR__ . '/GoogleController.php';
 
 class CitoyenController extends Controller {
-    public const ROLES = ['citoyen' => 'Citoyen', 'agent' => 'Agent', 'admin' => 'Administrateur'];
+    public const ROLES = ['citoyen' => 'Citoyen', 'admin' => 'Administrateur'];
     public const ETATS = ['1' => 'Actif', '0' => 'Désactivé'];
 
     // Colonnes pour tous les SELECT
@@ -377,31 +377,38 @@ class CitoyenController extends Controller {
         ];
     }
 
-    public function verifierCitoyen(array $d, bool $creation = true, bool $inscription = false): array {
+    // Contrôle de saisie PHP (les mêmes règles que le JavaScript).
+    // $creation = true : le mot de passe est obligatoire (ajout / inscription).
+    public function verifierCitoyen(array $d, bool $creation = true): array {
         $erreurs = [];
-        $limiteNom = $inscription ? 50 : 80;
-        if (mb_strlen($d['nom']) < 2 || mb_strlen($d['nom']) > $limiteNom || preg_match('/[<>\x00-\x1F]/u', $d['nom'])) {
-            $erreurs['nom'] = 'Saisissez un nom de 2 à ' . $limiteNom . ' caractères, sans balises ni caractères de contrôle.';
+
+        if (strlen($d['nom']) < 2 || strlen($d['nom']) > 50) {
+            $erreurs['nom'] = 'Le nom doit contenir entre 2 et 50 caractères.';
         }
-        if (!filter_var($d['email'], FILTER_VALIDATE_EMAIL) || strlen($d['email']) > 150) $erreurs['email'] = 'Saisissez une adresse email valide.';
-        if (!isset(self::ROLES[$d['role']])) $erreurs['role'] = 'Choisissez un rôle proposé dans la liste.';
-        if (!in_array($d['actif'], ['0', '1'], true)) $erreurs['actif'] = 'Choisissez un état de compte valide.';
-        $champPassword = $inscription ? 'mot_de_passe' : 'password';
-        $champConfirmation = $inscription ? 'mot_de_passe2' : 'confirmation';
-        if ($creation || $d['password'] !== '') {
-            if (mb_strlen($d['password']) < 8 || strlen($d['password']) > 72 || strpos($d['password'], "\0") !== false) {
-                $erreurs[$champPassword] = 'Le mot de passe doit contenir au moins 8 caractères et au maximum 72 octets.';
+        if (strlen($d['prenom']) < 2 || strlen($d['prenom']) > 50) {
+            $erreurs['prenom'] = 'Le prénom doit contenir entre 2 et 50 caractères.';
+        }
+        if (!filter_var($d['email'], FILTER_VALIDATE_EMAIL)) {
+            $erreurs['email'] = 'L’adresse email n’est pas valide.';
+        }
+        if (strlen($d['telephone']) != 8 || !ctype_digit($d['telephone'])) {
+            $erreurs['telephone'] = 'Le téléphone doit contenir 8 chiffres.';
+        }
+        if ($creation || $d['password'] != '') {
+            if (strlen($d['password']) < 8) {
+                $erreurs['password'] = 'Le mot de passe doit contenir au moins 8 caractères.';
             }
         }
-        if ($d['password'] !== $d['confirmation']) $erreurs[$champConfirmation] = 'Les mots de passe doivent être identiques.';
-        if (mb_strlen($d['prenom']) < 2 || mb_strlen($d['prenom']) > 50 || preg_match('/[<>\x00-\x1F]/u', $d['prenom'])) {
-            $erreurs['prenom'] = 'Saisissez un prénom de 2 à 50 caractères, sans balises ni caractères de contrôle.';
+        if ($d['password'] != $d['confirmation']) {
+            $erreurs['confirmation'] = 'Les deux mots de passe ne sont pas identiques.';
         }
-        if ($inscription) {
-            if ($d['telephone'] !== '' && (strlen($d['telephone']) !== 8 || !ctype_digit($d['telephone']))) $erreurs['telephone'] = 'Le téléphone doit contenir 8 chiffres.';
-        } elseif (!preg_match('/^[2-9][0-9]{7}$/D', $d['telephone'])) {
-            $erreurs['telephone'] = 'Le téléphone doit contenir 8 chiffres et commencer par un chiffre de 2 à 9.';
+        if (!isset(self::ROLES[$d['role']])) {
+            $erreurs['role'] = 'Choisissez un rôle de la liste.';
         }
+        if ($d['actif'] != '0' && $d['actif'] != '1') {
+            $erreurs['actif'] = 'Choisissez un état de la liste.';
+        }
+
         return $erreurs;
     }
 
@@ -427,7 +434,7 @@ class CitoyenController extends Controller {
             $old = self::clean($_POST);
             $old['role'] = 'citoyen';
             $old['actif'] = '1';
-            $erreurs = $this->verifierCitoyen($old, true, true);
+            $erreurs = $this->verifierCitoyen($old, true);
             if (!$this->verifierCaptcha()) {
                 $erreurs['captcha'] = 'Veuillez cocher la case « Je ne suis pas un robot ».';
             }
@@ -459,9 +466,12 @@ class CitoyenController extends Controller {
                 $citoyen = $this->verifyLogin($old['email'], $old['password']);
                 if ($citoyen) {
                     connecterUtilisateur($citoyen);
-                    $destination = $citoyen['role'] === 'admin' ? 'dashboard'
-                        : ($citoyen['role'] === 'agent' ? 'admin-demandes-cnam' : 'home');
-                    header('Location: index.php?page=' . $destination, true, 303);
+                    // L'admin va au back office, le citoyen va à l'accueil.
+                    if ($citoyen['role'] === 'admin') {
+                        header('Location: index.php?page=dashboard', true, 303);
+                    } else {
+                        header('Location: index.php?page=home', true, 303);
+                    }
                     exit;
                 }
                 $erreurs['global'] = 'Email ou mot de passe incorrect.';
@@ -528,7 +538,6 @@ class CitoyenController extends Controller {
             'liste' => $liste, 'recherche' => $recherche, 'roles' => self::ROLES, 'csrfToken' => csrfToken(),
             // Statistiques par rôle
             'nbCitoyens' => $this->compterParRole('citoyen'),
-            'nbAgents' => $this->compterParRole('agent'),
             'nbAdmins' => $this->compterParRole('admin'),
         ]);
     }

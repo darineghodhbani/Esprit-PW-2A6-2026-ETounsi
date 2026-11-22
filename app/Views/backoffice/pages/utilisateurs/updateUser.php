@@ -25,7 +25,7 @@
       <div class="col-12 col-md-6">
         <label for="nom" class="form-label-custom">Nom</label>
         <input type="text" class="form-control-custom<?php echo invalidClass($erreurs, 'nom'); ?>" id="nom" name="nom" value="<?php echo e($old['nom']); ?>"
-               data-validate="required|min:2|max:80" required minlength="2" maxlength="80" autocomplete="family-name"
+               data-validate="required|min:2|max:50" required minlength="2" maxlength="50" autocomplete="family-name"
                <?php if (isset($erreurs['nom'])): ?>aria-invalid="true" aria-describedby="erreur-nom"<?php endif; ?>>
         <?php echo errorFor($erreurs, 'nom'); ?>
       </div>
@@ -39,7 +39,7 @@
       <div class="col-12 col-md-6">
         <label for="email" class="form-label-custom">Adresse e-mail</label>
         <input type="email" class="form-control-custom<?php echo invalidClass($erreurs, 'email'); ?>" id="email" name="email" value="<?php echo e($old['email']); ?>"
-               data-validate="required|email|max:150" required maxlength="150" autocomplete="email"
+               data-validate="required|email" required maxlength="150" autocomplete="email"
                <?php if (isset($erreurs['email'])): ?>aria-invalid="true" aria-describedby="erreur-email"<?php endif; ?>>
         <?php echo errorFor($erreurs, 'email'); ?>
       </div>
@@ -71,7 +71,7 @@
       <div class="col-12 col-md-6">
         <label for="mot_de_passe" class="form-label-custom">Nouveau mot de passe</label>
         <input type="password" class="form-control-custom<?php echo invalidClass($erreurs, 'password'); ?>" id="mot_de_passe" name="password"
-               data-validate="min:8|max:72" autocomplete="new-password"
+               data-validate="min:8" autocomplete="new-password"
                <?php if (isset($erreurs['password'])): ?>aria-invalid="true" aria-describedby="erreur-password"<?php endif; ?>>
         <p class="form-text">Laissez ce champ vide pour conserver le mot de passe actuel.</p>
         <?php echo errorFor($erreurs, 'password'); ?>

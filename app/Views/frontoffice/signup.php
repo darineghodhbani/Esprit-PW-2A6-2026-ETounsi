@@ -49,9 +49,9 @@
                     </div>
 
                     <div class="field">
-                        <label for="telephone"><?php echo t('signup.telephone'); ?></label>
+                        <label for="telephone"><?php echo t('signup.telephone'); ?> *</label>
                         <input id="telephone" name="telephone" type="tel" value="<?php echo e($old['telephone']); ?>"
-                               placeholder="22123456" data-validate="phone">
+                               placeholder="22123456" data-validate="required|phone">
                         <?php if (isset($erreurs['telephone'])): ?>
                             <p class="field-error server-error"><?php echo $erreurs['telephone']; ?></p>
                         <?php endif; ?>
@@ -59,18 +59,18 @@
 
                     <div class="field">
                         <label for="mot_de_passe"><?php echo t('login.password'); ?> *</label>
-                        <input id="mot_de_passe" name="mot_de_passe" type="password" data-validate="required|min:6">
+                        <input id="mot_de_passe" name="mot_de_passe" type="password" data-validate="required|min:8">
                         <p class="field-help"><?php echo t('signup.help'); ?></p>
-                        <?php if (isset($erreurs['mot_de_passe'])): ?>
-                            <p class="field-error server-error"><?php echo $erreurs['mot_de_passe']; ?></p>
+                        <?php if (isset($erreurs['password'])): ?>
+                            <p class="field-error server-error"><?php echo $erreurs['password']; ?></p>
                         <?php endif; ?>
                     </div>
 
                     <div class="field">
                         <label for="mot_de_passe2"><?php echo t('signup.password2'); ?> *</label>
                         <input id="mot_de_passe2" name="mot_de_passe2" type="password" data-validate="required|match:mot_de_passe">
-                        <?php if (isset($erreurs['mot_de_passe2'])): ?>
-                            <p class="field-error server-error"><?php echo $erreurs['mot_de_passe2']; ?></p>
+                        <?php if (isset($erreurs['confirmation'])): ?>
+                            <p class="field-error server-error"><?php echo $erreurs['confirmation']; ?></p>
                         <?php endif; ?>
                     </div>
 

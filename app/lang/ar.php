@@ -268,7 +268,7 @@ return [
     "signup.prenom" => "الاسم",
     "signup.telephone" => "الهاتف",
     "signup.password2" => "تأكيد كلمة المرور",
-    "signup.help" => "6 أحرف على الأقل.",
+    "signup.help" => "8 أحرف على الأقل.",
     "signup.submit" => "إنشاء الحساب",
     "signup.have" => "عندك حساب؟ سجّل الدخول",
     "login.eyebrow" => "التونسي · فضائي",

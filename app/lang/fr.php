@@ -277,7 +277,7 @@ return [
     "signup.prenom" => "Prénom",
     "signup.telephone" => "Téléphone",
     "signup.password2" => "Confirmer le mot de passe",
-    "signup.help" => "6 caractères minimum.",
+    "signup.help" => "8 caractères minimum.",
     "signup.submit" => "S’inscrire",
     "signup.have" => "Déjà inscrit ? Se connecter",
     "login.eyebrow" => "E-TOUNSI · MON ESPACE",
