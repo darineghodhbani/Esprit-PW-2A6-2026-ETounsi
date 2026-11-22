@@ -1,37 +1,5 @@
 <?php
-require_once __DIR__ . '/../../../../Controllers/CitoyenController.php';
-
-CitoyenController::requireAdmin();
-$citoyenC = new CitoyenController();
-$erreurs = [];
-$old = CitoyenController::clean([]);
-$old['role'] = 'citoyen';
-$old['actif'] = '1';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $old = CitoyenController::clean($_POST);
-    if (!csrfValide($_POST['csrf'] ?? '')) {
-        $erreurs['global'] = 'Jeton de sécurité invalide. Veuillez réessayer.';
-    } else {
-        $erreurs = $citoyenC->verifierCitoyen($old);
-    }
-    if (count($erreurs) == 0) {
-        $citoyen = new Citoyen(null, $old['nom'], $old['email'], $old['password'], $old['role'], (int) $old['actif'], $old['prenom'], $old['telephone']);
-        $resultat = $citoyenC->ajouterCitoyen($citoyen, $old['confirmation']);
-        $erreurs = $resultat['erreurs'];
-        if (count($erreurs) == 0) {
-            $_SESSION['flash'] = ['type' => 'success', 'message' => 'L’utilisateur a été ajouté.'];
-            header('Location: index.php?page=admin-utilisateurs', true, 303);
-            exit;
-        }
-    }
-    http_response_code(isset($erreurs['global']) ? 403 : 422);
-}
-
-$title = 'Ajouter un utilisateur';
-$currentPage = 'admin-utilisateurs';
-$section = 'utilisateurs';
-$csrfToken = csrfToken();
+// Vue : affichage seulement. Les données viennent de CitoyenController::addBack().
 ?>
 <div class="page-header">
   <div>

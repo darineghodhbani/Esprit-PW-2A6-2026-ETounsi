@@ -1,19 +1,5 @@
 <?php
-require_once __DIR__ . '/../../../../Controllers/CitoyenController.php';
-
-CitoyenController::requireAdmin();
-$citoyenC = new CitoyenController();
-$recherche = posteText($_GET, 'q');
-$liste = [];
-foreach ($citoyenC->listerCitoyens() as $citoyen) {
-    $texte = $citoyen['nom'] . ' ' . $citoyen['prenom'] . ' ' . $citoyen['email'] . ' ' . $citoyen['telephone'];
-    if (posteMatches($recherche, $texte)) $liste[] = $citoyen;
-}
-$roles = CitoyenController::ROLES;
-$title = 'Gestion des utilisateurs';
-$currentPage = 'admin-utilisateurs';
-$section = 'utilisateurs';
-$csrfToken = csrfToken();
+// Vue : affichage seulement. Les données viennent de CitoyenController::listBack().
 ?>
 <div class="page-header poste-page-header">
     <div>

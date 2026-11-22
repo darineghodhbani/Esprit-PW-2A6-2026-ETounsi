@@ -1,54 +1,5 @@
 <?php
-require_once __DIR__ . '/../../../../Controllers/CitoyenController.php';
-
-$compteConnecte = exigerRole(['admin']);
-$citoyenC = new CitoyenController();
-$title = 'Modifier un utilisateur';
-$currentPage = 'admin-utilisateurs';
-$section = 'utilisateurs';
-$id = posteId($_GET) ?? posteId($_POST);
-$old = $id === null ? null : $citoyenC->recupererCitoyen($id);
-if (!$old) {
-    http_response_code(404);
-    $title = 'Utilisateur introuvable';
-    $message = 'Ce compte n’existe plus ou le lien est incorrect.';
-    require __DIR__ . '/../commun/problem.php';
-    return;
-}
-$erreurs = [];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $old = CitoyenController::clean($_POST);
-    $old['id'] = $id;
-    if (!csrfValide($_POST['csrf'] ?? '')) {
-        $erreurs['global'] = 'Jeton de sécurité invalide. Veuillez réessayer.';
-    } else {
-        $erreurs = $citoyenC->verifierCitoyen($old, false);
-    }
-    if (count($erreurs) == 0) {
-        $version = $id === $compteConnecte['id'] ? $compteConnecte['version_session'] : null;
-        $citoyen = new Citoyen($id, $old['nom'], $old['email'], $old['password'], $old['role'], (int) $old['actif'], $old['prenom'], $old['telephone'], $version);
-        $resultat = $citoyenC->modifierCitoyen($citoyen, $id, $old['confirmation']);
-        $erreurs = $resultat['erreurs'];
-        if (count($erreurs) == 0) {
-            if ($id === $compteConnecte['id']) {
-                $compte = $resultat['utilisateur'];
-                if (!$compte || $compte['actif'] !== 1 || $compte['role'] !== 'admin') {
-                    deconnecterUtilisateur();
-                    header('Location: ' . frontUrl('connexion'), true, 303);
-                    exit;
-                }
-                connecterUtilisateur($compte);
-            }
-            $_SESSION['flash'] = ['type' => 'success', 'message' => 'L’utilisateur a été mis à jour.'];
-            header('Location: index.php?page=admin-utilisateurs', true, 303);
-            exit;
-        }
-    }
-    http_response_code(isset($erreurs['global']) ? 403 : 422);
-}
-
-$csrfToken = csrfToken();
+// Vue : affichage seulement. Les données viennent de CitoyenController::updateBack().
 ?>
 <div class="page-header">
   <div>

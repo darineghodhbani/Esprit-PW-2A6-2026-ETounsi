@@ -538,19 +538,122 @@ class CitoyenController extends Controller {
         exigerRole(['admin']);
     }
 
+    // ==============================================================
+    // BACK OFFICE : le Controller traite, puis la vue affiche
+    // ==============================================================
+
     public function listBack(): void {
-        $this->renderBack('utilisateurs/userList');
+        self::requireAdmin();
+        $recherche = posteText($_GET, 'q');
+        $liste = [];
+        foreach ($this->listerCitoyens() as $citoyen) {
+            $texte = $citoyen['nom'] . ' ' . $citoyen['prenom'] . ' ' . $citoyen['email'] . ' ' . $citoyen['telephone'];
+            if (posteMatches($recherche, $texte)) $liste[] = $citoyen;
+        }
+        $this->renderBack('utilisateurs/userList', [
+            'title' => 'Gestion des utilisateurs', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs',
+            'liste' => $liste, 'recherche' => $recherche, 'roles' => self::ROLES, 'csrfToken' => csrfToken(),
+        ]);
     }
 
     public function addBack(): void {
-        $this->renderBack('utilisateurs/addUser');
+        self::requireAdmin();
+        $erreurs = [];
+        $old = self::clean([]);
+        $old['role'] = 'citoyen';
+        $old['actif'] = '1';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $old = self::clean($_POST);
+            $erreurs = $this->verifierCitoyen($old);
+            if (count($erreurs) == 0) {
+                $citoyen = new Citoyen(null, $old['nom'], $old['email'], $old['password'], $old['role'], (int) $old['actif'], $old['prenom'], $old['telephone']);
+                $resultat = $this->ajouterCitoyen($citoyen, $old['confirmation']);
+                $erreurs = $resultat['erreurs'];
+                if (count($erreurs) == 0) {
+                    $_SESSION['flash'] = ['type' => 'success', 'message' => 'L’utilisateur a été ajouté.'];
+                    header('Location: index.php?page=admin-utilisateurs', true, 303);
+                    exit;
+                }
+            }
+            http_response_code(422);
+        }
+
+        $this->renderBack('utilisateurs/addUser', [
+            'title' => 'Ajouter un utilisateur', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs',
+            'old' => $old, 'erreurs' => $erreurs, 'csrfToken' => csrfToken(),
+        ]);
     }
 
     public function updateBack(): void {
-        $this->renderBack('utilisateurs/updateUser');
+        $compteConnecte = exigerRole(['admin']);
+        $id = posteId($_GET) ?? posteId($_POST);
+        $old = $id === null ? null : $this->recupererCitoyen($id);
+        if (!$old) {
+            http_response_code(404);
+            $this->renderBack('commun/problem', [
+                'title' => 'Utilisateur introuvable', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs',
+                'message' => 'Ce compte n’existe plus ou le lien est incorrect.',
+            ]);
+            return;
+        }
+        $erreurs = [];
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $old = self::clean($_POST);
+            $old['id'] = $id;
+            $erreurs = $this->verifierCitoyen($old, false);
+            if (count($erreurs) == 0) {
+                // Si l'admin modifie son propre compte, on vérifie que sa session est toujours valable.
+                $version = $id === $compteConnecte['id'] ? $compteConnecte['version_session'] : null;
+                $citoyen = new Citoyen($id, $old['nom'], $old['email'], $old['password'], $old['role'], (int) $old['actif'], $old['prenom'], $old['telephone'], $version);
+                $resultat = $this->modifierCitoyen($citoyen, $id, $old['confirmation']);
+                $erreurs = $resultat['erreurs'];
+                if (count($erreurs) == 0) {
+                    if ($id === $compteConnecte['id']) {
+                        $compte = $resultat['utilisateur'];
+                        if (!$compte || $compte['actif'] !== 1 || $compte['role'] !== 'admin') {
+                            deconnecterUtilisateur();
+                            header('Location: ' . frontUrl('connexion'), true, 303);
+                            exit;
+                        }
+                        connecterUtilisateur($compte);
+                    }
+                    $_SESSION['flash'] = ['type' => 'success', 'message' => 'L’utilisateur a été mis à jour.'];
+                    header('Location: index.php?page=admin-utilisateurs', true, 303);
+                    exit;
+                }
+            }
+            http_response_code(422);
+        }
+
+        $this->renderBack('utilisateurs/updateUser', [
+            'title' => 'Modifier un utilisateur', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs',
+            'id' => $id, 'old' => $old, 'erreurs' => $erreurs, 'csrfToken' => csrfToken(),
+        ]);
     }
 
+    // Pas de vue : on supprime puis on revient à la liste avec un message.
     public function deleteBack(): void {
-        require __DIR__ . '/../Views/backoffice/pages/utilisateurs/deleteUser.php';
+        self::requireAdmin();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrfValide($_POST['csrf'] ?? '')) {
+            $id = posteId($_POST);
+            $resultat = $id === null ? ['erreurs' => ['general' => 'Identifiant utilisateur invalide.']] : $this->supprimerCitoyen($id);
+            if (count($resultat['erreurs']) == 0) {
+                if ($id === (int) $_SESSION['user_id']) {
+                    deconnecterUtilisateur();
+                    header('Location: ' . frontUrl('connexion'), true, 303);
+                    exit;
+                }
+                $_SESSION['flash'] = ['type' => 'success', 'message' => 'L’utilisateur a été supprimé.'];
+            } else {
+                $_SESSION['flash'] = ['type' => 'warning', 'message' => implode(' ', $resultat['erreurs'])];
+            }
+        } else {
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') auditEvenement('ACCESS_DENIED', 'Jeton CSRF invalide pour la page ' . pageAudit() . '.');
+            $_SESSION['flash'] = ['type' => 'danger', 'message' => 'Action refusée (jeton de sécurité invalide).'];
+        }
+        header('Location: index.php?page=admin-utilisateurs', true, 303);
+        exit;
     }
 }
