@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     document.querySelectorAll('form[data-poste-save]').forEach(function (form) {
         form.addEventListener('submit', function (event) {
+            if (event.defaultPrevented) return;
             if (form.dataset.envoi === 'oui') {
                 event.preventDefault();
                 return;

@@ -198,7 +198,7 @@ class CitoyenController extends Controller {
             }
             http_response_code(422);
         }
-        $this->renderBack('poste/userForm', [
+        $this->renderBack('poste/addUser', [
             'title' => 'Ajouter un utilisateur', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs',
             'old' => $old, 'erreurs' => $erreurs, 'roles' => self::ROLES,
         ]);
@@ -236,7 +236,7 @@ class CitoyenController extends Controller {
             }
             http_response_code(422);
         }
-        $this->renderBack('poste/userForm', [
+        $this->renderBack('poste/updateUser', [
             'title' => 'Modifier un utilisateur', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs',
             'old' => $old, 'erreurs' => $erreurs, 'roles' => self::ROLES,
         ]);

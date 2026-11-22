@@ -10,4 +10,5 @@
 </div></main>
 <?php require __DIR__ . '/includes/footer.php'; ?>
 <?php require __DIR__ . '/includes/scripts.php'; ?>
+<script src="assets/frontoffice/js/validation.js"></script>
 </body></html>

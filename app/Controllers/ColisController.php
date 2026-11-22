@@ -255,7 +255,7 @@ class ColisController extends Controller {
                 http_response_code(422);
             }
         }
-        $this->renderBack('poste/colisForm', [
+        $this->renderBack('poste/addColis', [
             'title' => 'Enregistrer un colis', 'currentPage' => 'admin-colis', 'section' => 'colis',
             'old' => $old, 'erreurs' => $erreurs, 'statuts' => [],
             'bureaux' => (new BureauPostalController())->listerBureaux(), 'citoyens' => $this->listerCitoyens(),
@@ -289,7 +289,7 @@ class ColisController extends Controller {
                 if (!$old) { $this->introuvable(); return; }
             }
         }
-        $this->renderBack('poste/colisForm', [
+        $this->renderBack('poste/updateColis', [
             'title' => 'Modifier le statut', 'currentPage' => 'admin-colis', 'section' => 'colis',
             'old' => $old, 'erreurs' => $erreurs, 'statuts' => self::statutsSuivants($old['statut']),
             'bureaux' => [], 'citoyens' => [],

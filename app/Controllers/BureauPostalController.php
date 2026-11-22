@@ -92,7 +92,7 @@ class BureauPostalController extends Controller {
             }
             http_response_code(422);
         }
-        $this->renderBack('poste/bureauForm', [
+        $this->renderBack('poste/addBureau', [
             'title' => 'Ajouter un bureau', 'currentPage' => 'admin-bureaux', 'section' => 'bureaux',
             'old' => $old, 'erreurs' => $erreurs,
         ]);
@@ -123,7 +123,7 @@ class BureauPostalController extends Controller {
             }
             http_response_code(422);
         }
-        $this->renderBack('poste/bureauForm', [
+        $this->renderBack('poste/updateBureau', [
             'title' => 'Modifier le bureau', 'currentPage' => 'admin-bureaux', 'section' => 'bureaux',
             'old' => $old, 'erreurs' => $erreurs,
         ]);
