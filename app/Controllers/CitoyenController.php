@@ -11,10 +11,11 @@ class CitoyenController extends Controller {
     public const ROLES = ['citoyen' => 'Citoyen', 'agent' => 'Agent', 'admin' => 'Administrateur'];
     public const ETATS = ['1' => 'Actif', '0' => 'Désactivé'];
 
-    // Colonnes lues dans la table citoyen (écrites une seule fois pour tous les SELECT).
+    // Colonnes pour tous les SELECT
     public const COLONNES = 'id_citoyen AS id, id_citoyen, nom, prenom, telephone, email, role, actif, version_session, created_at';
-
+// pour laffichage
     public const CAPTCHA_SITE_KEY   = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
+    //pour la verification
     public const CAPTCHA_SECRET_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
 
     public function listerCitoyens() {
@@ -47,128 +48,68 @@ class CitoyenController extends Controller {
         }
     }
 
-    // La saisie est déjà contrôlée par verifierCitoyen() ; ici on vérifie seulement l'email en base.
+    // CREATE : ajoute un utilisateur (comme addPersonne du cours).
+    // Le mot de passe est haché avec password_hash avant d'être enregistré.
     public function ajouterCitoyen(Citoyen $citoyen) {
         $sql = "INSERT INTO citoyen (nom, prenom, telephone, email, mot_de_passe, role, actif)
                 VALUES (:nom, :prenom, :telephone, :email, :mot_de_passe, :role, :actif)";
         $db = Database::getConnection();
-        $nom = $this->texte($citoyen->getNom());
-        $email = strtolower($this->texte($citoyen->getEmail()));
-        $password = $citoyen->getMotDePasse() ?? '';
-        $role = $citoyen->getRole();
-        $actif = $citoyen->getActif();
-        if ($this->emailDejaUtilise($email, null)) {
-            return $this->resultat(['email' => 'Cette adresse email est déjà utilisée.']);
-        }
-
         try {
-            $db->beginTransaction();
-            $this->verrouillerAdministrateurs();
             $query = $db->prepare($sql);
             $query->execute([
-                'nom' => $nom, 'prenom' => $citoyen->getPrenom() ?? '',
-                'telephone' => $citoyen->getTelephone(), 'email' => $email,
-                'mot_de_passe' => password_hash($password, PASSWORD_DEFAULT),
-                'role' => $role, 'actif' => $actif,
+                'nom' => $citoyen->getNom(),
+                'prenom' => $citoyen->getPrenom(),
+                'telephone' => $citoyen->getTelephone(),
+                'email' => strtolower($citoyen->getEmail()),
+                'mot_de_passe' => password_hash($citoyen->getMotDePasse(), PASSWORD_DEFAULT),
+                'role' => $citoyen->getRole(),
+                'actif' => $citoyen->getActif()
             ]);
-            $id = (int) $db->lastInsertId();
-            $utilisateur = $this->recupererCitoyen($id);
-            $acteur = $_SESSION['user_id'] ?? $id;
-            (new AuditController($db))->log($acteur, 'USER_CREATED', 'Création du compte #' . $id . '.', $id);
-            $db->commit();
-            return $this->resultat([], $utilisateur);
-        } catch (PDOException $e) {
-            return $this->erreurBase($e);
+        } catch (Exception $e) {
+            echo 'Error: ' . $e->getMessage();
         }
     }
 
-    // La saisie est déjà contrôlée par verifierCitoyen() ; ici on vérifie seulement l'email en base.
+    // UPDATE : modifie un utilisateur (comme updatePersonne du cours).
+    // Si le champ mot de passe est vide, on garde l'ancien mot de passe.
     public function modifierCitoyen(Citoyen $citoyen, $id) {
-        $sql = "UPDATE citoyen SET nom = :nom, prenom = :prenom, telephone = :telephone, email = :email,
-                mot_de_passe = :mot_de_passe, role = :role, actif = :actif, version_session = :version WHERE id_citoyen = :id";
+        $sql = "UPDATE citoyen SET nom = :nom, prenom = :prenom, telephone = :telephone,
+                email = :email, role = :role, actif = :actif WHERE id_citoyen = :id";
         $db = Database::getConnection();
-        $nom = $this->texte($citoyen->getNom());
-        $email = strtolower($this->texte($citoyen->getEmail()));
-        $password = $citoyen->getMotDePasse() ?? '';
-        $role = $citoyen->getRole();
-        $actif = $citoyen->getActif();
-        if ($this->emailDejaUtilise($email, $id)) {
-            return $this->resultat(['email' => 'Cette adresse email est déjà utilisée.']);
-        }
-
         try {
-            $db->beginTransaction();
-            $administrateurs = $this->verrouillerAdministrateurs();
-            $compte = $this->lireCompte($id, true);
-            if ($compte === false) {
-                $db->rollBack();
-                return $this->resultat(['general' => 'Cet utilisateur n’existe plus.']);
-            }
-            $versionAttendue = $citoyen->getVersionSession();
-            if ($versionAttendue !== null && (int) $compte['version_session'] !== $versionAttendue) {
-                $db->rollBack();
-                return $this->resultat(['general' => 'Votre compte a été modifié. Reconnectez-vous avant de modifier votre profil.']);
-            }
-            if ($compte['role'] === 'admin' && (int) $compte['actif'] === 1
-                && ($role !== 'admin' || $actif !== 1) && count($administrateurs) <= 1) {
-                $db->rollBack();
-                return $this->resultat(['general' => 'Conservez au moins un administrateur actif.']);
-            }
-            $motDePasse = $password === '' ? $compte['mot_de_passe'] : password_hash($password, PASSWORD_DEFAULT);
-            $version = (int) $compte['version_session'];
-            if ($password !== '' || $role !== $compte['role'] || $actif !== (int) $compte['actif']) $version++;
             $query = $db->prepare($sql);
             $query->execute([
-                'nom' => $nom, 'prenom' => $citoyen->getPrenom() ?? $compte['prenom'],
-                'telephone' => $citoyen->getTelephone() ?? $compte['telephone'], 'email' => $email,
-                'mot_de_passe' => $motDePasse, 'role' => $role, 'actif' => $actif, 'version' => $version, 'id' => $id,
+                'id' => $id,
+                'nom' => $citoyen->getNom(),
+                'prenom' => $citoyen->getPrenom(),
+                'telephone' => $citoyen->getTelephone(),
+                'email' => strtolower($citoyen->getEmail()),
+                'role' => $citoyen->getRole(),
+                'actif' => $citoyen->getActif()
             ]);
-            $utilisateur = $this->recupererCitoyen($id);
-            $audit = new AuditController($db);
-            $acteur = $_SESSION['user_id'] ?? null;
-            $audit->log($acteur, 'USER_UPDATED', 'Compte #' . $id . ' mis à jour.', $id);
-            if ($role !== $compte['role']) $audit->log($acteur, 'ROLE_CHANGED', 'Rôle changé de ' . $compte['role'] . ' à ' . $role . '.', $id);
-            if ($actif !== (int) $compte['actif']) {
-                $audit->log($acteur, $actif === 1 ? 'ACCOUNT_ACTIVATED' : 'ACCOUNT_SUSPENDED', $actif === 1 ? 'Compte activé.' : 'Compte suspendu.', $id);
-            }
-            $db->commit();
-            return $this->resultat([], $utilisateur);
-        } catch (PDOException $e) {
-            return $this->erreurBase($e);
-        }
 
+            if ($citoyen->getMotDePasse() != '') {
+                $query = $db->prepare('UPDATE citoyen SET mot_de_passe = :mot_de_passe WHERE id_citoyen = :id');
+                $query->execute([
+                    'id' => $id,
+                    'mot_de_passe' => password_hash($citoyen->getMotDePasse(), PASSWORD_DEFAULT)
+                ]);
+            }
+        } catch (Exception $e) {
+            echo 'Error: ' . $e->getMessage();
+        }
     }
 
-    public function supprimerCitoyen($id)
-    {
+    // DELETE : supprime un utilisateur (comme deletePersonne du cours).
+    // Renvoie false si la base refuse (le compte a des colis, un dossier CNAM...).
+    public function supprimerCitoyen($id) {
         $db = Database::getConnection();
         try {
-            $db->beginTransaction();
-            $administrateurs = $this->verrouillerAdministrateurs();
-            $compte = $this->lireCompte($id, true);
-            if ($compte === false) {
-                $db->rollBack();
-                return $this->resultat(['general' => 'Cet utilisateur n’existe plus.']);
-            }
-            if ($compte['role'] === 'admin' && (int) $compte['actif'] === 1 && count($administrateurs) <= 1) {
-                $db->rollBack();
-                return $this->resultat(['general' => 'Conservez au moins un administrateur actif.']);
-            }
-            $sql = 'SELECT (SELECT COUNT(*) FROM colis WHERE id_citoyen = :colis) + (SELECT COUNT(*) FROM propriete WHERE id_citoyen = :propriete)';
-            $query = $db->prepare($sql);
-            $query->execute(['colis' => $id, 'propriete' => $id]);
-            if ((int) $query->fetchColumn() > 0) {
-                $db->rollBack();
-                return $this->resultat(['general' => 'Ce compte possède des colis ou des propriétés. Désactivez-le pour conserver leur historique.']);
-            }
-            (new AuditController($db))->log($_SESSION['user_id'] ?? null, 'USER_DELETED', 'Compte #' . $id . ' supprimé.', $id);
-            $sql = 'DELETE FROM citoyen WHERE id_citoyen = :id';
-            $query = $db->prepare($sql);
+            $query = $db->prepare('DELETE FROM citoyen WHERE id_citoyen = :id');
             $query->execute(['id' => $id]);
-            $db->commit();
-            return ['erreurs' => [], 'utilisateur' => null, 'id' => (int) $id];
-        } catch (PDOException $erreur) {
-            return $this->erreurBase($erreur);
+            return true;
+        } catch (Exception $e) {
+            return false;
         }
     }
 
@@ -381,19 +322,6 @@ class CitoyenController extends Controller {
         }
     }
 
-    private function verrouillerAdministrateurs()
-    {
-        $db = Database::getConnection();
-        try {
-            $sql = "SELECT id_citoyen FROM citoyen WHERE role = 'admin' AND actif = 1 ORDER BY id_citoyen FOR UPDATE";
-            $query = $db->query($sql);
-            return $query->fetchAll();
-        } catch (Exception $e) {
-            error_log($e->getMessage());
-            throw $e;
-        }
-    }
-
     private function texte($valeur)
     {
         return is_string($valeur) ? trim($valeur) : '';
@@ -490,14 +418,15 @@ class CitoyenController extends Controller {
             if (!$this->verifierCaptcha()) {
                 $erreurs['captcha'] = 'Veuillez cocher la case « Je ne suis pas un robot ».';
             }
+            if ($this->emailDejaUtilise($old['email'], null)) {
+                $erreurs['email'] = 'Cette adresse email est déjà utilisée.';
+            }
             if (count($erreurs) == 0) {
                 $citoyen = new Citoyen(null, $old['nom'], $old['email'], $old['password'], 'citoyen', 1, $old['prenom'], $old['telephone'], null);
-                $resultat = $this->ajouterCitoyen($citoyen);
-                $erreurs = $resultat['erreurs'];
-                if (count($erreurs) == 0) {
-                    header('Location: index.php?page=login&inscrit=1', true, 303);
-                    exit;
-                }
+                $this->ajouterCitoyen($citoyen);
+                auditEvenement('USER_CREATED', 'Inscription de ' . $old['email'] . '.');
+                header('Location: index.php?page=login&inscrit=1', true, 303);
+                exit;
             }
         }
         $this->renderFront('signup', ['title' => 'Inscription — E-Tounsi', 'currentPage' => 'signup', 'old' => $old, 'erreurs' => $erreurs]);
@@ -570,9 +499,8 @@ class CitoyenController extends Controller {
         exigerRole(['admin']);
     }
 
-    // ==============================================================
     // BACK OFFICE : le Controller traite, puis la vue affiche
-    // ==============================================================
+    
 
     public function listBack(): void {
         self::requireAdmin();
@@ -598,15 +526,16 @@ class CitoyenController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $old = self::clean($_POST);
             $erreurs = $this->verifierCitoyen($old);
+            if ($this->emailDejaUtilise($old['email'], null)) {
+                $erreurs['email'] = 'Cette adresse email est déjà utilisée.';
+            }
             if (count($erreurs) == 0) {
                 $citoyen = new Citoyen(null, $old['nom'], $old['email'], $old['password'], $old['role'], (int) $old['actif'], $old['prenom'], $old['telephone'], null);
-                $resultat = $this->ajouterCitoyen($citoyen);
-                $erreurs = $resultat['erreurs'];
-                if (count($erreurs) == 0) {
-                    $_SESSION['flash'] = ['type' => 'success', 'message' => 'L’utilisateur a été ajouté.'];
-                    header('Location: index.php?page=admin-utilisateurs', true, 303);
-                    exit;
-                }
+                $this->ajouterCitoyen($citoyen);
+                auditEvenement('USER_CREATED', 'Création du compte ' . $old['email'] . '.');
+                $_SESSION['flash'] = ['type' => 'success', 'message' => 'L’utilisateur a été ajouté.'];
+                header('Location: index.php?page=admin-utilisateurs', true, 303);
+                exit;
             }
             http_response_code(422);
         }
@@ -621,6 +550,7 @@ class CitoyenController extends Controller {
         $compteConnecte = exigerRole(['admin']);
         $id = posteId($_GET) ?? posteId($_POST);
         $old = $id === null ? null : $this->recupererCitoyen($id);
+        $ancien = $old; // le compte avant la modification
         if (!$old) {
             http_response_code(404);
             $this->renderBack('commun/problem', [
@@ -635,26 +565,32 @@ class CitoyenController extends Controller {
             $old = self::clean($_POST);
             $old['id'] = $id;
             $erreurs = $this->verifierCitoyen($old, false);
+            if ($this->emailDejaUtilise($old['email'], $id)) {
+                $erreurs['email'] = 'Cette adresse email est déjà utilisée.';
+            }
+            // L'admin ne peut pas retirer son propre rôle admin ni désactiver son propre compte.
+            if ($id === $compteConnecte['id'] && ($old['role'] !== 'admin' || $old['actif'] !== '1')) {
+                $erreurs['role'] = 'Vous ne pouvez pas retirer votre rôle administrateur ni désactiver votre propre compte.';
+            }
             if (count($erreurs) == 0) {
-                // Si l'admin modifie son propre compte, on vérifie que sa session est toujours valable.
-                $version = $id === $compteConnecte['id'] ? $compteConnecte['version_session'] : null;
-                $citoyen = new Citoyen($id, $old['nom'], $old['email'], $old['password'], $old['role'], (int) $old['actif'], $old['prenom'], $old['telephone'], $version);
-                $resultat = $this->modifierCitoyen($citoyen, $id);
-                $erreurs = $resultat['erreurs'];
-                if (count($erreurs) == 0) {
-                    if ($id === $compteConnecte['id']) {
-                        $compte = $resultat['utilisateur'];
-                        if (!$compte || $compte['actif'] !== 1 || $compte['role'] !== 'admin') {
-                            deconnecterUtilisateur();
-                            header('Location: ' . frontUrl('connexion'), true, 303);
-                            exit;
-                        }
-                        connecterUtilisateur($compte);
-                    }
-                    $_SESSION['flash'] = ['type' => 'success', 'message' => 'L’utilisateur a été mis à jour.'];
-                    header('Location: index.php?page=admin-utilisateurs', true, 303);
-                    exit;
+                $citoyen = new Citoyen($id, $old['nom'], $old['email'], $old['password'], $old['role'], (int) $old['actif'], $old['prenom'], $old['telephone'], null);
+                $this->modifierCitoyen($citoyen, $id);
+
+                // Journal d'audit
+                auditEvenement('USER_UPDATED', 'Compte #' . $id . ' mis à jour.', $id);
+                if ($ancien['role'] !== $old['role']) {
+                    auditEvenement('ROLE_CHANGED', 'Rôle changé de ' . $ancien['role'] . ' à ' . $old['role'] . '.', $id);
                 }
+                if ($ancien['actif'] === 1 && $old['actif'] === '0') {
+                    auditEvenement('ACCOUNT_SUSPENDED', 'Compte suspendu.', $id);
+                }
+                if ($ancien['actif'] === 0 && $old['actif'] === '1') {
+                    auditEvenement('ACCOUNT_ACTIVATED', 'Compte activé.', $id);
+                }
+
+                $_SESSION['flash'] = ['type' => 'success', 'message' => 'L’utilisateur a été mis à jour.'];
+                header('Location: index.php?page=admin-utilisateurs', true, 303);
+                exit;
             }
             http_response_code(422);
         }
@@ -665,21 +601,21 @@ class CitoyenController extends Controller {
         ]);
     }
 
-    // Pas de vue : on supprime puis on revient à la liste avec un message.
+    
     public function deleteBack(): void {
         self::requireAdmin();
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrfValide($_POST['csrf'] ?? '')) {
             $id = posteId($_POST);
-            $resultat = $id === null ? ['erreurs' => ['general' => 'Identifiant utilisateur invalide.']] : $this->supprimerCitoyen($id);
-            if (count($resultat['erreurs']) == 0) {
-                if ($id === (int) $_SESSION['user_id']) {
-                    deconnecterUtilisateur();
-                    header('Location: ' . frontUrl('connexion'), true, 303);
-                    exit;
-                }
+            if ($id === null) {
+                $_SESSION['flash'] = ['type' => 'warning', 'message' => 'Identifiant utilisateur invalide.'];
+            } elseif ($id === (int) $_SESSION['user_id']) {
+                // L'admin ne peut pas supprimer son propre compte.
+                $_SESSION['flash'] = ['type' => 'warning', 'message' => 'Vous ne pouvez pas supprimer votre propre compte.'];
+            } elseif ($this->supprimerCitoyen($id)) {
+                auditEvenement('USER_DELETED', 'Compte #' . $id . ' supprimé.', $id);
                 $_SESSION['flash'] = ['type' => 'success', 'message' => 'L’utilisateur a été supprimé.'];
             } else {
-                $_SESSION['flash'] = ['type' => 'warning', 'message' => implode(' ', $resultat['erreurs'])];
+                $_SESSION['flash'] = ['type' => 'warning', 'message' => 'Ce compte est lié à des données (colis, dossier CNAM...). Désactivez-le au lieu de le supprimer.'];
             }
         } else {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') auditEvenement('ACCESS_DENIED', 'Jeton CSRF invalide pour la page ' . pageAudit() . '.');
