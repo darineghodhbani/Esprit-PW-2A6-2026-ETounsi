@@ -7,6 +7,8 @@
 <main id="main"><div class="workspace container">
 <?php if (in_array($currentPage, ['mon-dossier', 'mes-beneficiaires', 'beneficiaire-form', 'mes-remboursements', 'remboursement-form', 'cnam-refuse'], true)): ?>
 <?php require __DIR__ . '/cnam/menu.php'; ?>
+<?php elseif (in_array($currentPage, ['lignes-transport', 'stations-transport'], true)): ?>
+<?php require __DIR__ . '/transport/menu.php'; ?>
 <?php else: ?>
 <?php require __DIR__ . '/poste/menu.php'; ?>
 <?php endif; ?>

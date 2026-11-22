@@ -99,3 +99,18 @@ $routes['cnam-decision'] = ['DemandeRemboursementController', 'decision', ['POST
 $routes['cnam-versement'] = ['DemandeRemboursementController', 'versement', ['POST'], ['agent']];
 $routes['admin-cnam-agents'] = ['HabilitationCNAMController', 'liste', ['GET'], 'admin'];
 $routes['cnam-habilitation'] = ['HabilitationCNAMController', 'modifier', ['POST'], 'admin'];
+
+// Module Transport (Ranim Aissa) : lignes, stations et horaires.
+require_once __DIR__ . '/Controllers/LigneTransportController.php';
+require_once __DIR__ . '/Controllers/StationController.php';
+require_once __DIR__ . '/Controllers/HoraireController.php';
+$routes['lignes-transport'] = ['LigneTransportController', 'listFront', ['GET']];
+$routes['stations-transport'] = ['StationController', 'listFront', ['GET']];
+foreach (['ligne' => ['LigneTransportController', 'admin-lignes'],
+          'station' => ['StationController', 'admin-stations'],
+          'horaire' => ['HoraireController', 'admin-horaires']] as $entite => $module) {
+    $routes[$module[1]] = [$module[0], 'listBack', ['GET'], 'admin'];
+    $routes['admin-' . $entite . '-add'] = [$module[0], 'addBack', ['GET', 'POST'], 'admin'];
+    $routes['admin-' . $entite . '-update'] = [$module[0], 'updateBack', ['GET', 'POST'], 'admin'];
+    $routes['admin-' . $entite . '-delete'] = [$module[0], 'deleteBack', ['POST'], 'admin'];
+}

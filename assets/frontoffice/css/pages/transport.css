@@ -1,0 +1,276 @@
+/* Module Transport — compléments du thème E-Tounsi (tokens.css, components.css, workspace.css). */
+
+.transport-page {
+  --module-accent: var(--color-transport);
+  margin-block-start: 8px;
+}
+
+/* La mise en page commune applique des styles Poste à tous les champs : la recherche garde l'aspect du thème. */
+.page-poste .transport-page form {
+  margin-block: 0;
+}
+.page-poste .transport-page .search-form {
+  margin-block: 0 16px;
+}
+.page-poste .transport-page .search-form input {
+  border: 0;
+  background: none;
+  min-height: 44px;
+  padding: 0;
+  outline-offset: 4px;
+}
+.page-poste .transport-page .search-form input:focus {
+  outline: none;
+}
+.page-poste .transport-page .search-form:focus-within {
+  outline: 3px solid var(--color-cnam);
+  outline-offset: 3px;
+}
+.page-poste .transport-page .field label {
+  margin-block-end: 0;
+}
+
+.transport-page .results-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-block-end: 16px;
+}
+
+/* Numéro de ligne */
+.transport-page .ligne-numero {
+  display: inline-grid;
+  place-items: center;
+  min-width: 52px;
+  height: 52px;
+  padding-inline: 10px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--module-accent) 12%, white);
+  color: var(--module-accent);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+.transport-page .ligne-numero-petit {
+  min-width: 38px;
+  height: 28px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  margin-inline-end: 6px;
+}
+
+/* Cartes des lignes */
+.transport-page .ligne-card {
+  overflow: hidden;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+.transport-page .ligne-card:hover,
+.transport-page .ligne-card[open] {
+  border-color: color-mix(in srgb, var(--module-accent) 45%, var(--color-border));
+  box-shadow: var(--shadow-soft);
+}
+.transport-page .ligne-card summary {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 22px 24px;
+  list-style: none;
+  cursor: pointer;
+}
+.transport-page .ligne-card summary::-webkit-details-marker {
+  display: none;
+}
+.transport-page .ligne-card summary:focus-visible {
+  outline-offset: -4px;
+  border-radius: var(--radius-panel);
+}
+.transport-page .ligne-titre {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+.transport-page .ligne-titre strong {
+  font-size: 1.2rem;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.35;
+}
+.transport-page .ligne-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin-block-start: 6px;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+.transport-page .ligne-meta > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.transport-page .ligne-meta .icon {
+  width: 15px;
+  height: 15px;
+}
+.transport-page .prochain-badge {
+  font-size: 0.6875rem;
+  white-space: nowrap;
+}
+.transport-page .ligne-chevron .icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-muted);
+  transition: transform 0.2s;
+}
+.transport-page .ligne-card[open] .ligne-chevron .icon {
+  transform: rotate(180deg);
+}
+.transport-page .ligne-body {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 36px;
+  padding: 26px 24px 30px;
+  border-top: 1px solid var(--color-border);
+  background: #fdfbf8;
+}
+.transport-page .ligne-section-title {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin-block-end: 18px;
+}
+.transport-page .timeline-node {
+  background: color-mix(in srgb, var(--module-accent) 12%, white);
+  color: var(--module-accent);
+}
+.transport-page .timeline li strong {
+  font-size: 0.9375rem;
+}
+.transport-page .prochain-depart {
+  margin-block-end: 16px;
+}
+.transport-page .horaires-table {
+  min-width: 380px;
+}
+.transport-page .horaires-table tr.prochain td {
+  background: #eef4ec;
+}
+.transport-page .horaires-table tr.prochain td:first-child {
+  box-shadow: inset 3px 0 0 var(--module-accent);
+}
+[dir="rtl"] .transport-page .horaires-table tr.prochain td:first-child {
+  box-shadow: inset -3px 0 0 var(--module-accent);
+}
+.transport-page .empty-state > .icon {
+  width: 38px;
+  height: 38px;
+}
+
+/* Stations et tarifs */
+.transport-page .workspace-subtitle:first-child {
+  margin-block-start: 0;
+}
+.transport-page .tarifs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr));
+  gap: 12px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.transport-page .tarifs-grid li {
+  border-radius: 16px;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+.transport-page .tarifs-grid li:hover {
+  border-color: var(--module-accent);
+  box-shadow: var(--shadow-soft);
+}
+.transport-page .tarifs-grid a {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 14px;
+  align-items: center;
+  padding: 16px;
+  min-height: 84px;
+}
+.transport-page .tarifs-grid a[aria-current="true"] {
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 2px var(--module-accent);
+}
+.transport-page .tarifs-grid .ligne-numero {
+  grid-row: span 2;
+}
+.transport-page .tarif-nom {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+.transport-page .tarif-prix {
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+.transport-page .transport-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 20px;
+  margin-block-end: 16px;
+}
+.transport-page .transport-filter .field {
+  flex: 1 1 220px;
+}
+.transport-page .transport-filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.transport-page .table-scroll {
+  margin-block-start: 8px;
+}
+.transport-page .table-scroll th[scope="row"] {
+  background: none;
+  color: var(--color-text);
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 1100px) {
+  .transport-page .ligne-body {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 26px;
+  }
+}
+@media (max-width: 600px) {
+  .transport-page .ligne-card summary {
+    flex-wrap: wrap;
+    gap: 12px 14px;
+    padding: 18px;
+  }
+  .transport-page .ligne-numero {
+    min-width: 44px;
+    height: 44px;
+  }
+  .transport-page .ligne-titre {
+    flex-basis: calc(100% - 60px);
+  }
+  .transport-page .prochain-badge {
+    margin-inline-start: 58px;
+  }
+  .transport-page .ligne-chevron {
+    margin-inline-start: auto;
+  }
+  .transport-page .ligne-body {
+    padding: 18px;
+  }
+  .transport-page .transport-filter {
+    padding: 16px;
+  }
+}

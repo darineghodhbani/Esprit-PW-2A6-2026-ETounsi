@@ -1,0 +1,106 @@
+/* Module Transport — compléments du template Spark Admin d'E-Tounsi (main.css). */
+
+.stat-unit {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-muted-green);
+    letter-spacing: 0;
+}
+
+.numero-ligne {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    padding: 0.25rem 0.6rem;
+    margin-inline-end: 0.35rem;
+    border-radius: var(--radius-md);
+    background: #E9F0E5;
+    color: #3B4F30;
+    font-weight: 800;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.ordre-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 0.5rem;
+    border-radius: var(--radius-md);
+    background: #F8FAF9;
+    border: 1px solid rgba(11, 19, 15, 0.08);
+    font-weight: 700;
+}
+
+.count-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-weight: 700;
+}
+
+.count-link i {
+    font-size: 0.7rem;
+}
+
+/* Filtres des listes */
+.transport-filter {
+    justify-content: flex-start;
+    align-items: flex-end;
+}
+
+.transport-filter-field {
+    flex: 1 1 240px;
+    max-width: 380px;
+}
+
+.transport-filter-field .form-label-custom {
+    margin-bottom: 0.4rem;
+}
+
+.transport-filter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Formulaires */
+.transport-form-card {
+    max-width: 960px;
+}
+
+.transport-form-card .form-text {
+    font-size: 0.8rem;
+    color: var(--text-muted-green);
+}
+
+.transport-form-context {
+    margin-bottom: 1.25rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    background: #F8FAF9;
+    color: var(--text-muted-green);
+    font-size: 0.85rem;
+}
+
+.transport-form-context i {
+    margin-inline-end: 0.4rem;
+}
+
+.transport-form-card .form-control-custom.is-invalid,
+.transport-form-card .form-select-custom.is-invalid {
+    border-color: var(--sys-red);
+}
+
+@media (max-width: 767px) {
+    .transport-filter-field {
+        max-width: none;
+    }
+
+    .transport-filter > * {
+        width: 100%;
+    }
+}
