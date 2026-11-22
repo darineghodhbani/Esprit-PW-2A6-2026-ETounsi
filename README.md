@@ -168,4 +168,4 @@ Le paiement par carte reste en mode de démonstration locale tant qu’un fourni
 
 Les sélecteurs Gouvernorat / Délégation reposent sur `app/Data/municipalite-delegations.php` (découpage INS) et `assets/frontoffice/js/municipalite.js`. Pour réappliquer le schéma et réinstaller le contenu UTF-8 des services, lancez `php scripts/migrate-municipalite.php` depuis le dossier du projet.
 
-Les entités PHP `PaiementMunicipal` et `NotificationMunicipale` décrivent les tables municipales déjà utilisées par le module, sans remplacer ses flux existants. Leurs attributs et cardinalités figurent dans [docs/entites-municipalite.md](docs/entites-municipalite.md).
+Les quatre entités PHP du module sont `MunicipaliteDemande`, `RendezVous`, `PaiementMunicipal` et `NotificationMunicipale`. Le rendez-vous est modélisé séparément en PHP et continue d'utiliser les colonnes de rendez-vous déjà présentes dans `municipalite_demande`. Les attributs et cardinalités sont décrits dans [docs/entites-municipalite.md](docs/entites-municipalite.md).
