@@ -30,7 +30,14 @@ if (!isset($routes[$page])) {
     exit;
 }
 $route = $routes[$page];
-if (($route[3] ?? '') === 'admin' || strpos($page, 'admin-') === 0 || $page === 'dashboard') CitoyenController::requireAdmin();
+$access = $route[3] ?? null;
+if ($access === 'admin') {
+    CitoyenController::requireAdmin();
+} elseif (is_array($access)) {
+    exigerRole($access);
+} elseif (strpos($page, 'admin-') === 0 || $page === 'dashboard') {
+    CitoyenController::requireAdmin();
+}
 $methodes = $route[2] ?? ['GET','POST'];
 if (!in_array($_SERVER['REQUEST_METHOD'], $methodes, true)) {
     http_response_code(405);

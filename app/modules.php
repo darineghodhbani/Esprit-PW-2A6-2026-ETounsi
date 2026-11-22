@@ -15,8 +15,9 @@ return [
         'threshold'    => ['u' => 0.218, 'v' => 0.71],
         'approachScale' => 6.5,
         'services'     => ['service.cnam.dossier', 'service.cnam.beneficiaire', 'service.cnam.remboursement', 'service.cnam.suivi'],
+        'pages'        => ['mon-dossier', 'beneficiaire-form', 'remboursement-form', 'mes-remboursements'],
         'route'        => 'mon-dossier',
-        'ready'        => false,
+        'ready'        => true,
     ],
     'transport' => [
         'id'           => 'transport',

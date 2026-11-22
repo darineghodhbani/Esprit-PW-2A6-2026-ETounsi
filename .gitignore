@@ -20,3 +20,6 @@ uploads/cnam/*
 
 # Configuration privee de la machine
 config.local.php
+google.local.php
+vendor/
+composer.phar
