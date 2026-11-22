@@ -5,7 +5,11 @@
 <?php require __DIR__ . '/includes/spinner.php'; ?>
 <?php require __DIR__ . '/includes/navbar.php'; ?>
 <main id="main"><div class="workspace container">
+<?php if (in_array($currentPage, ['mon-dossier', 'mes-beneficiaires', 'beneficiaire-form', 'mes-remboursements', 'remboursement-form', 'cnam-refuse'], true)): ?>
+<?php require __DIR__ . '/cnam/menu.php'; ?>
+<?php else: ?>
 <?php require __DIR__ . '/poste/menu.php'; ?>
+<?php endif; ?>
 <div class="workspace-content"><?= $content ?></div>
 </div></main>
 <?php require __DIR__ . '/includes/footer.php'; ?>

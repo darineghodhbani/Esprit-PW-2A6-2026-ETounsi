@@ -23,7 +23,7 @@
                         <?php echo et_icon('user'); ?> <?php echo t('account.profile'); ?>
                     </a>
                     <?php if ($_SESSION['role'] == 'agent' || $_SESSION['role'] == 'admin'): ?>
-                        <a href="index.php?page=dashboard">
+                        <a href="index.php?page=<?= $_SESSION['role'] === 'agent' ? 'admin-demandes-cnam' : 'dashboard' ?>">
                             <?php echo et_icon('landmark'); ?> <?php echo t('nav.backoffice'); ?>
                         </a>
                     <?php endif; ?>
@@ -35,6 +35,8 @@
 
             <div class="workspace-content">
                 <h1><?php echo t('account.welcome'); ?> <?php echo e($citoyen['prenom']); ?></h1>
+
+                <?php if ($citoyen['role'] === 'citoyen'): ?><p><a class="button button-outline" href="index.php?page=mon-dossier"><?= e(tr('Mon dossier CNAM', 'ملفي لدى الصندوق')) ?></a></p><?php endif; ?>
 
                 <div class="profile-card surface">
                     <h2><?php echo t('account.infos'); ?></h2>
@@ -59,6 +61,17 @@
                         <dd><?php echo $citoyen['date_inscription']; ?></dd>
                     </dl>
                 </div>
+
+                <?php if ($googleReady): ?>
+                <section class="profile-card surface"><h2><?= e(tr('Compte Google', 'حساب Google')) ?></h2>
+                    <?php if ($googleLinked): ?><p><?= e(tr('Votre compte Google est lié.', 'حسابك مرتبط بحساب Google.')) ?></p>
+                    <?php else: ?><form class="stack" method="post" action="index.php?page=google-start">
+                        <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>"><input type="hidden" name="mode" value="link">
+                        <label for="google-password"><?= e(tr('Confirmez votre mot de passe actuel', 'تأكيد كلمة المرور الحالية')) ?></label>
+                        <input id="google-password" name="password" type="password" autocomplete="current-password" required>
+                        <button class="button button-outline" type="submit"><?= e(tr('Lier mon compte Google', 'ربط حساب Google')) ?></button>
+                    </form><?php endif; ?>
+                </section><?php endif; ?>
 
                 <?php if (isset($_SESSION['flash'])): ?><p class="alert alert-success" role="status"><?php echo e($_SESSION['flash']['message']); ?></p><?php unset($_SESSION['flash']); endif; ?>
                 <?php if ($erreurs !== []): ?><div class="alert alert-error" role="alert"><?php foreach ($erreurs as $message): ?><p><?php echo e($message); ?></p><?php endforeach; ?></div><?php endif; ?>

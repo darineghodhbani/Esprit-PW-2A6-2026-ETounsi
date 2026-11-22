@@ -26,6 +26,10 @@ function t(string $key): string {
     return et_messages()[$key] ?? $key;
 }
 
+function tr(string $fr, string $ar): string {
+    return et_lang() === 'ar' ? $ar : $fr;
+}
+
 function m(array $item, string $field): string {
     $value = $item[$field] ?? '';
     if (is_array($value)) {

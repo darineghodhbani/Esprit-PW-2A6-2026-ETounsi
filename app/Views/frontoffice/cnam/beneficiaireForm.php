@@ -1,0 +1,14 @@
+<?php $intro=tr('Le rattachement devient actif après vérification par un agent CNAM.','يُفعّل الارتباط بعد التثبت منه من طرف موظف الصندوق.'); require __DIR__ . '/../poste/page-heading.php'; ?>
+<div class="poste-section"><section class="content-panel panel-narrow">
+    <?php if ($erreurs): ?><div class="alert alert-error" role="alert"><?php foreach ($erreurs as $erreur): ?><p><?= e($erreur) ?></p><?php endforeach; ?></div><?php endif; ?>
+    <form method="post" enctype="multipart/form-data" action="index.php?page=beneficiaire-form<?= !empty($old['id_beneficiaire'])?'&amp;id='.rawurlencode((string)$old['id_beneficiaire']):'' ?>">
+        <input type="hidden" name="csrf" value="<?= e($jeton) ?>"><input type="hidden" name="id_beneficiaire" value="<?= e($old['id_beneficiaire']??'') ?>">
+        <div class="poste-form-grid"><div><label for="prenom"><?= e(tr('Prénom','الاسم')) ?></label><input id="prenom" name="prenom" required maxlength="100" value="<?= e($old['prenom']??'') ?>"></div>
+        <div><label for="nom"><?= e(tr('Nom','اللقب')) ?></label><input id="nom" name="nom" required maxlength="100" value="<?= e($old['nom']??'') ?>"></div>
+        <div><label for="date_naissance"><?= e(tr('Date de naissance','تاريخ الميلاد')) ?></label><input id="date_naissance" name="date_naissance" type="date" max="<?= e(date('Y-m-d')) ?>" required value="<?= e($old['date_naissance']??'') ?>"></div>
+        <div><label for="lien_parente"><?= e(tr('Lien de parenté','صلة القرابة')) ?></label><select id="lien_parente" name="lien_parente" required><option value=""><?= e(tr('Choisir','اختر')) ?></option><?php foreach (['CONJOINT'=>tr('Conjoint','قرين'),'ENFANT'=>tr('Enfant','ابن/ابنة'),'PARENT'=>tr('Parent','والد/والدة'),'AUTRE'=>tr('Autre','آخر')] as $value=>$label): ?><option value="<?= e($value) ?>" <?= ($old['lien_parente']??'')===$value?'selected':'' ?>><?= e($label) ?></option><?php endforeach; ?></select></div></div>
+        <label for="justificatifs"><?= e(tr('Justificatif du lien','ما يثبت صلة القرابة')) ?></label><input id="justificatifs" name="justificatifs[]" type="file" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" multiple <?= empty($old['id_beneficiaire'])?'required':'' ?>><small class="form-text"><?= e(tr('PDF, PNG ou JPEG · 5 Mo par fichier, 5 fichiers maximum.','PDF أو PNG أو JPEG · 5 ميغابايت لكل ملف، 5 ملفات كحد أقصى.')) ?></small>
+        <?php if ($documents): ?><p><?= e(tr('Pièces déjà jointes','الوثائق المرفقة')) ?> : <?php foreach ($documents as $doc): ?><a href="index.php?page=document-cnam&amp;id=<?= e($doc['id_document']) ?>"><?= e($doc['nom_original']) ?></a> <?php endforeach; ?></p><?php endif; ?>
+        <div class="poste-actions"><button class="button button-dark" type="submit"><?= e(tr('Transmettre le rattachement','إرسال طلب الإضافة')) ?></button><a class="button button-light" href="index.php?page=mes-beneficiaires"><?= e(tr('Annuler','إلغاء')) ?></a></div>
+    </form>
+</section></div>

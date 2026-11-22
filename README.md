@@ -2,11 +2,12 @@
 
 ## Overview
 
-Projet Technologies Web, classe 2A6, Esprit School of Engineering, année universitaire 2026–2027. Cette version réunit les fonctionnalités Poste et Recette des Finances dans la structure MVC et le thème commun de la branche `integration`. Les dossiers Transport, Municipalité et CNAM restent disponibles pour les contributions des membres concernés.
+Projet Technologies Web, classe 2A6, Esprit School of Engineering, année universitaire 2026–2027. Cette version réunit les modules Poste, Recette des Finances et CNAM dans la structure MVC et le thème commun de la branche `integration`, avec un compte citoyen partagé et une connexion Google OAuth.
 
 ## Features
 
-- Compte commun : inscription, connexion, profil, CRUD utilisateurs, activation/suspension et rôles citoyen/administrateur.
+- Compte commun : inscription, connexion par mot de passe ou Google, profil, CRUD utilisateurs, activation/suspension et rôles citoyen/agent/administrateur.
+- CNAM : dossier assuré, bénéficiaires avec justificatifs, demandes de remboursement en brouillon ou déposées, suivi des décisions et versements. Les agents habilités valident les rattachements et traitent les demandes ; l’administrateur gère leurs habilitations.
 - Poste : annuaire des bureaux, déclaration d’un envoi, référence unique, suivi et historique. Le citoyen saisit le nom et la date, choisit le bureau, puis peut modifier ces informations et supprimer ses propres déclarations en attente ; l’administrateur dispose du CRUD des bureaux et colis et gère leur traitement.
 - Cycle des colis : En attente → Accepté → En transit → Livré ; annulation avant départ selon les règles du module.
 - Finances : déclaration de propriétés, gestion des impôts, demande de paiement simulée, validation administrateur et reçus.
@@ -14,7 +15,7 @@ Projet Technologies Web, classe 2A6, Esprit School of Engineering, année univer
 
 ## Tech Stack
 
-PHP 8, PDO, MySQL/MariaDB, HTML5, CSS3 et JavaScript. Le code utilise les classes, les sessions, les requêtes préparées et les formulaires étudiés en cours. Les vues réutilisent les ressources Front Office et Back Office présentes dans la branche d’intégration.
+PHP 8.2+, PDO, MySQL 8+, Composer, `google/auth`, HTML5, CSS3 et JavaScript. Le code utilise les classes, les sessions, les requêtes préparées et les formulaires étudiés en cours. Les vues réutilisent les ressources Front Office et Back Office présentes dans la branche d’intégration.
 
 ## Architecture
 
@@ -61,7 +62,9 @@ E-Tounsi/
 │   ├── frontoffice/  css / js / img / fonts / lib
 │   └── backoffice/   css / js / img / lib
 ├── database/etounsi.sql
-└── uploads/cnam/
+├── database/cnam-google.sql
+├── docs/cnam-google.md
+└── uploads/cnam/  (marqueur uniquement ; les pièces sont stockées hors du site)
 ```
 
 Les contrôleurs Poste et utilisateurs suivent la présentation de Recette des Finances : `clean()`, méthodes de validation, variables `$old` et `$erreurs`, actions `listBack()`, `addBack()`, `updateBack()` et `deleteBack()`. La déclaration du colis utilise `declarer()`. Les modèles portent les propriétés, constructeurs et getters/setters. Les données validées servent à construire les objets transmis aux méthodes CRUD. Les vues administrateur d’ajout et de modification sont séparées, comme dans Finances : `addBureau.php` / `updateBureau.php`, `addColis.php` / `updateColis.php` et `addUser.php` / `updateUser.php`.
@@ -76,7 +79,7 @@ Les pages `updateBureau.php` et `updateColis.php` chargent la ligne par son iden
 
 La gestion utilisateurs suit les mêmes pages simples : `userList.php` charge les comptes et la recherche en haut du fichier ; `addUser.php` et `updateUser.php` traitent `POST` puis affichent leurs formulaires ; `deleteUser.php` vérifie le rôle, `POST` et CSRF puis redirige avec un message. Les champs nom, prénom, e-mail, téléphone, rôle et état sont présents à l’ajout et à la modification. Le mot de passe est obligatoire à l’ajout et facultatif en modification. `CitoyenController.php` assure les requêtes préparées, le hashage du mot de passe, la protection du dernier administrateur actif et les transactions avec le journal d’audit. `Citoyen.php` contient les attributs, le constructeur et les getters/setters, selon l’exemple CRUD du cours. La langue choisie est conservée lors de la déconnexion pour permettre le retour au formulaire de connexion.
 
-La connexion PDO est centralisée dans `config.php`. Toutes les requêtes SQL sont dans les contrôleurs, comme dans la référence CRUD du cours : `CitoyenController.php`, `BureauPostalController.php`, `ColisController.php`, `ProprieteController.php`, `ImpotController.php` et `AuditController.php`. Les modèles conservent les attributs, constructeurs, getters/setters et constantes nécessaires. Ils ne contiennent aucune requête SQL ni connexion PDO. Les contrôleurs valident les données et préparent les vues. Le contrôleur de base assemble le contenu dans les layouts. Les formulaires Poste reprennent le HTML de Finances, les valeurs `$old`, les erreurs par champ `$erreurs` et les attributs `data-validate`. Les règles de validation PHP restent dans les contrôleurs ; les suppressions Poste utilisent la confirmation des formulaires de liste.
+La connexion PDO est centralisée dans `config.php`. Les modules déjà présents conservent leurs requêtes dans les contrôleurs ; le module CNAM regroupe ses requêtes préparées dans ses modèles de données pour isoler son cycle métier. Les vues ne contiennent pas de SQL. Les contrôleurs vérifient les rôles, valident les formulaires et préparent les données d’affichage. Le contrôleur de base assemble le contenu dans les layouts. Les formulaires Poste reprennent le HTML de Finances, les valeurs `$old`, les erreurs par champ `$erreurs` et les attributs `data-validate`.
 
 Le journal utilise `AuditController::log()` pour les écritures et les méthodes `compter()` / `lister()` pour sa consultation. Les opérations utilisateurs transmettent leur connexion PDO au contrôleur d’audit afin d’enregistrer la modification du compte et sa trace dans la même transaction. Les classes des modules encore à intégrer restent dans leurs dossiers sans ouvrir de connexion à la base.
 
@@ -99,16 +102,21 @@ Développé à Esprit School of Engineering — Tunisia, dans le cadre du Projet
 
 ## Getting Started
 
-1. Placer le projet sous `C:\xampp\htdocs` et démarrer Apache et MySQL dans XAMPP.
-2. Importer `database/etounsi.sql` dans phpMyAdmin, onglet **Importer**. Le script crée la base commune `etounsi` et les tables manquantes. Il conserve les tables et les données lors d’une réimportation. Les exemples sont ajoutés uniquement lorsque toutes les tables sont vides ; le fichier partagé contient uniquement des données de démonstration.
-3. Vérifier la connexion dans `config.php`. Un fichier local `config.local.php`, ignoré par Git, peut sélectionner une autre base : `<?php return ['host'=>'127.0.0.1','database'=>'nom_base','user'=>'root','password'=>''];`.
-4. Ouvrir `http://localhost/NOM_DU_DOSSIER/index.php`.
+1. Démarrer Apache et MySQL, puis importer `database/etounsi.sql` si la base commune `etounsi` n’existe pas encore.
+2. Installer les dépendances avec `composer install`.
+3. Copier `config.local.example.php` vers `config.local.php` et renseigner MySQL. Le fichier local est ignoré par Git ; `app_env` doit rester `development` en local.
+4. Copier `google.local.example.php` vers `google.local.php`. Renseigner l’identifiant et le secret du client Google, avec l’URI locale exacte `http://127.0.0.1:8081/index.php?page=google-callback`. Ce fichier est aussi ignoré par Git.
+5. Lancer une fois `php scripts/migrate-cnam.php`, puis ouvrir `http://127.0.0.1:8081/index.php`.
 
 Pour une base déjà installée avant l’ajout des champs de saisie des colis, sélectionner cette base dans phpMyAdmin et importer une seule fois `database/mise-a-jour-colis.sql`. Cette mise à jour ajoute le nom saisi et la date choisie sans remplacer les colis existants. Sur une installation neuve, `database/etounsi.sql` contient déjà ces colonnes.
 
 Sur ce PC, le projet est dans `C:\xampp\htdocs\ETounsi-Integration-Preview` et utilise la base commune `etounsi`, définie dans `config.php`. Les données de `etounsi_integration_preview` y ont été conservées, avec les mêmes identifiants, mots de passe hachés et relations. L’ancienne base de prévisualisation et le projet Poste d’origine sont conservés séparément. Aucun fichier `config.local.php` n’est nécessaire sur ce PC.
 
 Une réimportation crée les tables absentes ; elle ne modifie pas les colonnes d’une table déjà installée. Utiliser la mise à jour ci-dessus uniquement pour une ancienne base qui ne contient pas encore les deux champs de déclaration des colis.
+
+La migration crée les tables CNAM et Google et ajoute le rôle Agent. Elle conserve les anciennes tables CNAM en les renommant si elles sont vides ; si des données du schéma historique sont détectées, elle s’arrête pour éviter de les remplacer. Les détails du parcours, des pièces jointes et de l’OAuth sont dans [docs/cnam-google.md](docs/cnam-google.md).
+
+Les agents sont créés avec le rôle Agent dans **Utilisateurs**, puis activés par l’administrateur dans **Habilitations CNAM**. En développement, le CAPTCHA est désactivé ; en production, configurez les vraies clés reCAPTCHA dans `config.local.php`.
 
 Routes principales :
 
@@ -121,13 +129,16 @@ Routes principales :
 | Déclaration / mes colis | `index.php?page=declarer-envoi` / `index.php?page=mes-colis` |
 | Modifier / supprimer mon colis | `index.php?page=modifier-colis&id=ID` / `index.php?page=supprimer-colis&id=ID` |
 | Finances | `index.php?page=module&id=finances` |
+| CNAM citoyen | `index.php?page=module&id=cnam` |
+| Dossier / bénéficiaires / remboursements | `index.php?page=mon-dossier` / `index.php?page=mes-beneficiaires` / `index.php?page=mes-remboursements` |
+| CNAM back office | `index.php?page=admin-demandes-cnam` |
 | Administration | `index.php?page=dashboard` |
 | Utilisateurs | `index.php?page=admin-utilisateurs` |
 | Journal d’audit | `index.php?page=admin-audit` |
 
 Sur une installation vide, le script crée `admin@etounsi.tn` (administrateur) et `citoyen@etounsi.tn` (citoyen), avec le mot de passe de démonstration `password`. Lors d’une réimportation sur une base remplie, les comptes et mots de passe existants sont conservés.
 
-Le CAPTCHA reprend les clés de test déjà présentes dans la branche. Leur usage pour les essais est décrit dans la [documentation Google reCAPTCHA](https://developers.google.com/recaptcha/docs/faq). Le SSO Google n’est pas implémenté dans cette version.
+Le flux OAuth utilise `state`, `nonce`, PKCE et la vérification serveur de l’identité Google. Un compte déjà existant se lie depuis son profil après confirmation du mot de passe ; Google ne peut pas attribuer les rôles Agent ou Administrateur.
 
 ## Sécurité et journal d’audit
 

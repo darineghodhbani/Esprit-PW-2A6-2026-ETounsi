@@ -1,0 +1,15 @@
+{
+  "name": "power-girls/e-tounsi",
+  "description": "CNAM et connexion citoyenne Google — contribution Mariem Kaabi",
+  "type": "project",
+  "require": {
+    "php": "^8.2",
+    "ext-fileinfo": "*",
+    "ext-mbstring": "*",
+    "ext-pdo": "*",
+    "ext-pdo_mysql": "*",
+    "google/auth": "^1.48",
+    "phpseclib/phpseclib": "^3.0.35"
+  },
+  "config": {"allow-plugins": false, "sort-packages": true}
+}
