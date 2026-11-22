@@ -37,7 +37,10 @@ if (!in_array($_SERVER['REQUEST_METHOD'], $methodes, true)) {
     header('Allow: ' . implode(', ', $methodes));
     exit('Méthode non autorisée.');
 }
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !csrfValide($_POST['csrf'] ?? '')) {
+// Les scripts Delete Poste vérifient leur jeton avant de rediriger.
+$suppressionPoste = in_array($route[0], ['BureauPostalController', 'ColisController'], true)
+    && $route[1] === 'deleteBack';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$suppressionPoste && !csrfValide($_POST['csrf'] ?? '')) {
     auditEvenement('ACCESS_DENIED', 'Jeton CSRF invalide pour la page ' . pageAudit() . '.');
     if ($page === 'login' || $page === 'connexion') auditEvenement('LOGIN_FAILED', 'Jeton CSRF invalide.');
     http_response_code(403);

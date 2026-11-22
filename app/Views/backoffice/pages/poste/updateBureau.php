@@ -1,7 +1,53 @@
+<?php
+require_once __DIR__ . '/../../../../Controllers/CitoyenController.php';
+require_once __DIR__ . '/../../../../Controllers/BureauPostalController.php';
+CitoyenController::requireAdmin();
+
+$bureauC = new BureauPostalController();
+$title = 'Modifier un bureau';
+$currentPage = 'admin-bureaux';
+$section = 'bureaux';
+
+$id = posteId($_GET) ?? posteId($_POST);
+$old = $id === null ? null : $bureauC->recupererBureau($id);
+if (!$old) {
+    http_response_code(404);
+    $title = 'Bureau introuvable';
+    $message = 'Cet élément n’existe plus ou le lien est incorrect.';
+    require __DIR__ . '/../commun/problem.php';
+    return;
+}
+$erreurs = [];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $old = BureauPostalController::clean($_POST);
+    $old['id_bureau'] = $id;
+    if (!csrfValide($_POST['csrf'] ?? '')) {
+        $erreurs['global'] = 'Jeton de sécurité invalide. Veuillez réessayer.';
+    } else {
+        $erreurs = $bureauC->verifierBureau($old);
+    }
+    if (count($erreurs) == 0) {
+        $bureau = new BureauPostal($id, $old['nom'], $old['adresse'], $old['ville']);
+        if (!$bureauC->modifierBureau($bureau, $id)) {
+            http_response_code(404);
+            $title = 'Bureau introuvable';
+            $message = 'Cet élément n’existe plus ou le lien est incorrect.';
+            require __DIR__ . '/../commun/problem.php';
+            return;
+        }
+        $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le bureau a été mis à jour.'];
+        header('Location: index.php?page=admin-bureaux', true, 303);
+        exit;
+    }
+    http_response_code(isset($erreurs['global']) ? 403 : 422);
+}
+
+$csrfToken = csrfToken();
+?>
 <div class="page-header">
   <div>
     <h1 class="page-title">Modifier un bureau</h1>
-    <p class="page-subtitle">Renseignez les informations du formulaire.</p>
+    <p class="page-subtitle">Tous les champs sont obligatoires.</p>
   </div>
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb mb-0">
@@ -12,9 +58,12 @@
 </div>
 
 <div class="card border-light shadow-sm p-4 mb-4">
-  <form method="post" action="index.php?page=admin-bureau-update&amp;id=<?php echo e($old['id_bureau']); ?>" novalidate data-validate-form data-poste-save>
-    <input type="hidden" name="csrf" value="<?php echo e(csrfToken()); ?>">
-    <input type="hidden" name="id" value="<?php echo e($old['id_bureau']); ?>">
+  <?php if (isset($erreurs['global'])): ?>
+    <div class="alert alert-danger" role="alert"><?php echo e($erreurs['global']); ?></div>
+  <?php endif; ?>
+  <form method="post" action="index.php?page=admin-bureau-update&amp;id=<?php echo e($id); ?>" novalidate data-validate-form data-poste-save>
+    <input type="hidden" name="csrf" value="<?php echo e($csrfToken); ?>">
+    <input type="hidden" name="id" value="<?php echo e($id); ?>">
     <div class="row g-3">
       <div class="col-12 col-md-6">
         <label for="nom" class="form-label-custom">Nom du bureau</label>

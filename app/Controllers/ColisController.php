@@ -229,55 +229,11 @@ class ColisController extends Controller {
     }
 
     public function updateBack(): void {
-        CitoyenController::requireAdmin();
-        $id = posteId($_GET) ?? posteId($_POST);
-        $old = $id === null ? null : $this->recupererColis($id);
-        if (!$old) { $this->introuvable(); return; }
-        $erreurs = [];
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $statut = posteText($_POST, 'statut');
-            if (posteText($_POST, 'statut_actuel') !== $old['statut']) {
-                http_response_code(409);
-                $erreurs['statut'] = 'Le statut a changé depuis l’ouverture du formulaire. Vérifiez son état actuel.';
-            } elseif (!in_array($statut, self::statutsSuivants($old['statut']), true)) {
-                http_response_code(422);
-                $erreurs['statut'] = 'Choisissez une étape proposée pour ce colis.';
-            } else {
-                $colis = new Colis($id, null, null, null, $statut);
-                if ($this->modifierColis($colis, $id, $old['statut'])) {
-                    $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le statut du colis a été mis à jour.'];
-                    header('Location: index.php?page=admin-colis', true, 303);
-                    exit;
-                }
-                http_response_code(409);
-                $erreurs['statut'] = 'Ce colis vient d’être modifié. Rechargez son état avant de réessayer.';
-                $old = $this->recupererColis($id);
-                if (!$old) { $this->introuvable(); return; }
-            }
-        }
-        $this->renderBack('poste/updateColis', [
-            'title' => 'Modifier le statut', 'currentPage' => 'admin-colis', 'section' => 'colis',
-            'old' => $old, 'erreurs' => $erreurs, 'statuts' => self::statutsSuivants($old['statut']),
-            'bureaux' => [], 'citoyens' => [],
-        ]);
+        $this->renderBack('poste/updateColis');
     }
 
     public function deleteBack(): void {
-        CitoyenController::requireAdmin();
-        $id = $_SERVER['REQUEST_METHOD'] === 'POST' ? posteId($_POST) : posteId($_GET);
-        $colis = $id === null ? null : $this->recupererColis($id);
-        if (!$colis) { $this->introuvable(); return; }
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->supprimerColis($id);
-            $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le colis a été supprimé.'];
-            header('Location: index.php?page=admin-colis', true, 303);
-            exit;
-        }
-        $this->renderBack('commun/supprimer', [
-            'title' => 'Supprimer le colis', 'currentPage' => 'admin-colis', 'section' => 'colis', 'erreurs' => [],
-            'old' => ['id' => $id, 'reference' => $colis['numero_suivi'], 'action' => 'deleteColis',
-                'message' => 'Le colis sera retiré du suivi et de l’historique citoyen. Cette action est définitive.'],
-        ]);
+        require __DIR__ . '/../Views/backoffice/pages/poste/deleteColis.php';
     }
 
     public function accepter(): void {

@@ -76,58 +76,11 @@ class BureauPostalController extends Controller {
     }
 
     public function updateBack(): void {
-        CitoyenController::requireAdmin();
-        $id = posteId($_GET) ?? posteId($_POST);
-        $old = $id === null ? null : $this->recupererBureau($id);
-        if (!$old) {
-            $this->introuvable();
-            return;
-        }
-        $erreurs = [];
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $old = self::clean($_POST);
-            $old['id_bureau'] = $id;
-            $erreurs = $this->verifierBureau($old);
-            if (count($erreurs) == 0) {
-                $bureau = new BureauPostal($id, $old['nom'], $old['adresse'], $old['ville']);
-                if (!$this->modifierBureau($bureau, $id)) {
-                    $this->introuvable();
-                    return;
-                }
-                $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le bureau a été mis à jour.'];
-                header('Location: index.php?page=admin-bureaux', true, 303);
-                exit;
-            }
-            http_response_code(422);
-        }
-        $this->renderBack('poste/updateBureau', [
-            'title' => 'Modifier le bureau', 'currentPage' => 'admin-bureaux', 'section' => 'bureaux',
-            'old' => $old, 'erreurs' => $erreurs,
-        ]);
+        $this->renderBack('poste/updateBureau');
     }
 
     public function deleteBack(): void {
-        CitoyenController::requireAdmin();
-        $id = $_SERVER['REQUEST_METHOD'] === 'POST' ? posteId($_POST) : posteId($_GET);
-        $bureau = $id === null ? null : $this->recupererBureau($id);
-        if (!$bureau) {
-            $this->introuvable();
-            return;
-        }
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $supprime = $this->supprimerBureau($id);
-            $_SESSION['flash'] = [
-                'type' => $supprime ? 'success' : 'warning',
-                'message' => $supprime ? 'Le bureau a été supprimé.' : 'Ce bureau est associé à des colis et ne peut pas être supprimé.',
-            ];
-            header('Location: index.php?page=admin-bureaux', true, 303);
-            exit;
-        }
-        $this->renderBack('commun/supprimer', [
-            'title' => 'Supprimer le bureau', 'currentPage' => 'admin-bureaux', 'section' => 'bureaux', 'erreurs' => [],
-            'old' => ['id' => $id, 'reference' => $bureau['nom'], 'action' => 'deleteBureau',
-                'message' => 'La suppression est possible si aucun colis n’est associé à ce bureau.'],
-        ]);
+        require __DIR__ . '/../Views/backoffice/pages/poste/deleteBureau.php';
     }
 
     public function listFront(): void {
@@ -146,11 +99,4 @@ class BureauPostalController extends Controller {
         ]);
     }
 
-    private function introuvable(): void {
-        http_response_code(404);
-        $this->renderBack('commun/problem', [
-            'title' => 'Bureau introuvable', 'currentPage' => 'admin-bureaux', 'section' => 'bureaux',
-            'message' => 'Ce bureau n’existe plus ou le lien est incorrect.',
-        ]);
-    }
 }
