@@ -11,24 +11,8 @@ class CitoyenController extends Controller {
     public const ROLES = ['citoyen' => 'Citoyen', 'agent' => 'Agent', 'admin' => 'Administrateur'];
     public const ETATS = ['1' => 'Actif', '0' => 'Désactivé'];
 
-    private static function captchaConfiguration(): array {
-        $local = is_file(__DIR__ . '/../../config.local.php') ? require __DIR__ . '/../../config.local.php' : [];
-        return [
-            'site_key' => is_string($local['recaptcha_site_key'] ?? null) ? trim($local['recaptcha_site_key']) : '',
-            'secret_key' => is_string($local['recaptcha_secret_key'] ?? null) ? trim($local['recaptcha_secret_key']) : '',
-            'environment' => getenv('APP_ENV') ?: ($local['app_env'] ?? 'production'),
-        ];
-    }
-
-    public static function captchaEnabled(): bool {
-        $config = self::captchaConfiguration();
-        return $config['site_key'] !== '' && $config['secret_key'] !== '';
-    }
-
-    public static function captchaSiteKey(): string {
-        $config = self::captchaConfiguration();
-        return self::captchaEnabled() ? $config['site_key'] : '';
-    }
+    public const CAPTCHA_SITE_KEY   = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
+    public const CAPTCHA_SECRET_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
 
     public function listerCitoyens() {
         $sql = "SELECT id_citoyen AS id, id_citoyen, nom, prenom, telephone, email, role, actif, version_session, created_at
@@ -493,19 +477,18 @@ class CitoyenController extends Controller {
     }
 
     public function verifierCaptcha(): bool {
-        $config = self::captchaConfiguration();
-        if ($config['site_key'] === '' || $config['secret_key'] === '') {
-            return $config['environment'] === 'development';
+        if (!isset($_POST['g-recaptcha-response']) || $_POST['g-recaptcha-response'] == '') {
+            return false;
         }
-        $token = posteText($_POST, 'g-recaptcha-response');
-        if ($token === '') return false;
+
         $url = 'https://www.google.com/recaptcha/api/siteverify'
-             . '?secret=' . urlencode($config['secret_key']) . '&response=' . urlencode($token);
-        $contexte = stream_context_create(['http' => ['timeout' => 8]]);
-        $reponse = @file_get_contents($url, false, $contexte);
-        if ($reponse === false) return false;
+             . '?secret=' . self::CAPTCHA_SECRET_KEY
+             . '&response=' . urlencode($_POST['g-recaptcha-response']);
+
+        $reponse = file_get_contents($url);
         $resultat = json_decode($reponse, true);
-        return is_array($resultat) && !empty($resultat['success']);
+
+        return $resultat['success'] == true;
     }
 
     public function signup(): void {
@@ -516,9 +499,9 @@ class CitoyenController extends Controller {
             $old['role'] = 'citoyen';
             $old['actif'] = '1';
             $erreurs = $this->verifierCitoyen($old, true, true);
-            if (!$this->verifierCaptcha()) $erreurs['captcha'] = self::captchaEnabled()
-                ? 'Veuillez cocher la case « Je ne suis pas un robot ». '
-                : 'La vérification de sécurité n’est pas configurée pour cet environnement.';
+            if (!$this->verifierCaptcha()) {
+                $erreurs['captcha'] = 'Veuillez cocher la case « Je ne suis pas un robot ».';
+            }
             if (count($erreurs) == 0) {
                 $citoyen = new Citoyen(null, $old['nom'], $old['email'], $old['password'], 'citoyen', 1, $old['prenom'], $old['telephone'], null);
                 $resultat = $this->ajouterCitoyen($citoyen, $old['confirmation']);
@@ -539,9 +522,9 @@ class CitoyenController extends Controller {
             $old = self::clean($_POST);
             if (!filter_var($old['email'], FILTER_VALIDATE_EMAIL)) $erreurs['email'] = 'L’email n’est pas valide.';
             if ($old['password'] === '') $erreurs['mot_de_passe'] = 'Le mot de passe est obligatoire.';
-            if (!$this->verifierCaptcha()) $erreurs['captcha'] = self::captchaEnabled()
-                ? 'Veuillez cocher la case « Je ne suis pas un robot ». '
-                : 'La vérification de sécurité n’est pas configurée pour cet environnement.';
+            if (!$this->verifierCaptcha()) {
+                $erreurs['captcha'] = 'Veuillez cocher la case « Je ne suis pas un robot ».';
+            }
             if (count($erreurs) == 0) {
                 $citoyen = $this->verifyLogin($old['email'], $old['password']);
                 if ($citoyen) {

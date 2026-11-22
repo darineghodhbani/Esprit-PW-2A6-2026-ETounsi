@@ -49,12 +49,12 @@
                         <?php endif; ?>
                     </div>
 
-                    <?php if (CitoyenController::captchaEnabled() || isset($erreurs['captcha'])): ?>
                     <div class="field">
-                        <?php if (CitoyenController::captchaEnabled()): ?><div class="g-recaptcha" data-sitekey="<?= e(CitoyenController::captchaSiteKey()) ?>"></div><?php endif; ?>
-                        <?php if (isset($erreurs['captcha'])): ?><p class="field-error"><?= e($erreurs['captcha']) ?></p><?php endif; ?>
+                        <div class="g-recaptcha" data-sitekey="<?php echo CitoyenController::CAPTCHA_SITE_KEY; ?>"></div>
+                        <?php if (isset($erreurs['captcha'])): ?>
+                            <p class="field-error"><?php echo $erreurs['captcha']; ?></p>
+                        <?php endif; ?>
                     </div>
-                    <?php endif; ?>
 
                     <button class="button button-brand button-full" type="submit"><?php echo t('login.submit'); ?></button>
                     <a class="button button-outline button-full" href="index.php?page=signup"><?php echo t('login.register'); ?></a>
@@ -81,6 +81,6 @@
     <?php require_once __DIR__ . '/includes/footer.php'; ?>
     <?php require_once __DIR__ . '/includes/scripts.php'; ?>
     <script src="assets/frontoffice/js/validation.js"></script>
-    <?php if (CitoyenController::captchaEnabled()): ?><script src="https://www.google.com/recaptcha/api.js" async defer></script><?php endif; ?>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </body>
 </html>
