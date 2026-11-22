@@ -8,6 +8,45 @@
     </div>
     <div class="poste-table-actions"><a class="btn-custom btn-custom-primary" href="?espace=admin&amp;page=addUser"><i class="bi bi-plus-lg" aria-hidden="true"></i> Ajouter un utilisateur</a></div>
 </div>
+
+<div class="row g-4 mb-4">
+  <div class="col-12 col-md-3">
+    <div class="card card-stat">
+      <div class="card-header">
+        <span class="stat-label">Total des comptes</span>
+        <span class="stat-icone stat-gris"><i class="bi bi-people-fill"></i></span>
+      </div>
+      <div class="stat-value"><?php echo $nbCitoyens + $nbAgents + $nbAdmins; ?></div>
+    </div>
+  </div>
+  <div class="col-12 col-md-3">
+    <div class="card card-stat">
+      <div class="card-header">
+        <span class="stat-label">Citoyens</span>
+        <span class="stat-icone stat-gris"><i class="bi bi-person-fill"></i></span>
+      </div>
+      <div class="stat-value"><?php echo $nbCitoyens; ?></div>
+    </div>
+  </div>
+  <div class="col-12 col-md-3">
+    <div class="card card-stat">
+      <div class="card-header">
+        <span class="stat-label">Agents</span>
+        <span class="stat-icone stat-jaune"><i class="bi bi-person-badge-fill"></i></span>
+      </div>
+      <div class="stat-value"><?php echo $nbAgents; ?></div>
+    </div>
+  </div>
+  <div class="col-12 col-md-3">
+    <div class="card card-stat">
+      <div class="card-header">
+        <span class="stat-label">Administrateurs</span>
+        <span class="stat-icone stat-rouge"><i class="bi bi-shield-lock-fill"></i></span>
+      </div>
+      <div class="stat-value"><?php echo $nbAdmins; ?></div>
+    </div>
+  </div>
+</div>
 <section class="table-card-custom" aria-label="Comptes utilisateurs">
     <form method="get" class="table-header-control poste-filter" action="" novalidate>
         <input type="hidden" name="espace" value="admin">

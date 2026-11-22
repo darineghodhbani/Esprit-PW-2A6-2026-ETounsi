@@ -48,6 +48,19 @@ class CitoyenController extends Controller {
         }
     }
 
+    // Compte les utilisateurs d'un rôle (comme countByRole du workshop).
+    public function compterParRole($role) {
+        $sql = 'SELECT COUNT(*) FROM citoyen WHERE role = :role';
+        $db = Database::getConnection();
+        try {
+            $query = $db->prepare($sql);
+            $query->execute(['role' => $role]);
+            return (int) $query->fetchColumn();
+        } catch (Exception $e) {
+            echo 'Error: ' . $e->getMessage();
+        }
+    }
+
     // CREATE : ajoute un utilisateur (comme addPersonne du cours).
     // Le mot de passe est haché avec password_hash avant d'être enregistré.
     public function ajouterCitoyen(Citoyen $citoyen) {
@@ -513,6 +526,10 @@ class CitoyenController extends Controller {
         $this->renderBack('utilisateurs/userList', [
             'title' => 'Gestion des utilisateurs', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs',
             'liste' => $liste, 'recherche' => $recherche, 'roles' => self::ROLES, 'csrfToken' => csrfToken(),
+            // Statistiques par rôle
+            'nbCitoyens' => $this->compterParRole('citoyen'),
+            'nbAgents' => $this->compterParRole('agent'),
+            'nbAdmins' => $this->compterParRole('admin'),
         ]);
     }
 
