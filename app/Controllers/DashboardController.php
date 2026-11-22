@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/Controller.php';
+require_once __DIR__ . '/ColisController.php';
 
 class DashboardController extends Controller {
 
@@ -10,6 +11,7 @@ class DashboardController extends Controller {
         $this->renderBack('dashboard', [
             'title'       => 'Tableau de bord — E-Tounsi',
             'currentPage' => 'dashboard',
+            'poste' => (new ColisController())->statistiques(),
         ]);
     }
 }

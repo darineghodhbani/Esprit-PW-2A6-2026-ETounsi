@@ -298,4 +298,6 @@ return [
     "footer.rights" => "Tous droits réservés.",
     "info.project.team" => "Projet réalisé dans le cadre du module Technologies Web (2A) à Esprit School of Engineering, année universitaire 2026/2027, par l’équipe Power Girls.",
     "info.privacy.roles" => "Les mots de passe sont hashés côté serveur et l’accès aux espaces est contrôlé par rôle (citoyen, agent, admin).",
+    'service.poste.suivi' => 'Suivre un colis',
+    'service.poste.historique' => 'Mes colis',
 ];

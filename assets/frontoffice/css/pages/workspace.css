@@ -7,6 +7,7 @@
 }
 
 .workspace-sidebar {
+  min-width: 0;
   border-inline-end: 1px solid var(--color-border);
   padding-inline-end: 32px;
 }
@@ -70,6 +71,10 @@
   padding: 12px;
   margin-block-start: 40px;
   min-height: 44px;
+}
+
+.workspace-content {
+  min-width: 0;
 }
 
 .workspace-content h1 {
@@ -142,7 +147,7 @@
 
 @media (max-width: 800px) {
   .workspace {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .workspace-sidebar {
     border: 0;

@@ -14,16 +14,16 @@
 
         <div class="dropdown">
             <button class="navbar-profile-btn dropdown-toggle" type="button" data-bs-toggle="dropdown"
-                    aria-expanded="false" id="profile-dropdown">
+                    aria-expanded="false" id="profile-dropdown" aria-label="Menu du compte">
                 <span class="avatar-cercle"><i class="bi bi-person-fill"></i></span>
-                <span class="navbar-profile-name d-none d-md-inline"><?php echo e($_SESSION['prenom']); ?></span>
+                <span class="navbar-profile-name d-none d-md-inline"><?php echo e($_SESSION['prenom'] ?: $_SESSION['nom']); ?></span>
                 <i class="bi bi-chevron-down navbar-profile-caret"></i>
             </button>
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-profile" aria-labelledby="profile-dropdown">
-                <li class="dropdown-header">Bonjour <?php echo e($_SESSION['prenom']); ?> !</li>
+                <li class="dropdown-header">Bonjour <?php echo e($_SESSION['prenom'] ?: $_SESSION['nom']); ?> !</li>
                 <li><a class="dropdown-item" href="index.php?page=profile"><i class="bi bi-person"></i> Mon profil</a></li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item text-danger" href="index.php?page=logout"><i class="bi bi-box-arrow-right"></i> Se déconnecter</a></li>
+                <li><form method="post" action="index.php?page=logout" class="logout-inline"><input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>"><button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right"></i> Se déconnecter</button></form></li>
             </ul>
         </div>
     </div>

@@ -17,3 +17,6 @@ uploads/*
 !uploads/cnam/
 uploads/cnam/*
 !uploads/cnam/.gitkeep
+
+# Configuration privee de la machine
+config.local.php

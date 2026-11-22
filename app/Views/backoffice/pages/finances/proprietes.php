@@ -40,6 +40,7 @@
                 <a href="index.php?page=admin-propriete-update&id=<?php echo $p['id']; ?>" class="table-btn-action" title="Modifier"><i class="bi bi-pencil"></i></a>
                 <form method="post" action="index.php?page=admin-propriete-delete" class="d-inline"
                       data-confirm="Supprimer cette propriété et tous ses impôts ?">
+<input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
                   <input type="hidden" name="id" value="<?php echo $p['id']; ?>">
                   <button type="submit" class="table-btn-action delete border-0" title="Supprimer"><i class="bi bi-trash"></i></button>
                 </form>

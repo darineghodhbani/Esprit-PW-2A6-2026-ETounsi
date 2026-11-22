@@ -135,7 +135,7 @@ a:hover {
     color: var(--text-sidebar-muted);
     padding-left: 0.75rem;
     margin-bottom: 0.75rem;
-    opacity: 0.6;
+    opacity: 1;
 }
 
 .sidebar-menu-list {

@@ -5,115 +5,56 @@ require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../Models/Propriete.php';
 
 class ProprieteController extends Controller {
+    private $modele;
+
+    public function __construct() {
+        $this->modele = new Propriete();
+    }
+
 
     public const TYPES = [
         'maison' => 'Maison', 'appartement' => 'Appartement', 'terrain' => 'Terrain',
         'voiture' => 'Voiture', 'local_commercial' => 'Local commercial',
     ];
 
-    public function listerProprietes() {
-        $sql = "SELECT propriete.*, CONCAT(citoyen.prenom, ' ', citoyen.nom) AS proprietaire
-                FROM propriete JOIN citoyen ON propriete.id_citoyen = citoyen.id_citoyen
-                ORDER BY propriete.id ASC";
-        $db = Database::getConnection();
-        try {
-            $liste = $db->query($sql);
-            return $liste->fetchAll();
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function listerProprietes()
+    {
+        return $this->modele->listerProprietes();
     }
 
-    public function listerProprietesCitoyen($idCitoyen) {
-        $sql = "SELECT * FROM propriete WHERE id_citoyen = :id_citoyen ORDER BY id ASC";
-        $db = Database::getConnection();
-        try {
-            $query = $db->prepare($sql);
-            $query->execute(['id_citoyen' => $idCitoyen]);
-            return $query->fetchAll();
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function listerProprietesCitoyen($idCitoyen)
+    {
+        return $this->modele->listerProprietesCitoyen($idCitoyen);
     }
 
-    public function recupererPropriete($id) {
-        $sql = "SELECT * FROM propriete WHERE id = :id";
-        $db = Database::getConnection();
-        try {
-            $query = $db->prepare($sql);
-            $query->execute(['id' => $id]);
-            return $query->fetch();
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function recupererPropriete($id)
+    {
+        return $this->modele->recupererPropriete($id);
     }
 
-    public function compterProprietes() {
-        $sql = "SELECT COUNT(*) FROM propriete";
-        $db = Database::getConnection();
-        try {
-            return $db->query($sql)->fetchColumn();
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function compterProprietes()
+    {
+        return $this->modele->compterProprietes();
     }
 
-    public function listerCitoyens() {
-        $sql = "SELECT id_citoyen, nom, prenom FROM citoyen WHERE role = 'citoyen' ORDER BY nom ASC";
-        $db = Database::getConnection();
-        try {
-            return $db->query($sql)->fetchAll();
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function listerCitoyens()
+    {
+        return $this->modele->listerCitoyens();
     }
 
-    public function ajouterPropriete(Propriete $propriete) {
-        $sql = "INSERT INTO propriete (id_citoyen, type, reference, adresse, valeur)
-                VALUES (:id_citoyen, :type, :reference, :adresse, :valeur)";
-        $db = Database::getConnection();
-        try {
-            $query = $db->prepare($sql);
-            $query->execute([
-                'id_citoyen' => $propriete->getIdCitoyen(),
-                'type' => $propriete->getType(),
-                'reference' => $propriete->getReference(),
-                'adresse' => $propriete->getAdresse(),
-                'valeur' => $propriete->getValeur()
-            ]);
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function ajouterPropriete(Propriete $propriete)
+    {
+        return $this->modele->ajouterPropriete($propriete);
     }
 
-    public function modifierPropriete(Propriete $propriete, $id) {
-        $sql = "UPDATE propriete SET id_citoyen = :id_citoyen, type = :type, reference = :reference,
-                adresse = :adresse, valeur = :valeur WHERE id = :id";
-        $db = Database::getConnection();
-        try {
-            $query = $db->prepare($sql);
-            $query->execute([
-                'id_citoyen' => $propriete->getIdCitoyen(),
-                'type' => $propriete->getType(),
-                'reference' => $propriete->getReference(),
-                'adresse' => $propriete->getAdresse(),
-                'valeur' => $propriete->getValeur(),
-                'id' => $id
-            ]);
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function modifierPropriete(Propriete $propriete, $id)
+    {
+        return $this->modele->modifierPropriete($propriete, $id);
     }
 
-    public function supprimerPropriete($id) {
-        $sql = "DELETE FROM propriete WHERE id = :id";
-        $db = Database::getConnection();
-        try {
-            $query = $db->prepare($sql);
-            $query->execute(['id' => $id]);
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function supprimerPropriete($id)
+    {
+        return $this->modele->supprimerPropriete($id);
     }
 
     public static function clean(array $post): array {

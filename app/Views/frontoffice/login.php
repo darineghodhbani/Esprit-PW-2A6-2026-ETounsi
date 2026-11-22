@@ -18,6 +18,7 @@
 
             <div class="login-panel">
                 <form method="post" action="index.php?page=login" class="stack" novalidate data-validate-form>
+<input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
 
                     <?php if (isset($_GET['inscrit'])): ?>
                         <div class="alert alert-success">
