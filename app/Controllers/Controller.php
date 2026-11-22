@@ -25,7 +25,7 @@ class Controller {
         $utilisateur = utilisateurConnecte();
         $pageTitle = $data['title'] ?? 'E-Tounsi';
         extract($data);
-        if (strpos($vue, 'poste/') === 0 || strpos($vue, 'cnam/') === 0) {
+        if (strpos($vue, 'poste/') === 0 || strpos($vue, 'cnam/') === 0 || strpos($vue, 'transport/') === 0) {
             ob_start();
             require __DIR__ . '/../Views/frontoffice/' . $vue . '.php';
             $content = ob_get_clean();

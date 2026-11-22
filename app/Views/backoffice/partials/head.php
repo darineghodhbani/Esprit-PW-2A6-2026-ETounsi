@@ -7,4 +7,5 @@
     <link rel="stylesheet" href="assets/backoffice/lib/bootstrap-icons/bootstrap-icons.css">
     <link rel="stylesheet" href="assets/backoffice/css/main.css">
 <link rel="stylesheet" href="assets/backoffice/css/poste.css">
+<link rel="stylesheet" href="assets/backoffice/css/transport.css">
 </head>

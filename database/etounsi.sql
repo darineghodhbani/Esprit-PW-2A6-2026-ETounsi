@@ -96,6 +96,18 @@ CREATE TABLE IF NOT EXISTS `station` (
   CONSTRAINT `station_ibfk_1` FOREIGN KEY (`id_ligne`) REFERENCES `ligne_transport` (`id_ligne`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS `horaire` (
+  `id_horaire` int(11) NOT NULL AUTO_INCREMENT,
+  `id_ligne` int(11) NOT NULL,
+  `sens` varchar(10) NOT NULL DEFAULT 'Aller',
+  `heure_depart` time NOT NULL,
+  `heure_arrivee` time NOT NULL,
+  `jours` varchar(30) NOT NULL DEFAULT 'Tous les jours',
+  PRIMARY KEY (`id_horaire`),
+  KEY `id_ligne` (`id_ligne`),
+  CONSTRAINT `horaire_ibfk_1` FOREIGN KEY (`id_ligne`) REFERENCES `ligne_transport` (`id_ligne`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS `service_municipal` (
   `id_service` int(11) NOT NULL AUTO_INCREMENT,
   `nom` varchar(100) NOT NULL,
@@ -206,7 +218,7 @@ CREATE TABLE IF NOT EXISTS `audit_logs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Initialiser les exemples uniquement si toutes les tables sont vides.
-SET @initialiser_demo = ((SELECT COUNT(*) FROM `citoyen`) = 0 AND (SELECT COUNT(*) FROM `bureau_postal`) = 0 AND (SELECT COUNT(*) FROM `colis`) = 0 AND (SELECT COUNT(*) FROM `propriete`) = 0 AND (SELECT COUNT(*) FROM `impot`) = 0 AND (SELECT COUNT(*) FROM `ligne_transport`) = 0 AND (SELECT COUNT(*) FROM `station`) = 0 AND (SELECT COUNT(*) FROM `service_municipal`) = 0 AND (SELECT COUNT(*) FROM `demande_municipale`) = 0 AND (SELECT COUNT(*) FROM `assure_social`) = 0 AND (SELECT COUNT(*) FROM `beneficiaire`) = 0 AND (SELECT COUNT(*) FROM `demande_remboursement`) = 0 AND (SELECT COUNT(*) FROM `document_cnam`) = 0 AND (SELECT COUNT(*) FROM `decision_cnam`) = 0 AND (SELECT COUNT(*) FROM `audit_logs`) = 0);
+SET @initialiser_demo = ((SELECT COUNT(*) FROM `citoyen`) = 0 AND (SELECT COUNT(*) FROM `bureau_postal`) = 0 AND (SELECT COUNT(*) FROM `colis`) = 0 AND (SELECT COUNT(*) FROM `propriete`) = 0 AND (SELECT COUNT(*) FROM `impot`) = 0 AND (SELECT COUNT(*) FROM `ligne_transport`) = 0 AND (SELECT COUNT(*) FROM `station`) = 0 AND (SELECT COUNT(*) FROM `horaire`) = 0 AND (SELECT COUNT(*) FROM `service_municipal`) = 0 AND (SELECT COUNT(*) FROM `demande_municipale`) = 0 AND (SELECT COUNT(*) FROM `assure_social`) = 0 AND (SELECT COUNT(*) FROM `beneficiaire`) = 0 AND (SELECT COUNT(*) FROM `demande_remboursement`) = 0 AND (SELECT COUNT(*) FROM `document_cnam`) = 0 AND (SELECT COUNT(*) FROM `decision_cnam`) = 0 AND (SELECT COUNT(*) FROM `audit_logs`) = 0);
 
 -- Mot de passe des deux comptes de demonstration : password.
 INSERT INTO citoyen (id_citoyen, nom, prenom, email, telephone, mot_de_passe, role, actif)
@@ -247,6 +259,15 @@ INSERT INTO station (id_station, nom, adresse, ordre, id_ligne)
 SELECT 1, 'Tunis Centre', 'Tunis', 1, 1 WHERE @initialiser_demo = 1
 UNION ALL SELECT 2, 'Ariana Centre', 'Ariana', 2, 1 WHERE @initialiser_demo = 1
 UNION ALL SELECT 3, 'Sousse Centre', 'Sousse', 2, 2 WHERE @initialiser_demo = 1;
+
+INSERT INTO horaire (id_horaire, id_ligne, sens, heure_depart, heure_arrivee, jours)
+SELECT 1, 1, 'Aller', '06:00:00', '06:25:00', 'Tous les jours' WHERE @initialiser_demo = 1
+UNION ALL SELECT 2, 1, 'Aller', '08:00:00', '08:25:00', 'Lundi - Vendredi' WHERE @initialiser_demo = 1
+UNION ALL SELECT 3, 1, 'Retour', '17:30:00', '17:55:00', 'Lundi - Vendredi' WHERE @initialiser_demo = 1
+UNION ALL SELECT 4, 1, 'Retour', '21:00:00', '21:25:00', 'Tous les jours' WHERE @initialiser_demo = 1
+UNION ALL SELECT 5, 2, 'Aller', '07:00:00', '09:30:00', 'Tous les jours' WHERE @initialiser_demo = 1
+UNION ALL SELECT 6, 2, 'Aller', '10:00:00', '12:30:00', 'Week-end' WHERE @initialiser_demo = 1
+UNION ALL SELECT 7, 2, 'Retour', '16:00:00', '18:30:00', 'Tous les jours' WHERE @initialiser_demo = 1;
 
 INSERT INTO service_municipal (id_service, nom, description, delai_traitement)
 SELECT 1, 'Acte de naissance', 'Exemple de service municipal.', 2 WHERE @initialiser_demo = 1

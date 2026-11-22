@@ -45,7 +45,8 @@ if (!in_array($_SERVER['REQUEST_METHOD'], $methodes, true)) {
     exit('Méthode non autorisée.');
 }
 // Les scripts Delete vérifient leur jeton avant de rediriger.
-$suppressionAdmin = in_array($route[0], ['BureauPostalController', 'ColisController', 'CitoyenController'], true)
+$suppressionAdmin = in_array($route[0], ['BureauPostalController', 'ColisController', 'CitoyenController',
+    'LigneTransportController', 'StationController', 'HoraireController'], true)
     && $route[1] === 'deleteBack';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$suppressionAdmin && !csrfValide($_POST['csrf'] ?? '')) {
     auditEvenement('ACCESS_DENIED', 'Jeton CSRF invalide pour la page ' . pageAudit() . '.');

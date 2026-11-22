@@ -38,6 +38,10 @@ function et_icon(string $name, string $class = ""): string
             '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>',
         "upload" => '<path d="M12 16V3m-5 5 5-5 5 5M4 16v4h16v-4"/>',
         "log-out" => '<path d="M9 3H4v18h5m6-14 5 5-5 5M8 12h12"/>',
+        "map-pin" =>
+            '<path d="M20 10c0 5-8 12-8 12s-8-7-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+        "ticket" =>
+            '<path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-2a2 2 0 0 0 0-4V8Zm10-2v2m0 3v2m0 3v2"/>',
         "help" =>
             '<circle cx="12" cy="12" r="9"/><path d="M9 8a3 3 0 0 1 6 0c0 2-3 2-3 4m0 4v1"/>',
     ];

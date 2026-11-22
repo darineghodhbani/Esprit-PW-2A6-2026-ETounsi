@@ -21,3 +21,4 @@
 <link rel="stylesheet" href="assets/frontoffice/css/pages/info.css">
 
 <link rel="stylesheet" href="assets/frontoffice/css/pages/poste.css">
+<link rel="stylesheet" href="assets/frontoffice/css/pages/transport.css">

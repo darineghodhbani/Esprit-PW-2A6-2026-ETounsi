@@ -16,6 +16,7 @@
       <div class="d-flex gap-2 mt-3">
         <a class="btn-custom btn-custom-light text-decoration-none" href="index.php?page=admin-lignes">Lignes</a>
         <a class="btn-custom btn-custom-light text-decoration-none" href="index.php?page=admin-stations">Stations</a>
+        <a class="btn-custom btn-custom-light text-decoration-none" href="index.php?page=admin-horaires">Horaires</a>
       </div>
     </div>
   </div>

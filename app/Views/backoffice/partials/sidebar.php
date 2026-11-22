@@ -11,6 +11,7 @@ $menu = [
     ['section' => 'Transport',    'module' => 'transport', 'items' => [
         ['page' => 'admin-lignes', 'label' => 'Lignes', 'icone' => 'bi-bus-front'],
         ['page' => 'admin-stations', 'label' => 'Stations', 'icone' => 'bi-geo-alt'],
+        ['page' => 'admin-horaires', 'label' => 'Horaires', 'icone' => 'bi-clock'],
     ]],
     ['section' => 'Municipalité', 'module' => 'municipalite', 'items' => [
         ['page' => 'admin-services', 'label' => 'Services', 'icone' => 'bi-building'],
