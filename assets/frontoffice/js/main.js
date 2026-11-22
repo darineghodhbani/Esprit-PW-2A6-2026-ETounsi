@@ -1,9 +1,14 @@
-window.addEventListener('load', () => {
+const hidePageSpinner = () => {
     const spinner = document.getElementById('spinner');
-    if (spinner) {
-        spinner.classList.add('hide');
-    }
-});
+    if (spinner) spinner.classList.add('hide');
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', hidePageSpinner, { once: true });
+} else {
+    hidePageSpinner();
+}
+window.setTimeout(hidePageSpinner, 1200);
 
 const menuToggle = document.querySelector('[data-menu-toggle]');
 const mainNav = document.getElementById('main-nav');

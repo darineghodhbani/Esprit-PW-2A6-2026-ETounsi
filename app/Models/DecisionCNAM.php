@@ -1,38 +1,54 @@
 <?php
 
 class DecisionCNAM {
-    private ?int $idDecision;
-    private ?string $decision;
-    private ?string $motif;
-    private ?float $montantAccorde;
-    private ?string $dateDecision;
-    private ?int $idRemboursement;
+    private ?int $id;
+    private ?int $idDemande;
     private ?int $idAgent;
+    private ?string $resultat;
+    private ?string $motif;
+    private ?string $montantAccorde;
+    private ?string $dateDecision;
 
-    public function __construct(?int $idDecision, ?string $decision, ?string $motif, ?float $montantAccorde, ?string $dateDecision, ?int $idRemboursement, ?int $idAgent) {
-        $this->idDecision = $idDecision;
-        $this->decision = $decision;
+    public function __construct(?int $id, ?int $idDemande, ?int $idAgent, ?string $resultat, ?string $motif, ?string $montantAccorde, ?string $dateDecision) {
+        $this->id = $id;
+        $this->idDemande = $idDemande;
+        $this->idAgent = $idAgent;
+        $this->resultat = $resultat;
         $this->motif = $motif;
         $this->montantAccorde = $montantAccorde;
         $this->dateDecision = $dateDecision;
-        $this->idRemboursement = $idRemboursement;
+    }
+
+    public function getId(): ?int {
+        return $this->id;
+    }
+
+    public function setId(?int $id): void {
+        $this->id = $id;
+    }
+
+    public function getIdDemande(): ?int {
+        return $this->idDemande;
+    }
+
+    public function setIdDemande(?int $idDemande): void {
+        $this->idDemande = $idDemande;
+    }
+
+    public function getIdAgent(): ?int {
+        return $this->idAgent;
+    }
+
+    public function setIdAgent(?int $idAgent): void {
         $this->idAgent = $idAgent;
     }
 
-    public function getIdDecision(): ?int {
-        return $this->idDecision;
+    public function getResultat(): ?string {
+        return $this->resultat;
     }
 
-    public function setIdDecision(?int $idDecision): void {
-        $this->idDecision = $idDecision;
-    }
-
-    public function getDecision(): ?string {
-        return $this->decision;
-    }
-
-    public function setDecision(?string $decision): void {
-        $this->decision = $decision;
+    public function setResultat(?string $resultat): void {
+        $this->resultat = $resultat;
     }
 
     public function getMotif(): ?string {
@@ -43,11 +59,11 @@ class DecisionCNAM {
         $this->motif = $motif;
     }
 
-    public function getMontantAccorde(): ?float {
+    public function getMontantAccorde(): ?string {
         return $this->montantAccorde;
     }
 
-    public function setMontantAccorde(?float $montantAccorde): void {
+    public function setMontantAccorde(?string $montantAccorde): void {
         $this->montantAccorde = $montantAccorde;
     }
 
@@ -57,21 +73,5 @@ class DecisionCNAM {
 
     public function setDateDecision(?string $dateDecision): void {
         $this->dateDecision = $dateDecision;
-    }
-
-    public function getIdRemboursement(): ?int {
-        return $this->idRemboursement;
-    }
-
-    public function setIdRemboursement(?int $idRemboursement): void {
-        $this->idRemboursement = $idRemboursement;
-    }
-
-    public function getIdAgent(): ?int {
-        return $this->idAgent;
-    }
-
-    public function setIdAgent(?int $idAgent): void {
-        $this->idAgent = $idAgent;
     }
 }

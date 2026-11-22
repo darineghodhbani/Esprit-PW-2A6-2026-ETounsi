@@ -1,7 +1,7 @@
 Options -Indexes
 Require local
 DirectoryIndex index.php
-<FilesMatch "^(config(?:\.local)?\.php|\.git|\.gitignore)$">
+<FilesMatch "^(config(?:\.local)?\.php|google\.local\.php|\.git|\.gitignore)$">
     Require all denied
 </FilesMatch>
 RedirectMatch 404 /\.git(?:/|$)

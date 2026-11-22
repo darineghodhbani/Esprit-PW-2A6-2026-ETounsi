@@ -30,34 +30,18 @@
   padding: 32px;
 }
 
-.demo-accounts {
-  margin-block-start: 32px;
-  border-top: 1px solid var(--color-border);
-  padding-block-start: 24px;
-  font-size: 0.75rem;
+.google-signin-form {
+  margin-block-start: 24px;
 }
 
-.demo-accounts > p {
-  margin-block: 12px;
-  line-height: 1.7;
-  color: var(--color-text-muted);
+.google-signin-button {
+  gap: 12px;
 }
 
-.demo-accounts > div {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 4px 12px;
-  margin-block: 8px;
-}
-
-.demo-accounts code {
-  font-size: 11px;
-  overflow-wrap: anywhere;
-}
-
-.demo-accounts small {
-  color: var(--color-text-muted);
+.google-signin-mark {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
 }
 
 @media (max-width: 1100px) {

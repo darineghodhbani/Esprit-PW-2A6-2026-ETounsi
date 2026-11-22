@@ -4,7 +4,7 @@ require_once __DIR__ . '/icons.php';
 
 $estConnecte = !empty($_SESSION['id_citoyen']);
 $estStaff    = $estConnecte && in_array($_SESSION['role'], ['agent', 'admin'], true);
-$lienCompte  = $estConnecte ? ($estStaff ? 'dashboard' : 'profile') : 'login';
+$lienCompte  = $estConnecte ? ($estStaff ? ($_SESSION['role'] === 'agent' ? 'admin-demandes-cnam' : 'dashboard') : 'profile') : 'login';
 $autreLangue = et_lang() === 'fr' ? 'ar' : 'fr';
 ?>
 <a class="skip-link" href="#main"><?= e(t('nav.skip')) ?></a>

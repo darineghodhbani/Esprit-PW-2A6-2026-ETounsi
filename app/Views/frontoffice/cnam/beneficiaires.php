@@ -1,0 +1,13 @@
+<?php
+$intro=tr('Gérez le titulaire et les membres rattachés à votre dossier CNAM.','أدر المؤمن الرئيسي وأفراد العائلة المرتبطين بملفك.');
+require __DIR__ . '/../poste/page-heading.php';
+?>
+<div class="poste-section">
+    <?php if (isset($_SESSION['flash'])): ?><p class="alert alert-<?= e($_SESSION['flash']['type']==='danger'?'error':'success') ?>" role="status"><?= e($_SESSION['flash']['message']) ?></p><?php unset($_SESSION['flash']); endif; ?>
+    <div class="poste-actions"><a class="button button-dark" href="index.php?page=beneficiaire-form"><?= e(tr('Ajouter un bénéficiaire','إضافة مستفيد')) ?></a><a class="button button-light" href="index.php?page=remboursement-form"><?= e(tr('Nouvelle demande','طلب جديد')) ?></a></div>
+    <?php if (!$liste): ?><section class="content-panel"><p><?= e(tr('Créez d’abord votre dossier CNAM.','أنشئ ملفّك لدى الصندوق أولًا.')) ?></p><a class="button button-dark" href="index.php?page=mon-dossier"><?= e(tr('Créer mon dossier','إنشاء ملفّي')) ?></a></section>
+    <?php else: ?><div class="table-scroll" role="region" aria-label="<?= e(tr('Mes bénéficiaires','المستفيدون')) ?>" tabindex="0"><table class="table poste-history-table"><thead><tr><th><?= e(tr('Nom','الاسم')) ?></th><th><?= e(tr('Date de naissance','تاريخ الميلاد')) ?></th><th><?= e(tr('Lien','الصلة')) ?></th><th><?= e(tr('Validation','التثبت')) ?></th><th><?= e(tr('Documents','الوثائق')) ?></th><th><?= e(tr('Actions','الإجراءات')) ?></th></tr></thead><tbody>
+    <?php foreach ($liste as $b): $docs=$documentsParBeneficiaire[(int)$b['id_beneficiaire']]??[]; ?>
+        <tr><th scope="row"><?= e($b['prenom'].' '.$b['nom']) ?></th><td><?= e(date('d/m/Y',strtotime($b['date_naissance']))) ?></td><td><?= e(tr($b['lien_parente'],$b['lien_parente'])) ?></td><td><span class="status-badge"><?= e(tr($b['statut_validation'],$b['statut_validation'])) ?></span></td><td><?php foreach ($docs as $doc): ?><a href="index.php?page=document-cnam&amp;id=<?= e($doc['id_document']) ?>"><?= e($doc['nom_original']) ?></a><br><?php endforeach; ?><?php if (!$docs): ?>—<?php endif; ?></td><td><?php if ($b['lien_parente']!=='SOI' && $b['statut_validation']!=='VALIDE'): ?><div class="poste-actions"><a class="button button-light" href="index.php?page=beneficiaire-form&amp;id=<?= e($b['id_beneficiaire']) ?>"><?= e(tr('Modifier','تعديل')) ?></a><form method="post" action="index.php?page=beneficiaire-delete"><input type="hidden" name="csrf" value="<?= e($jeton) ?>"><input type="hidden" name="id_beneficiaire" value="<?= e($b['id_beneficiaire']) ?>"><button class="button button-light" type="submit"><?= e(tr('Supprimer','حذف')) ?></button></form></div><?php endif; ?></td></tr>
+    <?php endforeach; ?></tbody></table></div><?php endif; ?>
+</div>

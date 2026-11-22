@@ -4,12 +4,31 @@ require_once __DIR__ . '/Controller.php';
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../Models/Citoyen.php';
 require_once __DIR__ . '/AuditController.php';
+require_once __DIR__ . '/../GoogleSignIn.php';
+require_once __DIR__ . '/GoogleController.php';
 
 class CitoyenController extends Controller {
-    public const ROLES = ['citoyen' => 'Citoyen', 'admin' => 'Administrateur'];
+    public const ROLES = ['citoyen' => 'Citoyen', 'agent' => 'Agent', 'admin' => 'Administrateur'];
     public const ETATS = ['1' => 'Actif', '0' => 'Désactivé'];
-    public const CAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
-    public const CAPTCHA_SECRET_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
+
+    private static function captchaConfiguration(): array {
+        $local = is_file(__DIR__ . '/../../config.local.php') ? require __DIR__ . '/../../config.local.php' : [];
+        return [
+            'site_key' => is_string($local['recaptcha_site_key'] ?? null) ? trim($local['recaptcha_site_key']) : '',
+            'secret_key' => is_string($local['recaptcha_secret_key'] ?? null) ? trim($local['recaptcha_secret_key']) : '',
+            'environment' => getenv('APP_ENV') ?: ($local['app_env'] ?? 'production'),
+        ];
+    }
+
+    public static function captchaEnabled(): bool {
+        $config = self::captchaConfiguration();
+        return $config['site_key'] !== '' && $config['secret_key'] !== '';
+    }
+
+    public static function captchaSiteKey(): string {
+        $config = self::captchaConfiguration();
+        return self::captchaEnabled() ? $config['site_key'] : '';
+    }
 
     public function listerCitoyens() {
         $sql = "SELECT id_citoyen AS id, id_citoyen, nom, prenom, telephone, email, role, actif, version_session, created_at
@@ -474,10 +493,14 @@ class CitoyenController extends Controller {
     }
 
     public function verifierCaptcha(): bool {
+        $config = self::captchaConfiguration();
+        if ($config['site_key'] === '' || $config['secret_key'] === '') {
+            return $config['environment'] === 'development';
+        }
         $token = posteText($_POST, 'g-recaptcha-response');
         if ($token === '') return false;
         $url = 'https://www.google.com/recaptcha/api/siteverify'
-             . '?secret=' . self::CAPTCHA_SECRET_KEY . '&response=' . urlencode($token);
+             . '?secret=' . urlencode($config['secret_key']) . '&response=' . urlencode($token);
         $contexte = stream_context_create(['http' => ['timeout' => 8]]);
         $reponse = @file_get_contents($url, false, $contexte);
         if ($reponse === false) return false;
@@ -493,7 +516,9 @@ class CitoyenController extends Controller {
             $old['role'] = 'citoyen';
             $old['actif'] = '1';
             $erreurs = $this->verifierCitoyen($old, true, true);
-            if (!$this->verifierCaptcha()) $erreurs['captcha'] = 'Veuillez cocher la case « Je ne suis pas un robot ».';
+            if (!$this->verifierCaptcha()) $erreurs['captcha'] = self::captchaEnabled()
+                ? 'Veuillez cocher la case « Je ne suis pas un robot ». '
+                : 'La vérification de sécurité n’est pas configurée pour cet environnement.';
             if (count($erreurs) == 0) {
                 $citoyen = new Citoyen(null, $old['nom'], $old['email'], $old['password'], 'citoyen', 1, $old['prenom'], $old['telephone'], null);
                 $resultat = $this->ajouterCitoyen($citoyen, $old['confirmation']);
@@ -514,12 +539,16 @@ class CitoyenController extends Controller {
             $old = self::clean($_POST);
             if (!filter_var($old['email'], FILTER_VALIDATE_EMAIL)) $erreurs['email'] = 'L’email n’est pas valide.';
             if ($old['password'] === '') $erreurs['mot_de_passe'] = 'Le mot de passe est obligatoire.';
-            if (!$this->verifierCaptcha()) $erreurs['captcha'] = 'Veuillez cocher la case « Je ne suis pas un robot ».';
+            if (!$this->verifierCaptcha()) $erreurs['captcha'] = self::captchaEnabled()
+                ? 'Veuillez cocher la case « Je ne suis pas un robot ». '
+                : 'La vérification de sécurité n’est pas configurée pour cet environnement.';
             if (count($erreurs) == 0) {
                 $citoyen = $this->verifyLogin($old['email'], $old['password']);
                 if ($citoyen) {
                     connecterUtilisateur($citoyen);
-                    header('Location: index.php?page=' . ($citoyen['role'] === 'citoyen' ? 'home' : 'dashboard'), true, 303);
+                    $destination = $citoyen['role'] === 'admin' ? 'dashboard'
+                        : ($citoyen['role'] === 'agent' ? 'admin-demandes-cnam' : 'home');
+                    header('Location: index.php?page=' . $destination, true, 303);
                     exit;
                 }
                 $erreurs['global'] = 'Email ou mot de passe incorrect.';
@@ -556,7 +585,10 @@ class CitoyenController extends Controller {
             }
             http_response_code(422);
         }
-        $this->renderFront('profile', ['title' => t('profil.titre'), 'currentPage' => 'profile', 'citoyen' => $citoyen, 'old' => $old, 'erreurs' => $erreurs]);
+        $googleReady = $citoyen['role'] === 'citoyen' && GoogleSignIn::configured();
+        $googleLinked = $googleReady && (new GoogleController())->liee($citoyen['id']);
+        $this->renderFront('profile', ['title' => t('profil.titre'), 'currentPage' => 'profile', 'citoyen' => $citoyen,
+            'old' => $old, 'erreurs' => $erreurs, 'googleReady' => $googleReady, 'googleLinked' => $googleLinked]);
     }
 
     public static function requireLogin(): void {
