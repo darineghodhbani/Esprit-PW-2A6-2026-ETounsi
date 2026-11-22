@@ -13,6 +13,7 @@
 
 <div class="card border-light shadow-sm p-4 mb-4">
   <form method="post" action="index.php?page=admin-impot-update&id=<?php echo $id; ?>" novalidate data-validate-form>
+<input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
     <div class="row g-3">
       <div class="col-12 col-md-6">
         <label for="id_propriete" class="form-label-custom">Propriété</label>

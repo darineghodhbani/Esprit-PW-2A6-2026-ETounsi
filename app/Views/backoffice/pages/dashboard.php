@@ -72,3 +72,49 @@
     </div>
   </div>
 </div>
+
+<section class="poste-admin" aria-label="Activité du module Poste">
+<?php
+$stats = $poste['stats'];
+$parcels = $poste['parcels'];
+$statusCounts = $poste['statusCounts'];
+$section = 'dashboard';
+?>
+<section class="poste-hero" aria-labelledby="tableau-de-bord">
+    <span class="poste-hero-label">Administration · Poste</span>
+    <h2 id="tableau-de-bord" class="page-title">Activité Poste</h2>
+    <p>Bienvenue dans votre espace de gestion des colis et des bureaux de poste.</p>
+    <a class="btn-custom btn-custom-primary" href="?espace=admin&amp;page=addColis"><i class="bi bi-plus-lg" aria-hidden="true"></i> Enregistrer un colis</a>
+</section>
+
+<div class="poste-metrics" aria-label="Chiffres du module Poste">
+    <?php foreach ($stats as $stat): ?>
+        <div class="poste-metric">
+            <span class="poste-metric-icon"><i class="bi bi-<?= e($stat['icon']) ?>" aria-hidden="true"></i></span>
+            <div><strong><?= e($stat['value']) ?></strong><span><?= e($stat['label']) ?></span></div>
+        </div>
+    <?php endforeach; ?>
+</div>
+
+<section class="poste-distribution" aria-labelledby="repartition">
+    <h2 id="repartition">Statuts des colis</h2>
+    <dl>
+        <?php foreach ($statusCounts as $status => $count): ?>
+            <div><dt><?= e($status) ?></dt><dd><?= e($count) ?></dd></div>
+        <?php endforeach; ?>
+    </dl>
+</section>
+
+<section class="table-card-custom" aria-labelledby="derniers-colis">
+    <div class="table-header-control poste-card-header">
+        <h2 id="derniers-colis">Derniers colis</h2>
+        <a class="btn-custom btn-custom-light" href="?espace=admin&amp;page=colis">Voir tous les colis <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+    </div>
+    <?php if ($parcels === []): ?>
+        <p class="poste-empty">Aucun colis enregistré.</p>
+    <?php else: ?>
+        <?php require __DIR__ . '/../partials/poste-colis.php'; ?>
+    <?php endif; ?>
+</section>
+
+</section>

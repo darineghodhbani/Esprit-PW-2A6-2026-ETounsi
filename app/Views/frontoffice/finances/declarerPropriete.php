@@ -23,6 +23,7 @@
 
                 <div class="profile-card surface">
                     <form method="post" action="index.php?page=declarer-propriete" class="stack" novalidate data-validate-form>
+<input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
                         <div class="field-row">
                             <div class="field">
                                 <label for="type">Type de propriété</label>

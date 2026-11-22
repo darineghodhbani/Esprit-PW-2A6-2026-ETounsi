@@ -1,4 +1,3 @@
-<script src="assets/frontoffice/js/transitions.js"></script>
 <script src="assets/frontoffice/js/main.js"></script>
 <?php if (($currentPage ?? '') === 'home'): ?>
 

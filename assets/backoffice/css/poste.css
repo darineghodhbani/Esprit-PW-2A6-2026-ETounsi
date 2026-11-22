@@ -1,0 +1,56 @@
+.poste-admin { padding: 32px; min-width: 0; }
+.poste-admin .poste-page-header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; }
+.poste-admin .poste-form-card { background: var(--card-background); padding: 28px; border: 1px solid var(--border-light); border-radius: var(--radius-xl); max-width: 880px; }
+.poste-admin .poste-back { display: inline-flex; gap: 8px; margin-block-end: 16px; text-decoration: none; color: var(--text-muted-green); }
+.poste-admin .poste-field { margin-block-end: 20px; }
+.poste-admin .poste-field label, .poste-admin .poste-filter-field label { display: block; font-weight: 600; margin-block-end: 8px; }
+.poste-admin .form-control-custom { display: block; width: 100%; border: 1px solid var(--border-light); border-radius: var(--radius-md); min-height: 46px; padding: 10px 14px; color: var(--text-main); background: white; font: inherit; }
+.poste-admin .form-control-custom:focus { outline: 2px solid var(--brand-forest-medium); outline-offset: 2px; }
+.poste-admin .form-control-custom.is-invalid { border-color: var(--sys-red); }
+.poste-admin .poste-form-intro, .poste-admin .form-text { color: var(--text-muted-green); margin-block-end: 18px; }
+.poste-admin .poste-table-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.poste-admin .poste-table-actions form { margin: 0; }
+.poste-admin .btn-custom { min-height: 44px; text-decoration: none; }
+.poste-admin .btn-custom-sm { padding: 7px 12px; font-size: .82rem; }
+.poste-admin .btn-custom-danger { color: #9e1b2a; background: #fff1f2; border: 1px solid #f3c6cd; }
+.poste-admin .poste-filter { display: flex; flex-wrap: wrap; gap: 14px; align-items: end; padding: 20px; }
+.poste-admin .poste-filter-field { flex: 1 1 220px; }
+.poste-admin .poste-empty { padding: 24px; margin: 0; }
+.poste-admin .poste-status { display: inline-block; border: 1px solid var(--border-light); border-radius: 999px; padding: 4px 10px; font-size: .82rem; white-space: nowrap; }
+.poste-admin .poste-status-delivered { color: #176534; background: #f0fdf4; }
+.poste-admin .poste-status-cancelled { color: #9e1b2a; background: #fff1f2; }
+.poste-admin .poste-details { display: flex; flex-wrap: wrap; gap: 22px; padding: 20px; background: var(--bs-body-bg); border-radius: var(--radius-md); }
+.poste-admin .poste-details dt { color: var(--text-muted-green); font-size: .8rem; }
+.poste-admin .poste-details dd { margin-block: 8px 0; overflow-wrap: anywhere; }
+.poste-admin .poste-password { display: flex; gap: 8px; align-items: start; }
+.poste-admin .poste-password input { min-width: 0; flex: 1; }
+.poste-admin .poste-password button { flex-shrink: 0; }
+.poste-admin .poste-delete-icon { display: block; font-size: 2rem; color: var(--brand-forest-medium); margin-block-end: 16px; }
+.poste-admin .table-custom th, .poste-admin .table-custom td { vertical-align: middle; }
+.poste-admin .table-responsive { max-width: 100%; }
+.logout-inline { display: inline-flex; margin: 0; }
+.logout-inline button { border: 0; background: transparent; font: inherit; text-align: start; cursor: pointer; }
+@media (max-width: 767px) {
+  .poste-admin { padding: 20px 16px; }
+  .poste-admin .poste-form-card { padding: 20px; }
+  .poste-admin .poste-filter > * { width: 100%; }
+}
+
+.poste-metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 16px; margin-block: 24px; }
+.poste-metric { display: flex; align-items: center; gap: 16px; padding: 20px; background: var(--card-background); border: 1px solid var(--border-light); border-radius: var(--radius-lg); }
+.poste-metric strong, .poste-metric span { display: block; }
+.poste-metric strong { font-size: 1.8rem; }
+.poste-metric-icon { color: var(--brand-forest-medium); font-size: 1.5rem; }
+.poste-distribution dl { display: flex; flex-wrap: wrap; gap: 16px; margin-block: 20px; }
+.poste-distribution dl > div { flex: 1 1 110px; padding: 14px; border: 1px solid var(--border-light); border-radius: var(--radius-md); background: white; }
+.poste-distribution dt { color: var(--text-muted-green); font-size: .8rem; }
+.poste-distribution dd { margin: 8px 0 0; font-size: 1.3rem; }
+.poste-hero p { margin-block: 12px 18px; }
+.audit-table { table-layout: fixed; width: 100%; min-width: 880px; }
+.audit-table th, .audit-table td { white-space: normal; overflow-wrap: anywhere; }
+.audit-table th:nth-child(1) { width: 16%; }
+.audit-table th:nth-child(2), .audit-table th:nth-child(3) { width: 18%; }
+.audit-table th:nth-child(4) { width: 12%; }
+.audit-table th:nth-child(5) { width: 22%; }
+.audit-table th:nth-child(6) { width: 14%; }
+.footer-custom a { color: var(--brand-forest-dark); }

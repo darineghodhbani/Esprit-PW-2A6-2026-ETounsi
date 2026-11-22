@@ -33,17 +33,18 @@ $autreLangue = et_lang() === 'fr' ? 'ar' : 'fr';
         </a>
         <?php if ($estConnecte): ?>
             <a class="button button-small button-dark account-button"
-               href="index.php?page=<?= $lienCompte ?>">
+               href="index.php?page=<?= $lienCompte ?>" aria-label="<?= e(t($estStaff ? 'nav.backoffice' : 'nav.account')) ?>">
                 <?= et_icon('user') ?>
                 <span><?= e(t($estStaff ? 'nav.backoffice' : 'nav.account')) ?></span>
             </a>
-            <a class="icon-button" href="index.php?page=logout"
+            <form method="post" action="index.php?page=logout" class="logout-inline"><input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>"><button type="submit" class="icon-button"
                aria-label="<?= e(t('nav.logout')) ?>" title="<?= e(t('nav.logout')) ?>">
                 <?= et_icon('log-out') ?>
-            </a>
+            </button></form>
         <?php else: ?>
             <a class="button button-small button-dark account-button"
                href="index.php?page=login"
+               aria-label="<?= e(t('nav.login')) ?>"
                <?= $currentPage === 'login' ? 'aria-current="page"' : '' ?>>
                 <?= et_icon('user') ?>
                 <span><?= e(t('nav.login')) ?></span>

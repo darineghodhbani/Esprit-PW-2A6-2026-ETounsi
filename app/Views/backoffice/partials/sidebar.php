@@ -5,6 +5,8 @@ $role = $_SESSION['role'] ?? 'citoyen';
 $menu = [
     ['section' => 'Général',      'module' => null, 'items' => [
         ['page' => 'dashboard', 'label' => 'Tableau de bord', 'icone' => 'bi-grid-fill'],
+        ['page' => 'admin-utilisateurs', 'label' => 'Utilisateurs', 'icone' => 'bi-people'],
+        ['page' => 'admin-audit', 'label' => 'Journal d’audit', 'icone' => 'bi-clock-history'],
     ]],
     ['section' => 'Transport',    'module' => 'transport', 'items' => [
         ['page' => 'admin-lignes', 'label' => 'Lignes', 'icone' => 'bi-bus-front'],

@@ -62,6 +62,7 @@
                                         <?php if ($i['statut'] == 'non_paye'): ?>
                                             <form method="post" action="index.php?page=payer-impot"
                                                   data-confirm="Vous devez régler <?php echo $i['montant']; ?> DT au bureau de poste. Confirmer ?">
+<input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
                                                 <input type="hidden" name="id" value="<?php echo $i['id']; ?>">
                                                 <button type="submit" class="button button-small button-dark">Payer</button>
                                             </form>

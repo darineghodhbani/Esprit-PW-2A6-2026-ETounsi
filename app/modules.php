@@ -66,9 +66,10 @@ return [
         'hotspot'      => ['u' => 0.619, 'v' => 0.625],
         'threshold'    => ['u' => 0.62, 'v' => 0.63],
         'approachScale' => 9,
-        'services'     => ['service.poste.bureaux', 'service.poste.envoi'],
-        'route'        => 'suivi-colis',
-        'ready'        => false,
+        'services'     => ['service.poste.bureaux', 'service.poste.envoi', 'service.poste.suivi', 'service.poste.historique'],
+        'pages'        => ['bureaux-poste', 'declarer-envoi', 'suivi-colis', 'mes-colis'],
+        'route'        => 'bureaux-poste',
+        'ready'        => true,
     ],
     'municipalite' => [
         'id'           => 'municipalite',

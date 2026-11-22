@@ -78,6 +78,7 @@
                 <a href="index.php?page=admin-impot-update&id=<?php echo $i['id']; ?>" class="table-btn-action" title="Modifier"><i class="bi bi-pencil"></i></a>
                 <form method="post" action="index.php?page=admin-impot-delete" class="d-inline"
                       data-confirm="Supprimer cet impôt ?">
+<input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
                   <input type="hidden" name="id" value="<?php echo $i['id']; ?>">
                   <button type="submit" class="table-btn-action delete border-0" title="Supprimer"><i class="bi bi-trash"></i></button>
                 </form>

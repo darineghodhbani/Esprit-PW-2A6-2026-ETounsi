@@ -6,147 +6,63 @@ require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../Models/Impot.php';
 
 class ImpotController extends Controller {
+    private $modele;
+
+    public function __construct() {
+        $this->modele = new Impot();
+    }
+
 
     public const STATUTS = ['non_paye' => 'Non payé', 'en_attente' => 'En attente de validation', 'paye' => 'Payé'];
 
-    public function listerImpots() {
-        $sql = "SELECT impot.*, propriete.reference FROM impot
-                JOIN propriete ON impot.id_propriete = propriete.id
-                ORDER BY impot.id ASC";
-        $db = Database::getConnection();
-        try {
-            $liste = $db->query($sql);
-            return $liste->fetchAll();
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function listerImpots()
+    {
+        return $this->modele->listerImpots();
     }
 
-    public function listerImpotsCitoyen($idCitoyen) {
-        $sql = "SELECT impot.*, propriete.reference FROM impot
-                JOIN propriete ON impot.id_propriete = propriete.id
-                WHERE propriete.id_citoyen = :id_citoyen
-                ORDER BY impot.id ASC";
-        $db = Database::getConnection();
-        try {
-            $query = $db->prepare($sql);
-            $query->execute(['id_citoyen' => $idCitoyen]);
-            return $query->fetchAll();
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function listerImpotsCitoyen($idCitoyen)
+    {
+        return $this->modele->listerImpotsCitoyen($idCitoyen);
     }
 
-    public function listerImpotsPayes($idCitoyen) {
-        $sql = "SELECT impot.*, propriete.reference, propriete.adresse FROM impot
-                JOIN propriete ON impot.id_propriete = propriete.id
-                WHERE propriete.id_citoyen = :id_citoyen AND impot.statut = 'paye'
-                ORDER BY impot.id ASC";
-        $db = Database::getConnection();
-        try {
-            $query = $db->prepare($sql);
-            $query->execute(['id_citoyen' => $idCitoyen]);
-            return $query->fetchAll();
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function listerImpotsPayes($idCitoyen)
+    {
+        return $this->modele->listerImpotsPayes($idCitoyen);
     }
 
-    public function recupererImpot($id) {
-        $sql = "SELECT * FROM impot WHERE id = :id";
-        $db = Database::getConnection();
-        try {
-            $query = $db->prepare($sql);
-            $query->execute(['id' => $id]);
-            return $query->fetch();
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function recupererImpot($id)
+    {
+        return $this->modele->recupererImpot($id);
     }
 
-    public function compterImpots($statut) {
-        $sql = "SELECT COUNT(*) FROM impot WHERE statut = :statut";
-        $db = Database::getConnection();
-        try {
-            $query = $db->prepare($sql);
-            $query->execute(['statut' => $statut]);
-            return $query->fetchColumn();
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function compterImpots($statut)
+    {
+        return $this->modele->compterImpots($statut);
     }
 
-    public function ajouterImpot(Impot $impot) {
-        $sql = "INSERT INTO impot (id_propriete, annee, montant, date_limite, statut)
-                VALUES (:id_propriete, :annee, :montant, :date_limite, :statut)";
-        $db = Database::getConnection();
-        try {
-            $query = $db->prepare($sql);
-            $query->execute([
-                'id_propriete' => $impot->getIdPropriete(),
-                'annee' => $impot->getAnnee(),
-                'montant' => $impot->getMontant(),
-                'date_limite' => $impot->getDateLimite(),
-                'statut' => $impot->getStatut()
-            ]);
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function ajouterImpot(Impot $impot)
+    {
+        return $this->modele->ajouterImpot($impot);
     }
 
-    public function modifierImpot(Impot $impot, $id) {
-        $sql = "UPDATE impot SET id_propriete = :id_propriete, annee = :annee, montant = :montant,
-                date_limite = :date_limite, statut = :statut WHERE id = :id";
-        $db = Database::getConnection();
-        try {
-            $query = $db->prepare($sql);
-            $query->execute([
-                'id_propriete' => $impot->getIdPropriete(),
-                'annee' => $impot->getAnnee(),
-                'montant' => $impot->getMontant(),
-                'date_limite' => $impot->getDateLimite(),
-                'statut' => $impot->getStatut(),
-                'id' => $id
-            ]);
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function modifierImpot(Impot $impot, $id)
+    {
+        return $this->modele->modifierImpot($impot, $id);
     }
 
-    public function supprimerImpot($id) {
-        $sql = "DELETE FROM impot WHERE id = :id";
-        $db = Database::getConnection();
-        try {
-            $query = $db->prepare($sql);
-            $query->execute(['id' => $id]);
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function supprimerImpot($id)
+    {
+        return $this->modele->supprimerImpot($id);
     }
 
-    public function recupererImpotCitoyen($id, $idCitoyen) {
-        $sql = "SELECT impot.* FROM impot
-                JOIN propriete ON impot.id_propriete = propriete.id
-                WHERE impot.id = :id AND propriete.id_citoyen = :id_citoyen";
-        $db = Database::getConnection();
-        try {
-            $query = $db->prepare($sql);
-            $query->execute(['id' => $id, 'id_citoyen' => $idCitoyen]);
-            return $query->fetch();
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function recupererImpotCitoyen($id, $idCitoyen)
+    {
+        return $this->modele->recupererImpotCitoyen($id, $idCitoyen);
     }
 
-    public function changerStatut($id, $statut) {
-        $sql = "UPDATE impot SET statut = :statut WHERE id = :id";
-        $db = Database::getConnection();
-        try {
-            $query = $db->prepare($sql);
-            $query->execute(['statut' => $statut, 'id' => $id]);
-        } catch (Exception $e) {
-            echo 'Error: ' . $e->getMessage();
-        }
+    public function changerStatut($id, $statut)
+    {
+        return $this->modele->changerStatut($id, $statut);
     }
 
     public static function clean(array $post): array {

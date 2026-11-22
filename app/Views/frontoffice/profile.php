@@ -28,9 +28,9 @@
                         </a>
                     <?php endif; ?>
                 </nav>
-                <a class="sidebar-logout" href="index.php?page=logout">
+                <form method="post" action="index.php?page=logout" class="logout-inline"><input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>"><button type="submit" class="sidebar-logout">
                     <?php echo et_icon('log-out'); ?> <?php echo t('nav.logout'); ?>
-                </a>
+                </button></form>
             </aside>
 
             <div class="workspace-content">
@@ -58,8 +58,25 @@
                         <dt><?php echo t('account.since'); ?></dt>
                         <dd><?php echo $citoyen['date_inscription']; ?></dd>
                     </dl>
-                    <p class="small-note"><?php echo t('account.edit.note'); ?></p>
                 </div>
+
+                <?php if (isset($_SESSION['flash'])): ?><p class="alert alert-success" role="status"><?= e($_SESSION['flash']['message']) ?></p><?php unset($_SESSION['flash']); endif; ?>
+                <?php if ($erreurs !== []): ?><div class="alert alert-error" role="alert"><?php foreach ($erreurs as $message): ?><p><?= e($message) ?></p><?php endforeach; ?></div><?php endif; ?>
+                <form class="stack profile-edit" method="post" action="index.php?page=profile" novalidate>
+                    <input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+                    <?php foreach (['nom' => [tr('Nom complet', 'الاسم الكامل'), 'text'], 'email' => [tr('Adresse email', 'البريد الإلكتروني'), 'email'],
+                        'mot_de_passe_actuel' => [tr('Mot de passe actuel', 'كلمة المرور الحالية'), 'password'],
+                        'password' => [tr('Nouveau mot de passe', 'كلمة مرور جديدة'), 'password'], 'confirmation' => [tr('Confirmer le mot de passe', 'تأكيد كلمة المرور'), 'password']] as $champ => $info): ?>
+                    <div class="field"><label for="<?= e($champ) ?>"><?= e($info[0]) ?></label>
+                        <input id="<?= e($champ) ?>" name="<?= e($champ) ?>" type="<?= e($info[1]) ?>" <?= $info[1] !== 'password' ? 'required' : '' ?>
+                            value="<?= e($info[1] === 'password' ? '' : $valeurs[$champ]) ?>"
+                            autocomplete="<?= $champ === 'mot_de_passe_actuel' ? 'current-password' : ($info[1] === 'password' ? 'new-password' : ($champ === 'email' ? 'email' : 'name')) ?>"
+                            <?= isset($erreurs[$champ]) ? 'aria-invalid="true" aria-describedby="erreur-' . e($champ) . '"' : '' ?>>
+                        <?php if (isset($erreurs[$champ])): ?><small class="field-error" id="erreur-<?= e($champ) ?>"><?= e($erreurs[$champ]) ?></small><?php endif; ?>
+                    </div><?php endforeach; ?>
+                    <p class="page-lead"><?= e(tr('Laissez les nouveaux mots de passe vides pour conserver le vôtre. Le mot de passe actuel est nécessaire pour modifier vos identifiants.', 'اترك كلمة المرور الجديدة فارغة للاحتفاظ بكلمتك الحالية.')) ?></p>
+                    <button class="button button-dark" type="submit"><?= e(tr('Enregistrer mon profil', 'حفظ ملفّي الشخصي')) ?></button>
+                </form>
             </div>
         </div>
     </main>

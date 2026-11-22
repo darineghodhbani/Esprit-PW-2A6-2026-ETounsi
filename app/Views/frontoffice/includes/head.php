@@ -19,3 +19,5 @@
 <link rel="stylesheet" href="assets/frontoffice/css/pages/module.css">
 <link rel="stylesheet" href="assets/frontoffice/css/pages/workspace.css">
 <link rel="stylesheet" href="assets/frontoffice/css/pages/info.css">
+
+<link rel="stylesheet" href="assets/frontoffice/css/pages/poste.css">
