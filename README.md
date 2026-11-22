@@ -52,7 +52,7 @@ E-Tounsi/
 │           └── pages/
 │               ├── dashboard.php
 │               ├── utilisateurs/
-│               ├── commun/  suppression et messages partagés
+│               ├── commun/  messages partagés
 │               ├── poste/
 │               ├── finances/
 │               ├── audit/index.php
@@ -74,9 +74,9 @@ Les listes `bureauList.php` et `colisList.php` chargent leurs données et compte
 
 Les pages `updateBureau.php` et `updateColis.php` chargent la ligne par son identifiant, traitent `POST` et affichent le formulaire prérempli avec `$old` et `$erreurs`. Les scripts `deleteBureau.php` et `deleteColis.php` contrôlent le rôle, la méthode `POST` et le jeton CSRF avant de supprimer, puis redirigent vers la liste avec un message. Le routeur leur confie ce contrôle CSRF afin qu’ils puissent afficher le message de refus après redirection. La suppression d’un bureau associé à des colis reste interdite.
 
-La gestion utilisateurs suit les mêmes pages simples : `userList.php` charge les comptes et la recherche en haut du fichier ; `addUser.php` et `updateUser.php` traitent `POST` puis affichent leurs formulaires ; `deleteUser.php` vérifie le rôle, `POST` et CSRF puis redirige avec un message. Les champs nom, prénom, e-mail, téléphone, rôle et état sont présents à l’ajout et à la modification. Le mot de passe est obligatoire à l’ajout et facultatif en modification. Le modèle assure le hashage du mot de passe, la protection du dernier administrateur actif et les transactions avec le journal d’audit. La langue choisie est conservée lors de la déconnexion pour permettre le retour au formulaire de connexion.
+La gestion utilisateurs suit les mêmes pages simples : `userList.php` charge les comptes et la recherche en haut du fichier ; `addUser.php` et `updateUser.php` traitent `POST` puis affichent leurs formulaires ; `deleteUser.php` vérifie le rôle, `POST` et CSRF puis redirige avec un message. Les champs nom, prénom, e-mail, téléphone, rôle et état sont présents à l’ajout et à la modification. Le mot de passe est obligatoire à l’ajout et facultatif en modification. `CitoyenController.php` assure les requêtes préparées, le hashage du mot de passe, la protection du dernier administrateur actif et les transactions avec le journal d’audit. `Citoyen.php` contient les attributs, le constructeur et les getters/setters, selon l’exemple CRUD du cours. La langue choisie est conservée lors de la déconnexion pour permettre le retour au formulaire de connexion.
 
-La connexion PDO est centralisée dans `config.php`. Les requêtes SQL sont dans les modèles. Les contrôleurs valident les données et préparent les vues. Le contrôleur de base assemble le contenu dans les layouts. Les formulaires Poste reprennent le HTML de Finances, les valeurs `$old`, les erreurs par champ `$erreurs` et les attributs `data-validate`. Les règles de validation PHP restent dans les contrôleurs ; les suppressions Poste utilisent la confirmation des formulaires de liste.
+La connexion PDO est centralisée dans `config.php`. Pour la gestion des utilisateurs, les requêtes SQL sont dans `CitoyenController.php`, comme dans la référence du cours. Les modèles Poste, Finances et Audit conservent leurs requêtes. Les contrôleurs valident les données et préparent les vues. Le contrôleur de base assemble le contenu dans les layouts. Les formulaires Poste reprennent le HTML de Finances, les valeurs `$old`, les erreurs par champ `$erreurs` et les attributs `data-validate`. Les règles de validation PHP restent dans les contrôleurs ; les suppressions Poste utilisent la confirmation des formulaires de liste.
 
 Les deux modules utilisent le même en-tête, la même navigation, les mêmes pieds de page et la même session. Les sélecteurs et dates utilisent les contrôles HTML natifs ; les listes des bureaux et colis affichent les données dans le tableau. Les changements de page après traitement utilisent `header('Location: ...')`, suivi de `exit`. Les liens HTML assurent la navigation normale ; le script de redirection JavaScript entre pages a été retiré. L’animation d’entrée dans les services est conservée.
 
@@ -98,13 +98,15 @@ Développé à Esprit School of Engineering — Tunisia, dans le cadre du Projet
 ## Getting Started
 
 1. Placer le projet sous `C:\xampp\htdocs` et démarrer Apache et MySQL dans XAMPP.
-2. Sur une nouvelle installation, importer `database/etounsi.sql` dans phpMyAdmin. Ce script installe le schéma commun et les données de démonstration ; il ne contient pas les comptes ni les colis privés copiés pour la prévisualisation.
+2. Importer `database/etounsi.sql` dans phpMyAdmin, onglet **Importer**. Le script crée la base commune `etounsi` et les tables manquantes. Il conserve les tables et les données lors d’une réimportation. Les exemples sont ajoutés uniquement lorsque toutes les tables sont vides ; le fichier partagé contient uniquement des données de démonstration.
 3. Vérifier la connexion dans `config.php`. Un fichier local `config.local.php`, ignoré par Git, peut sélectionner une autre base : `<?php return ['host'=>'127.0.0.1','database'=>'nom_base','user'=>'root','password'=>''];`.
 4. Ouvrir `http://localhost/NOM_DU_DOSSIER/index.php`.
 
 Pour une base déjà installée avant l’ajout des champs de saisie des colis, sélectionner cette base dans phpMyAdmin et importer une seule fois `database/mise-a-jour-colis.sql`. Cette mise à jour ajoute le nom saisi et la date choisie sans remplacer les colis existants. Sur une installation neuve, `database/etounsi.sql` contient déjà ces colonnes.
 
-Sur ce PC, la copie de revue est `C:\xampp\htdocs\ETounsi-Integration-Preview` et utilise la base isolée `etounsi_integration_preview`. Les comptes du module Poste y ont été copiés en conservant leurs mots de passe ; les correspondances d’identifiants ont été appliquées aux colis. Le dossier et la base d’origine restent séparés.
+Sur ce PC, le projet est dans `C:\xampp\htdocs\ETounsi-Integration-Preview` et utilise la base commune `etounsi`, définie dans `config.php`. Les données de `etounsi_integration_preview` y ont été conservées, avec les mêmes identifiants, mots de passe hachés et relations. L’ancienne base de prévisualisation et le projet Poste d’origine sont conservés séparément. Aucun fichier `config.local.php` n’est nécessaire sur ce PC.
+
+Une réimportation crée les tables absentes ; elle ne modifie pas les colonnes d’une table déjà installée. Utiliser la mise à jour ci-dessus uniquement pour une ancienne base qui ne contient pas encore les deux champs de déclaration des colis.
 
 Routes principales :
 
@@ -121,7 +123,7 @@ Routes principales :
 | Utilisateurs | `index.php?page=admin-utilisateurs` |
 | Journal d’audit | `index.php?page=admin-audit` |
 
-Les comptes de démonstration administrateur de la branche initiale sont `admin@etounsi.tn` et `agent@etounsi.tn`, avec le mot de passe `password`. Ils utilisent le même rôle administrateur dans la version intégrée.
+Sur une installation vide, le script crée `admin@etounsi.tn` (administrateur) et `citoyen@etounsi.tn` (citoyen), avec le mot de passe de démonstration `password`. Lors d’une réimportation sur une base remplie, les comptes et mots de passe existants sont conservés.
 
 Le CAPTCHA reprend les clés de test déjà présentes dans la branche. Leur usage pour les essais est décrit dans la [documentation Google reCAPTCHA](https://developers.google.com/recaptcha/docs/faq). Le SSO Google n’est pas implémenté dans cette version.
 

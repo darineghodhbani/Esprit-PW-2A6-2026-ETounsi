@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/Models/Citoyen.php';
+require_once __DIR__ . '/Controllers/CitoyenController.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     ini_set('session.use_strict_mode', '1');
@@ -33,7 +33,7 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
 header("Content-Security-Policy: default-src 'self'; script-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; frame-src https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/; connect-src 'self' https://www.google.com/recaptcha/; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
 
 function gestionUtilisateurs() {
-    return new Citoyen();
+    return new CitoyenController();
 }
 
 function utilisateurConnecte() {
