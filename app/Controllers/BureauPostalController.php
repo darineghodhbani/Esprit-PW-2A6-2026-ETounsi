@@ -5,38 +5,70 @@ require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../Models/BureauPostal.php';
 
 class BureauPostalController extends Controller {
-    private $modele;
-
-    public function __construct() {
-        $this->modele = new BureauPostal();
-    }
-
     public function listerBureaux() {
-        return $this->modele->listerBureaux();
+        $sql = "SELECT * FROM bureau_postal ORDER BY ville, nom";
+        $db = Database::getConnection();
+        return $db->query($sql)->fetchAll();
     }
 
     public function recupererBureau($id) {
-        return $this->modele->recupererBureau($id);
+        $sql = "SELECT * FROM bureau_postal WHERE id_bureau = :id";
+        $db = Database::getConnection();
+        $query = $db->prepare($sql);
+        $query->execute(['id' => $id]);
+        $bureau = $query->fetch();
+        return $bureau === false ? null : $bureau;
     }
 
     public function compterBureaux() {
-        return $this->modele->compterBureaux();
+        $sql = "SELECT COUNT(*) FROM bureau_postal";
+        $db = Database::getConnection();
+        return (int) $db->query($sql)->fetchColumn();
     }
 
     public function compterVilles() {
-        return $this->modele->compterVilles();
+        $sql = "SELECT COUNT(DISTINCT ville) FROM bureau_postal";
+        $db = Database::getConnection();
+        return (int) $db->query($sql)->fetchColumn();
     }
 
     public function ajouterBureau(BureauPostal $bureau) {
-        return $this->modele->ajouterBureau($bureau);
+        $sql = "INSERT INTO bureau_postal (nom, adresse, ville) VALUES (:nom, :adresse, :ville)";
+        $db = Database::getConnection();
+        $query = $db->prepare($sql);
+        $query->execute([
+            'nom' => $bureau->getNom(),
+            'adresse' => $bureau->getAdresse(),
+            'ville' => $bureau->getVille(),
+        ]);
+        return (int) $db->lastInsertId();
     }
 
     public function modifierBureau(BureauPostal $bureau, $id) {
-        return $this->modele->modifierBureau($bureau, $id);
+        $sql = "UPDATE bureau_postal SET nom = :nom, adresse = :adresse, ville = :ville WHERE id_bureau = :id";
+        $db = Database::getConnection();
+        $query = $db->prepare($sql);
+        $query->execute([
+            'nom' => $bureau->getNom(),
+            'adresse' => $bureau->getAdresse(),
+            'ville' => $bureau->getVille(),
+            'id' => $id,
+        ]);
+        return $query->rowCount() === 1 || $this->recupererBureau($id) !== null;
     }
 
     public function supprimerBureau($id) {
-        return $this->modele->supprimerBureau($id);
+        $sql = "DELETE FROM bureau_postal WHERE id_bureau = :id
+                AND id_bureau NOT IN (SELECT id_bureau_depart FROM colis)";
+        $db = Database::getConnection();
+        try {
+            $query = $db->prepare($sql);
+            $query->execute(['id' => $id]);
+            return $query->rowCount() === 1;
+        } catch (PDOException $e) {
+            if (isset($e->errorInfo[1]) && (int) $e->errorInfo[1] === 1451) return false;
+            throw $e;
+        }
     }
 
     public static function clean(array $post): array {

@@ -3,7 +3,7 @@
 require_once __DIR__ . '/Controller.php';
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../Models/Citoyen.php';
-require_once __DIR__ . '/../Models/AuditLog.php';
+require_once __DIR__ . '/AuditController.php';
 
 class CitoyenController extends Controller {
     public const ROLES = ['citoyen' => 'Citoyen', 'admin' => 'Administrateur'];
@@ -110,7 +110,7 @@ class CitoyenController extends Controller {
                 return $this->resultat(['general' => 'Le compte a changé. Reconnectez-vous.']);
             }
             $utilisateur = $this->trouver($compte['id']);
-            (new AuditLog($db))->log($compte['id'], 'LOGIN', 'Connexion réussie.', $compte['id']);
+            (new AuditController($db))->log($compte['id'], 'LOGIN', 'Connexion réussie.', $compte['id']);
             $db->commit();
             return $this->resultat([], $utilisateur);
         } catch (PDOException $erreur) {
@@ -212,7 +212,7 @@ class CitoyenController extends Controller {
                 ]);
             }
             $utilisateur = $this->trouver($id);
-            $audit = new AuditLog($db);
+            $audit = new AuditController($db);
             $acteur = $_SESSION['user_id'] ?? ($creation ? $id : null);
             $audit->log($acteur, $creation ? 'USER_CREATED' : 'USER_UPDATED',
                 $creation ? 'Création du compte #' . $id . '.' : 'Compte #' . $id . ' mis à jour.', $id);
@@ -279,7 +279,7 @@ class CitoyenController extends Controller {
                 'version' => $version, 'id' => $id,
             ]);
             $utilisateur = $this->trouver($id);
-            (new AuditLog($db))->log($_SESSION['user_id'] ?? $id, 'USER_UPDATED', 'Profil mis à jour.', $id);
+            (new AuditController($db))->log($_SESSION['user_id'] ?? $id, 'USER_UPDATED', 'Profil mis à jour.', $id);
             $db->commit();
             return $this->resultat([], $utilisateur);
         } catch (PDOException $erreur) {
@@ -308,7 +308,7 @@ class CitoyenController extends Controller {
                 $db->rollBack();
                 return $this->resultat(['general' => 'Ce compte possède des colis ou des propriétés. Désactivez-le pour conserver leur historique.']);
             }
-            (new AuditLog($db))->log($_SESSION['user_id'] ?? null, 'USER_DELETED', 'Compte #' . $id . ' supprimé.', $id);
+            (new AuditController($db))->log($_SESSION['user_id'] ?? null, 'USER_DELETED', 'Compte #' . $id . ' supprimé.', $id);
             $requete = $db->prepare('DELETE FROM citoyen WHERE id_citoyen = :id');
             $requete->execute(['id' => $id]);
             $db->commit();

@@ -130,7 +130,7 @@ function pageAudit() {
 
 function auditEvenement($action, $details, $cible = null) {
     try {
-        (new AuditLog())->log($_SESSION['user_id'] ?? null, $action, $details, $cible);
+        (new AuditController())->log($_SESSION['user_id'] ?? null, $action, $details, $cible);
     } catch (PDOException $erreur) {
         // Une panne du journal ne doit pas empêcher un refus d'accès ou une déconnexion.
         error_log('Audit indisponible : ' . $erreur->getMessage());
