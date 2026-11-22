@@ -51,6 +51,8 @@ E-Tounsi/
 │           ├── partials/ et layout.php
 │           └── pages/
 │               ├── dashboard.php
+│               ├── utilisateurs/
+│               ├── commun/  suppression et messages partagés
 │               ├── poste/
 │               ├── finances/
 │               ├── audit/index.php
@@ -63,6 +65,8 @@ E-Tounsi/
 ```
 
 Les contrôleurs Poste et utilisateurs suivent la présentation de Recette des Finances : `clean()`, méthodes de validation, variables `$old` et `$erreurs`, actions `listBack()`, `addBack()`, `updateBack()` et `deleteBack()`. La déclaration du colis utilise `declarer()`. Les modèles portent les propriétés, constructeurs et getters/setters ; les contrôleurs créent ces objets avant de les transmettre aux méthodes CRUD. Les vues administrateur d’ajout et de modification sont séparées, comme dans Finances : `addBureau.php` / `updateBureau.php`, `addColis.php` / `updateColis.php` et `addUser.php` / `updateUser.php`.
+
+La gestion des utilisateurs est commune à E-Tounsi : ses vues administrateur sont dans `pages/utilisateurs/`. Les confirmations de suppression et les messages partagés sont dans `pages/commun/`. Le dossier `pages/poste/` contient uniquement les vues des bureaux et des colis. Les modèles `Citoyen.php` et `AuditLog.php`, les contrôleurs et les formulaires de connexion restent communs aux modules.
 
 La connexion PDO est centralisée dans `config.php`. Les requêtes SQL sont dans les modèles. Les contrôleurs valident les données et préparent les vues. Le contrôleur de base assemble le contenu dans les layouts. Les formulaires Poste reprennent le HTML de Finances, les valeurs `$old`, les erreurs par champ `$erreurs` et les attributs `data-validate`. Les validations PHP restent dans les contrôleurs ; la suppression conserve sa confirmation.
 

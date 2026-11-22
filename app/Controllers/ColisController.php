@@ -307,7 +307,7 @@ class ColisController extends Controller {
             header('Location: index.php?page=admin-colis', true, 303);
             exit;
         }
-        $this->renderBack('poste/supprimer', [
+        $this->renderBack('commun/supprimer', [
             'title' => 'Supprimer le colis', 'currentPage' => 'admin-colis', 'section' => 'colis', 'erreurs' => [],
             'old' => ['id' => $id, 'reference' => $colis['numero_suivi'], 'action' => 'deleteColis',
                 'message' => 'Le colis sera retiré du suivi et de l’historique citoyen. Cette action est définitive.'],
@@ -322,7 +322,7 @@ class ColisController extends Controller {
         $colis = new Colis($id, null, null, null, 'Accepté');
         if (!$this->modifierColis($colis, $id, 'En attente')) {
             http_response_code(409);
-            $this->renderBack('poste/problem', [
+            $this->renderBack('commun/problem', [
                 'title' => 'Déclaration déjà traitée', 'currentPage' => 'admin-colis', 'section' => 'colis',
                 'message' => 'Ce colis n’est plus en attente. Rechargez la liste des colis.',
             ]);
@@ -379,7 +379,7 @@ class ColisController extends Controller {
 
     private function introuvable(): void {
         http_response_code(404);
-        $this->renderBack('poste/problem', [
+        $this->renderBack('commun/problem', [
             'title' => 'Colis introuvable', 'currentPage' => 'admin-colis', 'section' => 'colis',
             'message' => 'Ce colis n’existe plus ou le lien est incorrect.',
         ]);

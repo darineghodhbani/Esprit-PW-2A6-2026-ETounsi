@@ -171,7 +171,7 @@ class CitoyenController extends Controller {
         foreach ($this->listerCitoyens() as $citoyen) {
             if (posteMatches($recherche, $citoyen['nom'] . ' ' . $citoyen['email'])) $liste[] = $citoyen;
         }
-        $this->renderBack('poste/userList', [
+        $this->renderBack('utilisateurs/userList', [
             'title' => 'Gestion des utilisateurs', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs',
             'liste' => $liste, 'recherche' => $recherche, 'roles' => self::ROLES,
         ]);
@@ -198,7 +198,7 @@ class CitoyenController extends Controller {
             }
             http_response_code(422);
         }
-        $this->renderBack('poste/addUser', [
+        $this->renderBack('utilisateurs/addUser', [
             'title' => 'Ajouter un utilisateur', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs',
             'old' => $old, 'erreurs' => $erreurs, 'roles' => self::ROLES,
         ]);
@@ -236,7 +236,7 @@ class CitoyenController extends Controller {
             }
             http_response_code(422);
         }
-        $this->renderBack('poste/updateUser', [
+        $this->renderBack('utilisateurs/updateUser', [
             'title' => 'Modifier un utilisateur', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs',
             'old' => $old, 'erreurs' => $erreurs, 'roles' => self::ROLES,
         ]);
@@ -263,7 +263,7 @@ class CitoyenController extends Controller {
             }
             http_response_code(409);
         }
-        $this->renderBack('poste/supprimer', [
+        $this->renderBack('commun/supprimer', [
             'title' => 'Supprimer l’utilisateur', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs', 'erreurs' => $erreurs,
             'old' => ['id' => $id, 'reference' => $citoyen['nom'] . ' — ' . $citoyen['email'], 'action' => 'deleteUser',
                 'message' => 'Le compte sera supprimé si aucune donnée métier ne lui est associée. Vous pouvez le désactiver pour conserver son historique.'],
@@ -272,7 +272,7 @@ class CitoyenController extends Controller {
 
     private function introuvable(): void {
         http_response_code(404);
-        $this->renderBack('poste/problem', [
+        $this->renderBack('commun/problem', [
             'title' => 'Utilisateur introuvable', 'currentPage' => 'admin-utilisateurs', 'section' => 'utilisateurs',
             'message' => 'Ce compte n’existe plus ou le lien est incorrect.',
         ]);

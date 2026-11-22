@@ -146,7 +146,7 @@ class BureauPostalController extends Controller {
             header('Location: index.php?page=admin-bureaux', true, 303);
             exit;
         }
-        $this->renderBack('poste/supprimer', [
+        $this->renderBack('commun/supprimer', [
             'title' => 'Supprimer le bureau', 'currentPage' => 'admin-bureaux', 'section' => 'bureaux', 'erreurs' => [],
             'old' => ['id' => $id, 'reference' => $bureau['nom'], 'action' => 'deleteBureau',
                 'message' => 'La suppression est possible si aucun colis n’est associé à ce bureau.'],
@@ -171,7 +171,7 @@ class BureauPostalController extends Controller {
 
     private function introuvable(): void {
         http_response_code(404);
-        $this->renderBack('poste/problem', [
+        $this->renderBack('commun/problem', [
             'title' => 'Bureau introuvable', 'currentPage' => 'admin-bureaux', 'section' => 'bureaux',
             'message' => 'Ce bureau n’existe plus ou le lien est incorrect.',
         ]);
