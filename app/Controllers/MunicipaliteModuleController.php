@@ -3,6 +3,8 @@ require_once __DIR__ . '/Controller.php';
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../Models/MunicipaliteDemande.php';
 require_once __DIR__ . '/../Models/MunicipaliteService.php';
+require_once __DIR__ . '/../Models/PaiementMunicipal.php';
+require_once __DIR__ . '/../Models/NotificationMunicipale.php';
 
 /** Module Municipalité intégré au compte et au thème communs E-Tounsi. */
 class MunicipaliteModuleController extends Controller {

@@ -167,3 +167,5 @@ Un administrateur peut créer ou modifier un compte avec le rôle global Agent, 
 Le paiement par carte reste en mode de démonstration locale tant qu’un fournisseur de paiement n’est pas configuré. Aucune donnée de carte bancaire réelle n’est enregistrée par cette démonstration.
 
 Les sélecteurs Gouvernorat / Délégation reposent sur `app/Data/municipalite-delegations.php` (découpage INS) et `assets/frontoffice/js/municipalite.js`. Pour réappliquer le schéma et réinstaller le contenu UTF-8 des services, lancez `php scripts/migrate-municipalite.php` depuis le dossier du projet.
+
+Les entités PHP `PaiementMunicipal` et `NotificationMunicipale` décrivent les tables municipales déjà utilisées par le module, sans remplacer ses flux existants. Leurs attributs et cardinalités figurent dans [docs/entites-municipalite.md](docs/entites-municipalite.md).
