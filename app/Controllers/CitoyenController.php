@@ -11,12 +11,14 @@ class CitoyenController extends Controller {
     public const ROLES = ['citoyen' => 'Citoyen', 'agent' => 'Agent', 'admin' => 'Administrateur'];
     public const ETATS = ['1' => 'Actif', '0' => 'Désactivé'];
 
+    // Colonnes lues dans la table citoyen (écrites une seule fois pour tous les SELECT).
+    public const COLONNES = 'id_citoyen AS id, id_citoyen, nom, prenom, telephone, email, role, actif, version_session, created_at';
+
     public const CAPTCHA_SITE_KEY   = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
     public const CAPTCHA_SECRET_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe';
 
     public function listerCitoyens() {
-        $sql = "SELECT id_citoyen AS id, id_citoyen, nom, prenom, telephone, email, role, actif, version_session, created_at
-                FROM citoyen ORDER BY nom, id_citoyen";
+        $sql = 'SELECT ' . self::COLONNES . ' FROM citoyen ORDER BY nom, id_citoyen';
         $db = Database::getConnection();
         try {
             $query = $db->query($sql);
@@ -32,8 +34,7 @@ class CitoyenController extends Controller {
     }
 
     public function recupererCitoyen($id) {
-        $sql = "SELECT id_citoyen AS id, id_citoyen, nom, prenom, telephone, email, role, actif, version_session, created_at
-                FROM citoyen WHERE id_citoyen = :id";
+        $sql = 'SELECT ' . self::COLONNES . ' FROM citoyen WHERE id_citoyen = :id';
         $db = Database::getConnection();
         try {
             $query = $db->prepare($sql);
@@ -46,7 +47,8 @@ class CitoyenController extends Controller {
         }
     }
 
-    public function ajouterCitoyen(Citoyen $citoyen, $confirmation) {
+    // La saisie est déjà contrôlée par verifierCitoyen() ; ici on vérifie seulement l'email en base.
+    public function ajouterCitoyen(Citoyen $citoyen) {
         $sql = "INSERT INTO citoyen (nom, prenom, telephone, email, mot_de_passe, role, actif)
                 VALUES (:nom, :prenom, :telephone, :email, :mot_de_passe, :role, :actif)";
         $db = Database::getConnection();
@@ -55,10 +57,9 @@ class CitoyenController extends Controller {
         $password = $citoyen->getMotDePasse() ?? '';
         $role = $citoyen->getRole();
         $actif = $citoyen->getActif();
-        $erreurs = $this->validerCompte(null, $nom, $email, $password, $confirmation);
-        if (!is_string($role) || !isset(self::ROLES[$role])) $erreurs['role'] = 'Choisissez un rôle proposé dans la liste.';
-        if (!in_array($actif, [0, 1], true)) $erreurs['actif'] = 'Choisissez un état de compte valide.';
-        if ($erreurs !== []) return $this->resultat($erreurs);
+        if ($this->emailDejaUtilise($email, null)) {
+            return $this->resultat(['email' => 'Cette adresse email est déjà utilisée.']);
+        }
 
         try {
             $db->beginTransaction();
@@ -81,7 +82,8 @@ class CitoyenController extends Controller {
         }
     }
 
-    public function modifierCitoyen(Citoyen $citoyen, $id, $confirmation) {
+    // La saisie est déjà contrôlée par verifierCitoyen() ; ici on vérifie seulement l'email en base.
+    public function modifierCitoyen(Citoyen $citoyen, $id) {
         $sql = "UPDATE citoyen SET nom = :nom, prenom = :prenom, telephone = :telephone, email = :email,
                 mot_de_passe = :mot_de_passe, role = :role, actif = :actif, version_session = :version WHERE id_citoyen = :id";
         $db = Database::getConnection();
@@ -90,10 +92,9 @@ class CitoyenController extends Controller {
         $password = $citoyen->getMotDePasse() ?? '';
         $role = $citoyen->getRole();
         $actif = $citoyen->getActif();
-        $erreurs = $this->validerCompte($id, $nom, $email, $password, $confirmation);
-        if (!is_string($role) || !isset(self::ROLES[$role])) $erreurs['role'] = 'Choisissez un rôle proposé dans la liste.';
-        if (!in_array($actif, [0, 1], true)) $erreurs['actif'] = 'Choisissez un état de compte valide.';
-        if ($erreurs !== []) return $this->resultat($erreurs);
+        if ($this->emailDejaUtilise($email, $id)) {
+            return $this->resultat(['email' => 'Cette adresse email est déjà utilisée.']);
+        }
 
         try {
             $db->beginTransaction();
@@ -171,11 +172,6 @@ class CitoyenController extends Controller {
         }
     }
 
-    public function create(string $nom, string $prenom, string $email, string $telephone, string $motDePasse) {
-        $resultat = $this->enregistrer(null, $nom, $email, $motDePasse, $motDePasse, 'citoyen', 1, null, $prenom, $telephone);
-        return $resultat['erreurs'] === [] ? $resultat['id'] : false;
-    }
-
     public function verifyLogin(string $email, string $motDePasse) {
         $resultat = $this->authentifier($email, $motDePasse);
         return $resultat['erreurs'] === [] ? $resultat['utilisateur'] : false;
@@ -207,11 +203,6 @@ class CitoyenController extends Controller {
                 'date_inscription' => $ligne['date_inscription'] ?? $ligne['created_at']];
     }
 
-    public function inscrire($nom, $email, $password, $confirmation)
-    {
-        return $this->enregistrer(null, $nom, $email, $password, $confirmation, 'citoyen', 1);
-    }
-
     public function authentifier($email, $password)
     {
         $db = Database::getConnection();
@@ -232,8 +223,7 @@ class CitoyenController extends Controller {
         $identifiantsValides = filter_var($email, FILTER_VALIDATE_EMAIL) && strlen($email) <= 150
             && strlen($password) <= 72 && strpos($password, "\0") === false;
         if ($identifiantsValides) {
-            $sql = 'SELECT id_citoyen AS id, id_citoyen, nom, prenom, telephone, email, mot_de_passe, role, actif, version_session, created_at
-                 FROM citoyen WHERE email = :email LIMIT 1';
+            $sql = 'SELECT ' . self::COLONNES . ', mot_de_passe FROM citoyen WHERE email = :email LIMIT 1';
             $query = $db->prepare($sql);
             $query->execute(['email' => $email]);
             $compte = $query->fetch();
@@ -267,14 +257,6 @@ class CitoyenController extends Controller {
 
     public function trouver($id) {
         return $this->recupererCitoyen($id);
-    }
-
-    public function enregistrer($id, $nom, $email, $password, $confirmation, $role, $actif, $versionAttendue = null, $prenom = null, $telephone = null) {
-        if (!in_array($actif, [0, 1, '0', '1'], true)) return $this->resultat(['actif' => 'Choisissez un état de compte valide.']);
-        $citoyen = new Citoyen($id, $this->texte($nom), $this->texte($email), is_string($password) ? $password : '',
-            is_string($role) ? $role : null, (int) $actif, $prenom, $telephone, $versionAttendue);
-        $confirmation = is_string($confirmation) ? $confirmation : '';
-        return $id === null ? $this->ajouterCitoyen($citoyen, $confirmation) : $this->modifierCitoyen($citoyen, $id, $confirmation);
     }
 
     public function modifierProfil($id, $nom, $email, $password, $confirmation, $motDePasseActuel, $versionAttendue)
@@ -333,13 +315,8 @@ class CitoyenController extends Controller {
         }
     }
 
-    public function supprimer($id) {
-        return $this->supprimerCitoyen($id);
-    }
-
     private function validerCompte($id, $nom, $email, $password, $confirmation)
     {
-        $db = Database::getConnection();
         try {
             $erreurs = [];
             if (mb_strlen($nom, 'UTF-8') < 2 || mb_strlen($nom, 'UTF-8') > 80) {
@@ -362,13 +339,25 @@ class CitoyenController extends Controller {
             if ($password !== $confirmation) {
                 $erreurs['confirmation'] = 'Les mots de passe doivent être identiques.';
             }
-            $sql = 'SELECT id_citoyen FROM citoyen WHERE email = :email AND id_citoyen <> :id LIMIT 1';
-            $query = $db->prepare($sql);
-            $query->execute(['email' => $email, 'id' => (int) $id]);
-            if ($query->fetch()) {
+            if ($this->emailDejaUtilise($email, $id)) {
                 $erreurs['email'] = 'Cette adresse email est déjà utilisée.';
             }
             return $erreurs;
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            throw $e;
+        }
+    }
+
+    // Vrai si un autre compte utilise déjà cet email.
+    private function emailDejaUtilise($email, $id)
+    {
+        $db = Database::getConnection();
+        try {
+            $sql = 'SELECT id_citoyen FROM citoyen WHERE email = :email AND id_citoyen <> :id LIMIT 1';
+            $query = $db->prepare($sql);
+            $query->execute(['email' => $email, 'id' => (int) $id]);
+            return $query->fetch() !== false;
         } catch (Exception $e) {
             error_log($e->getMessage());
             throw $e;
@@ -379,8 +368,7 @@ class CitoyenController extends Controller {
     {
         $db = Database::getConnection();
         try {
-            $sql = 'SELECT id_citoyen AS id, id_citoyen, nom, prenom, telephone, email, mot_de_passe, role, actif, version_session, created_at
-                    FROM citoyen WHERE id_citoyen = :id';
+            $sql = 'SELECT ' . self::COLONNES . ', mot_de_passe FROM citoyen WHERE id_citoyen = :id';
             if ($verrouiller) {
                 $sql .= ' FOR UPDATE';
             }
@@ -504,7 +492,7 @@ class CitoyenController extends Controller {
             }
             if (count($erreurs) == 0) {
                 $citoyen = new Citoyen(null, $old['nom'], $old['email'], $old['password'], 'citoyen', 1, $old['prenom'], $old['telephone'], null);
-                $resultat = $this->ajouterCitoyen($citoyen, $old['confirmation']);
+                $resultat = $this->ajouterCitoyen($citoyen);
                 $erreurs = $resultat['erreurs'];
                 if (count($erreurs) == 0) {
                     header('Location: index.php?page=login&inscrit=1', true, 303);
@@ -612,7 +600,7 @@ class CitoyenController extends Controller {
             $erreurs = $this->verifierCitoyen($old);
             if (count($erreurs) == 0) {
                 $citoyen = new Citoyen(null, $old['nom'], $old['email'], $old['password'], $old['role'], (int) $old['actif'], $old['prenom'], $old['telephone'], null);
-                $resultat = $this->ajouterCitoyen($citoyen, $old['confirmation']);
+                $resultat = $this->ajouterCitoyen($citoyen);
                 $erreurs = $resultat['erreurs'];
                 if (count($erreurs) == 0) {
                     $_SESSION['flash'] = ['type' => 'success', 'message' => 'L’utilisateur a été ajouté.'];
@@ -651,7 +639,7 @@ class CitoyenController extends Controller {
                 // Si l'admin modifie son propre compte, on vérifie que sa session est toujours valable.
                 $version = $id === $compteConnecte['id'] ? $compteConnecte['version_session'] : null;
                 $citoyen = new Citoyen($id, $old['nom'], $old['email'], $old['password'], $old['role'], (int) $old['actif'], $old['prenom'], $old['telephone'], $version);
-                $resultat = $this->modifierCitoyen($citoyen, $id, $old['confirmation']);
+                $resultat = $this->modifierCitoyen($citoyen, $id);
                 $erreurs = $resultat['erreurs'];
                 if (count($erreurs) == 0) {
                     if ($id === $compteConnecte['id']) {
