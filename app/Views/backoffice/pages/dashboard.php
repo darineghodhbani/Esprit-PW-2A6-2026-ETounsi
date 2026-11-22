@@ -76,8 +76,8 @@
 <section class="poste-admin" aria-label="Activité du module Poste">
 <?php
 $stats = $poste['stats'];
-$parcels = $poste['parcels'];
-$statusCounts = $poste['statusCounts'];
+$liste = $poste['liste'];
+$statusCounts = $poste['compteurs'];
 $section = 'dashboard';
 ?>
 <section class="poste-hero" aria-labelledby="tableau-de-bord">
@@ -90,8 +90,8 @@ $section = 'dashboard';
 <div class="poste-metrics" aria-label="Chiffres du module Poste">
     <?php foreach ($stats as $stat): ?>
         <div class="poste-metric">
-            <span class="poste-metric-icon"><i class="bi bi-<?= e($stat['icon']) ?>" aria-hidden="true"></i></span>
-            <div><strong><?= e($stat['value']) ?></strong><span><?= e($stat['label']) ?></span></div>
+            <span class="poste-metric-icon"><i class="bi bi-<?php echo e($stat['icon']); ?>" aria-hidden="true"></i></span>
+            <div><strong><?php echo e($stat['value']); ?></strong><span><?php echo e($stat['label']); ?></span></div>
         </div>
     <?php endforeach; ?>
 </div>
@@ -100,7 +100,7 @@ $section = 'dashboard';
     <h2 id="repartition">Statuts des colis</h2>
     <dl>
         <?php foreach ($statusCounts as $status => $count): ?>
-            <div><dt><?= e($status) ?></dt><dd><?= e($count) ?></dd></div>
+            <div><dt><?php echo e($status); ?></dt><dd><?php echo e($count); ?></dd></div>
         <?php endforeach; ?>
     </dl>
 </section>
@@ -110,7 +110,7 @@ $section = 'dashboard';
         <h2 id="derniers-colis">Derniers colis</h2>
         <a class="btn-custom btn-custom-light" href="?espace=admin&amp;page=colis">Voir tous les colis <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
     </div>
-    <?php if ($parcels === []): ?>
+    <?php if ($liste === []): ?>
         <p class="poste-empty">Aucun colis enregistré.</p>
     <?php else: ?>
         <?php require __DIR__ . '/../partials/poste-colis.php'; ?>

@@ -18,7 +18,7 @@
 
             <div class="login-panel">
                 <form method="post" action="index.php?page=login" class="stack" novalidate data-validate-form>
-<input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>">
+<input type="hidden" name="csrf" value="<?php echo e(csrfToken()); ?>">
 
                     <?php if (isset($_GET['inscrit'])): ?>
                         <div class="alert alert-success">
@@ -34,7 +34,7 @@
 
                     <div class="field">
                         <label for="email"><?php echo t('login.email'); ?></label>
-                        <input id="email" name="email" type="email" value="<?php echo e($email); ?>"
+                        <input id="email" name="email" type="email" value="<?php echo e($old['email']); ?>"
                                data-validate="required|email">
                         <?php if (isset($erreurs['email'])): ?>
                             <p class="field-error server-error"><?php echo $erreurs['email']; ?></p>

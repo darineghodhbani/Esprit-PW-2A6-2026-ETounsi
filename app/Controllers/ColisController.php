@@ -1,473 +1,360 @@
 <?php
 
 require_once __DIR__ . '/Controller.php';
-require_once __DIR__ . '/../Models/Colis.php';
-require_once __DIR__ . '/../poste.php';
 require_once __DIR__ . '/BureauPostalController.php';
+require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../Models/Colis.php';
 
-class ColisController extends Controller
-{
-    public const STATUTS = ['En attente', 'Accepté', 'En transit', 'Livré', 'Annulé'];
-
-    private $connexion;
+class ColisController extends Controller {
     private $modele;
+    public const STATUTS = Colis::STATUTS;
 
-    public function __construct($connexion = null)
-    {
-        $this->connexion = $connexion ?? Database::getConnection();
+    public function __construct() {
         $this->modele = new Colis();
     }
 
-    public function listeCitoyens()
-    {
-        return $this->modele->listeCitoyens();
+    public function listerColis() {
+        return $this->modele->listerColis();
     }
 
-    public function listeColis($idCitoyen = null)
-    {
-        return $this->modele->listeColis($idCitoyen);
+    public function listerColisCitoyen($idCitoyen) {
+        return $this->modele->listerColisCitoyen($idCitoyen);
     }
 
-    public function recupererColis($id)
-    {
+    public function recupererColis($id) {
         return $this->modele->recupererColis($id);
     }
 
-    public function chercherColis($numero)
-    {
+    public function recupererColisCitoyen($id, $idCitoyen) {
+        return $this->modele->recupererColisCitoyen($id, $idCitoyen);
+    }
+
+    public function chercherColis($numero) {
         return $this->modele->chercherColis($numero);
     }
 
-    public function ajouterColis($idBureau, $idCitoyen, $nomCitoyen = null, $dateDeclaration = null)
-    {
-        return $this->modele->ajouterColis($idBureau, $idCitoyen, $nomCitoyen, $dateDeclaration);
+    public function listerCitoyens() {
+        return $this->modele->listerCitoyens();
     }
 
-    public static function statutsSuivants($statut)
-    {
-        return Colis::statutsSuivants($statut);
+    public function ajouterColis(Colis $colis) {
+        return $this->modele->ajouterColis($colis);
     }
 
-    public function modifierColis($id, $statut, $statutActuel)
-    {
-        return $this->modele->modifierColis($id, $statut, $statutActuel);
+    public function modifierColis(Colis $colis, $id, $statutActuel) {
+        return $this->modele->modifierColis($colis, $id, $statutActuel);
     }
 
-    public function annulerColis($id, $idCitoyen)
-    {
+    public function modifierColisCitoyen(Colis $colis, $id) {
+        return $this->modele->modifierColisCitoyen($colis, $id);
+    }
+
+    public function supprimerColis($id) {
+        return $this->modele->supprimerColis($id);
+    }
+
+    public function supprimerColisCitoyen($id, $idCitoyen) {
+        return $this->modele->supprimerColisCitoyen($id, $idCitoyen);
+    }
+
+    public function annulerColis($id, $idCitoyen) {
         return $this->modele->annulerColis($id, $idCitoyen);
     }
 
-    public function deleteColis($id)
-    {
-        return $this->modele->deleteColis($id);
+    public static function statutsSuivants($statut) {
+        return Colis::statutsSuivants($statut);
     }
 
-    public function declarerEnvoi($idRecu, $nomCitoyen, $dateDeclaration)
-    {
-        exigerRole(['citoyen']);
-        $utilisateur = utilisateurConnecte();
-        $erreurs = $this->validerDeclaration($idRecu, $nomCitoyen, $dateDeclaration);
-        if ($erreurs !== []) {
-            http_response_code(422);
-            return $erreurs;
-        }
-        $idBureau = $this->identifiantValide($idRecu);
-
-        try {
-            $colis = $this->ajouterColis($idBureau, $utilisateur['id'], $nomCitoyen, $dateDeclaration);
-        } catch (PDOException $erreur) {
-            if ((new BureauPostalController($this->connexion))->recupererBureau($idBureau) !== null) {
-                throw $erreur;
-            }
-
-            http_response_code(409);
-            return ['id_bureau_depart' => tr('Ce bureau n’est plus disponible. Choisissez un autre bureau de départ.', 'لم يعد هذا المكتب متاحًا. اختر مكتب إرسال آخر.')];
-        }
-
-        $this->retourHistorique(['kind' => 'declared', 'number' => $colis['numero_suivi']]);
+    public static function clean(array $post): array {
+        return [
+            'id_bureau_depart' => posteText($post, 'id_bureau_depart'),
+            'id_citoyen' => posteText($post, 'id_citoyen'),
+            'nom_citoyen' => posteText($post, 'nom_citoyen'),
+            'date_declaration' => posteText($post, 'date_declaration'),
+        ];
     }
 
-    private function validerDeclaration($idBureau, $nomCitoyen, $dateDeclaration)
-    {
+    public function verifierColis(array $d, bool $admin = false): array {
         $erreurs = [];
-        $id = $this->identifiantValide($idBureau);
-        if ($id === null || (new BureauPostalController())->recupererBureau($id) === null) {
+        $idBureau = posteId($d, 'id_bureau_depart');
+        if ($idBureau === null || !(new BureauPostalController())->recupererBureau($idBureau)) {
             $erreurs['id_bureau_depart'] = tr('Choisissez un bureau de départ dans la liste.', 'اختر مكتب الإرسال من القائمة.');
         }
-        if (mb_strlen($nomCitoyen) < 2 || mb_strlen($nomCitoyen) > 200
-            || preg_match('/[\x00-\x1F\x7F<>]/u', $nomCitoyen)) {
-            $erreurs['nom_citoyen'] = tr('Saisissez un nom et prénom entre 2 et 200 caractères, sans balises ni caractères de contrôle.', 'أدخل اسمًا ولقبًا بين حرفين و200 حرف دون وسوم أو محارف تحكّم.');
-        }
-        $dateValide = preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/D', $dateDeclaration, $parties) === 1
-            && (int) $parties[1] >= 1000
-            && checkdate((int) $parties[2], (int) $parties[3], (int) $parties[1]);
-        if (!$dateValide) {
-            $erreurs['date_declaration'] = tr('Choisissez une date de déclaration valide.', 'اختر تاريخ تصريح صحيحًا.');
+        if ($admin) {
+            $idCitoyen = posteId($d, 'id_citoyen');
+            if ($idCitoyen === null || !in_array($idCitoyen, array_column($this->listerCitoyens(), 'id_citoyen'), true)) {
+                $erreurs['id_citoyen'] = 'Choisissez un compte citoyen disponible.';
+            }
+        } else {
+            if (mb_strlen($d['nom_citoyen']) < 2 || mb_strlen($d['nom_citoyen']) > 200
+                || preg_match('/[\x00-\x1F\x7F<>]/u', $d['nom_citoyen'])) {
+                $erreurs['nom_citoyen'] = tr('Saisissez un nom et prénom entre 2 et 200 caractères, sans balises ni caractères de contrôle.', 'أدخل اسمًا ولقبًا بين حرفين و200 حرف دون وسوم أو محارف تحكّم.');
+            }
+            $dateValide = preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/D', $d['date_declaration'], $parties) === 1
+                && (int) $parties[1] >= 1000 && checkdate((int) $parties[2], (int) $parties[3], (int) $parties[1]);
+            if (!$dateValide) $erreurs['date_declaration'] = tr('Choisissez une date de déclaration valide.', 'اختر تاريخ تصريح صحيحًا.');
         }
         return $erreurs;
     }
 
-    public function listerHistorique()
-    {
+    public function declarer(): void {
         exigerRole(['citoyen']);
-        $utilisateur = utilisateurConnecte();
-        return $this->listeColis($utilisateur['id']);
-    }
-
-    public function annulerEnvoi($idRecu)
-    {
-        exigerRole(['citoyen']);
-        $utilisateur = utilisateurConnecte();
-        $idColis = $this->identifiantValide($idRecu);
-        if ($idColis !== null && $this->annulerColis($idColis, $utilisateur['id'])) {
-            $this->retourHistorique(['kind' => 'cancelled']);
-        }
-
-        http_response_code(409);
-        return tr('Ce colis ne peut plus être annulé. Seuls les envois en attente sont annulables.', 'لا يمكن إلغاء هذا الطرد. يمكن إلغاء الإرساليات قيد الانتظار فقط.');
-    }
-
-    private function identifiantValide($valeur)
-    {
-        if (!is_string($valeur)) {
-            return null;
-        }
-
-        $id = filter_var($valeur, FILTER_VALIDATE_INT);
-        if ($id === false || $id < 1) {
-            return null;
-        }
-        return $id;
-    }
-
-    private function retourHistorique($confirmation)
-    {
-        // La redirection évite de renvoyer le formulaire après un rafraîchissement.
-        $_SESSION['poste_front_flash'] = $confirmation;
-        header('Location: ' . frontUrl('historique'), true, 303);
-        exit;
-    }
-
-    public function index()
-    {
-        $query = posteText($_GET, 'q');
-        $statuses = ColisController::STATUTS;
-        $statusFilter = posteText($_GET, 'statut');
-        if (!in_array($statusFilter, $statuses, true)) {
-            $statusFilter = '';
-        }
-
-        $parcels = [];
-        foreach ($this->listeColis() as $parcel) {
-            $matchesStatus = $statusFilter === '' || $parcel['statut'] === $statusFilter;
-            $parcelInfo = $parcel['numero_suivi'] . ' ' . $parcel['bureau'] . ' ' . $parcel['ville'] . ' ' . $parcel['nom_citoyen'];
-            if ($matchesStatus && posteMatches($query, $parcelInfo)) {
-                $parcels[] = $parcel;
-            }
-        }
-
-        $titre = ($query !== '' || $statusFilter !== '') ? 'Rechercher un colis' : 'Gestion des colis';
-        posteRender('colisList', $titre, 'colis', [
-            'parcels' => $parcels,
-            'query' => $query,
-            'statusFilter' => $statusFilter,
-            'statuses' => $statuses,
-        ]);
-    }
-
-    public function form()
-    {
-        $parcel = ['id_citoyen' => 1, 'id_bureau_depart' => ''];
-        if (isset($_GET['id'])) {
-            $parcel = $this->find(posteId($_GET));
-        }
-        if ($parcel !== null) {
-            $this->renderForm($parcel);
-        }
-    }
-
-    public function save()
-    {
-        if (!posteCsrfValid()) {
-            return;
-        }
-
-        if (isset($_POST['id']) && $_POST['id'] !== '') {
-            $this->saveStatus();
-            return;
-        }
-
-        $officeId = posteId($_POST, 'id_bureau_depart');
-        $citizenId = posteId($_POST, 'id_citoyen');
-        $parcel = [
-            'id_bureau_depart' => posteText($_POST, 'id_bureau_depart'),
-            'id_citoyen' => posteText($_POST, 'id_citoyen'),
-        ];
-        $errors = [];
-        if ($officeId === null || (new BureauPostalController($this->connexion))->recupererBureau($officeId) === null) {
-            $errors['id_bureau_depart'] = 'Choisissez un bureau de départ disponible.';
-        }
-
-        $citizenFound = false;
-        foreach ($this->listeCitoyens() as $citizen) {
-            if ((int) $citizen['id_citoyen'] === $citizenId) {
-                $citizenFound = true;
-                break;
-            }
-        }
-        if (!$citizenFound) {
-            $errors['id_citoyen'] = 'Choisissez un compte citoyen disponible.';
-        }
-        if ($errors !== []) {
-            $this->renderForm($parcel, $errors);
-            return;
-        }
-
-        try {
-            $parcel = $this->ajouterColis($officeId, $citizenId);
-        } catch (PDOException $error) {
-            // Le bureau peut avoir été supprimé après l’ouverture du formulaire.
-            if ($error->getCode() !== '23000') {
-                throw $error;
-            }
-            $this->renderForm($parcel, ['id_bureau_depart' => 'Vérifiez le bureau de départ et le compte citoyen.']);
-            return;
-        }
-        posteRedirect('colis', 'Le colis ' . $parcel['numero_suivi'] . ' a été enregistré.');
-    }
-
-    public function accepter()
-    {
-        if (!posteCsrfValid()) {
-            return;
-        }
-        $id = posteId($_POST);
-        $parcel = $this->find($id);
-        if ($parcel === null) {
-            return;
-        }
-        if (!$this->modifierColis($id, 'Accepté', 'En attente')) {
-            posteProblem(409, 'Déclaration déjà traitée', 'Ce colis n’est plus en attente. Rechargez la liste des colis.', 'colis');
-            return;
-        }
-        posteRedirect('colis', 'Le colis ' . $parcel['numero_suivi'] . ' a été accepté.');
-    }
-
-    public function confirmDelete()
-    {
-        $parcel = $this->find(posteId($_GET));
-        if ($parcel !== null) {
-            posteRender('supprimer', 'Supprimer le colis', 'colis', [
-                'id' => $parcel['id_colis'],
-                'reference' => $parcel['numero_suivi'],
-                'action' => 'deleteColis',
-                'message' => 'Le colis sera retiré du suivi et de l’historique citoyen. Cette action est définitive.',
-            ]);
-        }
-    }
-
-    public function delete()
-    {
-        if (!posteCsrfValid()) {
-            return;
-        }
-
-        $id = posteId($_POST);
-        if ($this->find($id) === null) {
-            return;
-        }
-        if (!$this->deleteColis($id)) {
-            posteRedirect('colis', 'Ce colis a déjà été supprimé.', 'warning');
-        }
-        posteRedirect('colis', 'Le colis a été supprimé.');
-    }
-
-    private function saveStatus()
-    {
-        $id = posteId($_POST);
-        $parcel = $this->find($id);
-        if ($parcel === null) {
-            return;
-        }
-
-        if (posteText($_POST, 'statut_actuel') !== $parcel['statut']) {
-            $this->renderForm($parcel, ['statut' => 'Le statut a changé depuis l’ouverture du formulaire. Vérifiez son état actuel.'], 409);
-            return;
-        }
-        $status = posteText($_POST, 'statut');
-        if (!in_array($status, ColisController::statutsSuivants($parcel['statut']), true)) {
-            $this->renderForm($parcel, ['statut' => 'Choisissez une étape proposée pour ce colis.']);
-            return;
-        }
-        if (!$this->modifierColis($id, $status, $parcel['statut'])) {
-            $parcel = $this->find($id);
-            if ($parcel !== null) {
-                $this->renderForm($parcel, ['statut' => 'Le colis vient d’être modifié. Vérifiez son état avant de réessayer.'], 409);
-            }
-            return;
-        }
-
-        posteRedirect('colis', 'Le statut du colis a été mis à jour.');
-    }
-
-    private function find($id)
-    {
-        $parcel = null;
-        if ($id !== null) {
-            $parcel = $this->recupererColis($id);
-        }
-        if ($parcel === null) {
-            posteProblem(404, 'Colis introuvable', 'Ce colis n’existe plus ou le lien est incorrect.', 'colis');
-        }
-        return $parcel;
-    }
-
-    private function renderForm($parcel, $errors = [], $code = 422)
-    {
-        if ($errors !== []) {
-            http_response_code($code);
-        }
-
-        $editing = !empty($parcel['id_colis']);
-        $title = 'Modifier le statut';
-        if ($editing && ColisController::statutsSuivants($parcel['statut']) === []) {
-            $title = 'Consulter le colis';
-        }
-        $offices = [];
-        $citizens = [];
-        if (!$editing) {
-            $title = 'Enregistrer un colis';
-                $offices = (new BureauPostalController($this->connexion))->listeBureaux();
-            $citizens = $this->listeCitoyens();
-        }
-        posteRender('colisForm', $title, 'colis', [
-            'parcel' => $parcel,
-            'editing' => $editing,
-            'statuses' => $editing ? ColisController::statutsSuivants($parcel['statut']) : [],
-            'offices' => $offices,
-            'citizens' => $citizens,
-            'errors' => $errors,
-        ]);
-    }
-
-    public function statistiques()
-    {
-        exigerRole(['admin']);
-        $colisC = $this;
-        $bureauC = new BureauPostalController();
-        $parcels = $colisC->listeColis();
-        $statusCounts = [];
-        foreach (ColisController::STATUTS as $status) {
-            $statusCounts[$status] = 0;
-        }
-        foreach ($parcels as $parcel) {
-            $statusCounts[$parcel['statut']]++;
-        }
-
-        $stats = [
-            ['label' => 'Colis enregistrés', 'value' => count($parcels), 'icon' => 'box'],
-            ['label' => 'En attente', 'value' => $statusCounts['En attente'], 'icon' => 'clock'],
-            ['label' => 'Acceptés', 'value' => $statusCounts['Accepté'], 'icon' => 'check-circle'],
-            ['label' => 'En transit', 'value' => $statusCounts['En transit'], 'icon' => 'truck'],
-            ['label' => 'Bureaux de poste', 'value' => count($bureauC->listeBureaux()), 'icon' => 'geo-alt'],
-        ];
-
-        $stats[] = ['label' => 'Utilisateurs', 'value' => count(gestionUtilisateurs()->lister()), 'icon' => 'people'];
-
-        return ['stats' => $stats, 'parcels' => array_slice($parcels, 0, 5), 'statusCounts' => $statusCounts];
-    }
-
-    public function suiviFront(): void {
-        $rechercheLancee = isset($_GET['numero']);
-        $numeroSuivi = isset($_GET['numero']) && is_string($_GET['numero']) ? strtoupper(trim($_GET['numero'])) : '';
-        $numeroValide = preg_match('/^ET[0-9A-Z]{6,20}TN$/', $numeroSuivi) === 1;
-        $colis = $numeroValide ? $this->chercherColis($numeroSuivi) : null;
-        posteFront('suiviColis', tr('Suivre un colis', 'تتبّع طرد'), compact('rechercheLancee', 'numeroSuivi', 'numeroValide', 'colis'));
-    }
-
-    public function declarerFront(): void {
-        exigerRole(['citoyen']);
-        $bureauSelectionne = posteText($_POST, 'id_bureau_depart');
-        $nomCitoyen = posteText($_POST, 'nom_citoyen');
-        $dateDeclaration = posteText($_POST, 'date_declaration');
+        $idCitoyen = (int) $_SESSION['id_citoyen'];
         $erreurs = [];
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') $erreurs = $this->declarerEnvoi($bureauSelectionne, $nomCitoyen, $dateDeclaration);
-        posteFront('declarerEnvoi', tr('Déclarer un envoi', 'التصريح بإرسال طرد'),
-            ['erreur' => implode(' ', $erreurs), 'erreurs' => $erreurs, 'bureaux' => (new BureauPostalController())->listeBureaux(),
-             'modification' => false, 'bureauSelectionne' => $bureauSelectionne,
-             'nomCitoyen' => $nomCitoyen, 'dateDeclaration' => $dateDeclaration]);
-    }
-
-    public function modifierFront(): void
-    {
-        $utilisateur = exigerRole(['citoyen']);
-        $colis = $this->trouverDeclarationCitoyen($utilisateur['id']);
-        if ($colis === null) return;
-
-        $erreur = '';
-        $erreurs = [];
-        $bureauSelectionne = (string) $colis['id_bureau_depart'];
-        $nomCitoyen = $colis['nom_citoyen'];
-        $dateDeclaration = $colis['date_declaration'];
+        $old = self::clean([]);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $bureauSelectionne = posteText($_POST, 'id_bureau_depart');
-            $nomCitoyen = posteText($_POST, 'nom_citoyen');
-            $dateDeclaration = posteText($_POST, 'date_declaration');
-            $idBureau = posteId($_POST, 'id_bureau_depart');
-            $erreurs = $this->validerDeclaration($bureauSelectionne, $nomCitoyen, $dateDeclaration);
-            if ($erreurs !== []) {
-                http_response_code(422);
-                $erreur = implode(' ', $erreurs);
-            } else {
+            $old = self::clean($_POST);
+            $erreurs = $this->verifierColis($old);
+            if (count($erreurs) == 0) {
+                $colis = new Colis(null, (int) $old['id_bureau_depart'], $idCitoyen, null, null, $old['nom_citoyen'], $old['date_declaration']);
                 try {
-                    $modifie = $idBureau !== (int) $colis['id_bureau_depart']
-                        || $nomCitoyen !== $colis['nom_citoyen'] || $dateDeclaration !== $colis['date_declaration'];
-                    if ($modifie && !$this->modele->modifierDeclaration($colis['id_colis'], $utilisateur['id'], $idBureau, $nomCitoyen, $dateDeclaration)) {
+                    $resultat = $this->ajouterColis($colis);
+                    $_SESSION['flash'] = ['type' => 'success', 'kind' => 'declared', 'message' => 'Envoi déclaré.', 'number' => $resultat['numero_suivi']];
+                    header('Location: ' . frontUrl('mes-colis'), true, 303);
+                    exit;
+                } catch (PDOException $e) {
+                    if ($e->getCode() !== '23000') throw $e;
+                    $erreurs['id_bureau_depart'] = tr('Ce bureau n’est plus disponible. Choisissez un autre bureau.', 'لم يعد هذا المكتب متاحًا. اختر مكتبًا آخر.');
+                    http_response_code(409);
+                }
+            } else {
+                http_response_code(422);
+            }
+        }
+        $this->renderFront('poste/declarerEnvoi', [
+            'title' => tr('Déclarer un envoi', 'التصريح بإرسال طرد'), 'currentPage' => 'declarer-envoi',
+            'old' => $old, 'erreurs' => $erreurs, 'modification' => false,
+            'bureaux' => (new BureauPostalController())->listerBureaux(),
+        ]);
+    }
+
+    public function mesColis(): void {
+        exigerRole(['citoyen']);
+        $erreur = '';
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = posteId($_POST, 'id_colis');
+            if ($id !== null && $this->annulerColis($id, (int) $_SESSION['id_citoyen'])) {
+                $_SESSION['flash'] = ['type' => 'success', 'kind' => 'cancelled', 'message' => 'L’envoi a été annulé.'];
+                header('Location: ' . frontUrl('mes-colis'), true, 303);
+                exit;
+            }
+            http_response_code(409);
+            $erreur = tr('Ce colis ne peut plus être annulé. Seuls les envois en attente sont annulables.', 'لا يمكن إلغاء هذا الطرد. يمكن إلغاء الإرساليات قيد الانتظار فقط.');
+        }
+        $this->afficherMesColis($erreur);
+    }
+
+    public function modifierFront(): void {
+        exigerRole(['citoyen']);
+        $idCitoyen = (int) $_SESSION['id_citoyen'];
+        $colis = $this->trouverColisCitoyen($idCitoyen);
+        if (!$colis) return;
+        $id = (int) $colis['id_colis'];
+        $old = $colis;
+        $erreurs = [];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $old = self::clean($_POST);
+            $old['id_colis'] = $id;
+            $old['numero_suivi'] = $colis['numero_suivi'];
+            $erreurs = $this->verifierColis($old);
+            if (count($erreurs) == 0) {
+                $modifie = (int) $old['id_bureau_depart'] !== (int) $colis['id_bureau_depart']
+                    || $old['nom_citoyen'] !== $colis['nom_citoyen'] || $old['date_declaration'] !== $colis['date_declaration'];
+                $declaration = new Colis($id, (int) $old['id_bureau_depart'], $idCitoyen, null, null, $old['nom_citoyen'], $old['date_declaration']);
+                try {
+                    if ($modifie && !$this->modifierColisCitoyen($declaration, $id)) {
                         http_response_code(409);
                         $this->afficherMesColis(tr('Ce colis vient d’être traité ou supprimé. Rechargez la liste.', 'تمّت معالجة هذا الطرد أو حذفه. أعد تحميل القائمة.'));
                         return;
                     }
-                    $this->retourHistorique(['kind' => 'updated']);
-                } catch (PDOException $exception) {
-                    if ($exception->getCode() !== '23000') throw $exception;
+                    $_SESSION['flash'] = ['type' => 'success', 'kind' => 'updated', 'message' => 'Les informations de votre envoi ont été mises à jour.'];
+                    header('Location: ' . frontUrl('mes-colis'), true, 303);
+                    exit;
+                } catch (PDOException $e) {
+                    if ($e->getCode() !== '23000') throw $e;
                     http_response_code(409);
-                    $erreur = tr('Ce bureau n’est plus disponible. Choisissez un autre bureau.', 'لم يعد هذا المكتب متاحًا. اختر مكتبًا آخر.');
-                    $erreurs['id_bureau_depart'] = $erreur;
+                    $erreurs['id_bureau_depart'] = tr('Ce bureau n’est plus disponible. Choisissez un autre bureau.', 'لم يعد هذا المكتب متاحًا. اختر مكتبًا آخر.');
                 }
+            } else {
+                http_response_code(422);
             }
         }
-
-        posteFront('declarerEnvoi', tr('Modifier mon envoi', 'تعديل إرساليتي'), [
-            'erreur' => $erreur, 'bureaux' => (new BureauPostalController())->listeBureaux(),
-            'modification' => true, 'colis' => $colis, 'bureauSelectionne' => $bureauSelectionne,
-            'erreurs' => $erreurs, 'nomCitoyen' => $nomCitoyen, 'dateDeclaration' => $dateDeclaration,
+        $this->renderFront('poste/declarerEnvoi', [
+            'title' => tr('Modifier mon envoi', 'تعديل إرساليتي'), 'currentPage' => 'mes-colis',
+            'old' => $old, 'erreurs' => $erreurs, 'modification' => true,
+            'bureaux' => (new BureauPostalController())->listerBureaux(),
         ]);
     }
 
-    public function supprimerFront(): void
-    {
-        $utilisateur = exigerRole(['citoyen']);
-        $colis = $this->trouverDeclarationCitoyen($utilisateur['id']);
-        if ($colis === null) return;
-
+    public function supprimerFront(): void {
+        exigerRole(['citoyen']);
+        $idCitoyen = (int) $_SESSION['id_citoyen'];
+        $colis = $this->trouverColisCitoyen($idCitoyen);
+        if (!$colis) return;
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!$this->modele->supprimerDeclaration($colis['id_colis'], $utilisateur['id'])) {
+            if (!$this->supprimerColisCitoyen($colis['id_colis'], $idCitoyen)) {
                 http_response_code(409);
                 $this->afficherMesColis(tr('Ce colis vient d’être traité ou supprimé. Rechargez la liste.', 'تمّت معالجة هذا الطرد أو حذفه. أعد تحميل القائمة.'));
                 return;
             }
-            $this->retourHistorique(['kind' => 'deleted']);
+            $_SESSION['flash'] = ['type' => 'success', 'kind' => 'deleted', 'message' => 'Votre envoi a été supprimé.'];
+            header('Location: ' . frontUrl('mes-colis'), true, 303);
+            exit;
         }
-
         $this->afficherMesColis('', $colis);
     }
 
-    private function trouverDeclarationCitoyen($idCitoyen)
-    {
+    public function suivi(): void {
+        $rechercheLancee = isset($_GET['numero']);
+        $numeroSuivi = strtoupper(posteText($_GET, 'numero'));
+        $numeroValide = preg_match('/^ET[0-9A-Z]{6,20}TN$/', $numeroSuivi) === 1;
+        $colis = $numeroValide ? $this->chercherColis($numeroSuivi) : null;
+        $this->renderFront('poste/suiviColis', [
+            'title' => tr('Suivre un colis', 'تتبّع طرد'), 'currentPage' => 'suivi-colis',
+            'rechercheLancee' => $rechercheLancee, 'numeroSuivi' => $numeroSuivi,
+            'numeroValide' => $numeroValide, 'colis' => $colis,
+        ]);
+    }
+
+    public function listBack(): void {
+        CitoyenController::requireAdmin();
+        $recherche = posteText($_GET, 'q');
+        $filtreStatut = posteText($_GET, 'statut');
+        if (!in_array($filtreStatut, self::STATUTS, true)) $filtreStatut = '';
+        $liste = [];
+        foreach ($this->listerColis() as $colis) {
+            $texte = $colis['numero_suivi'] . ' ' . $colis['bureau'] . ' ' . $colis['ville'] . ' ' . $colis['nom_citoyen'];
+            if (($filtreStatut === '' || $colis['statut'] === $filtreStatut) && posteMatches($recherche, $texte)) $liste[] = $colis;
+        }
+        $this->renderBack('poste/colisList', [
+            'title' => 'Gestion des colis', 'currentPage' => 'admin-colis', 'section' => 'colis',
+            'liste' => $liste, 'recherche' => $recherche, 'filtreStatut' => $filtreStatut, 'statuts' => self::STATUTS,
+        ]);
+    }
+
+    public function addBack(): void {
+        CitoyenController::requireAdmin();
+        $erreurs = [];
+        $old = self::clean([]);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $old = self::clean($_POST);
+            $erreurs = $this->verifierColis($old, true);
+            if (count($erreurs) == 0) {
+                $colis = new Colis(null, (int) $old['id_bureau_depart'], (int) $old['id_citoyen']);
+                try {
+                    $resultat = $this->ajouterColis($colis);
+                    $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le colis ' . $resultat['numero_suivi'] . ' a été enregistré.'];
+                    header('Location: index.php?page=admin-colis', true, 303);
+                    exit;
+                } catch (PDOException $e) {
+                    if ($e->getCode() !== '23000') throw $e;
+                    $erreurs['id_bureau_depart'] = 'Vérifiez le bureau de départ et le compte citoyen.';
+                    http_response_code(409);
+                }
+            } else {
+                http_response_code(422);
+            }
+        }
+        $this->renderBack('poste/colisForm', [
+            'title' => 'Enregistrer un colis', 'currentPage' => 'admin-colis', 'section' => 'colis',
+            'old' => $old, 'erreurs' => $erreurs, 'statuts' => [],
+            'bureaux' => (new BureauPostalController())->listerBureaux(), 'citoyens' => $this->listerCitoyens(),
+        ]);
+    }
+
+    public function updateBack(): void {
+        CitoyenController::requireAdmin();
+        $id = posteId($_GET) ?? posteId($_POST);
+        $old = $id === null ? null : $this->recupererColis($id);
+        if (!$old) { $this->introuvable(); return; }
+        $erreurs = [];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $statut = posteText($_POST, 'statut');
+            if (posteText($_POST, 'statut_actuel') !== $old['statut']) {
+                http_response_code(409);
+                $erreurs['statut'] = 'Le statut a changé depuis l’ouverture du formulaire. Vérifiez son état actuel.';
+            } elseif (!in_array($statut, self::statutsSuivants($old['statut']), true)) {
+                http_response_code(422);
+                $erreurs['statut'] = 'Choisissez une étape proposée pour ce colis.';
+            } else {
+                $colis = new Colis($id, null, null, null, $statut);
+                if ($this->modifierColis($colis, $id, $old['statut'])) {
+                    $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le statut du colis a été mis à jour.'];
+                    header('Location: index.php?page=admin-colis', true, 303);
+                    exit;
+                }
+                http_response_code(409);
+                $erreurs['statut'] = 'Ce colis vient d’être modifié. Rechargez son état avant de réessayer.';
+                $old = $this->recupererColis($id);
+                if (!$old) { $this->introuvable(); return; }
+            }
+        }
+        $this->renderBack('poste/colisForm', [
+            'title' => 'Modifier le statut', 'currentPage' => 'admin-colis', 'section' => 'colis',
+            'old' => $old, 'erreurs' => $erreurs, 'statuts' => self::statutsSuivants($old['statut']),
+            'bureaux' => [], 'citoyens' => [],
+        ]);
+    }
+
+    public function deleteBack(): void {
+        CitoyenController::requireAdmin();
+        $id = $_SERVER['REQUEST_METHOD'] === 'POST' ? posteId($_POST) : posteId($_GET);
+        $colis = $id === null ? null : $this->recupererColis($id);
+        if (!$colis) { $this->introuvable(); return; }
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->supprimerColis($id);
+            $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le colis a été supprimé.'];
+            header('Location: index.php?page=admin-colis', true, 303);
+            exit;
+        }
+        $this->renderBack('poste/supprimer', [
+            'title' => 'Supprimer le colis', 'currentPage' => 'admin-colis', 'section' => 'colis', 'erreurs' => [],
+            'old' => ['id' => $id, 'reference' => $colis['numero_suivi'], 'action' => 'deleteColis',
+                'message' => 'Le colis sera retiré du suivi et de l’historique citoyen. Cette action est définitive.'],
+        ]);
+    }
+
+    public function accepter(): void {
+        CitoyenController::requireAdmin();
+        $id = posteId($_POST);
+        $old = $id === null ? null : $this->recupererColis($id);
+        if (!$old) { $this->introuvable(); return; }
+        $colis = new Colis($id, null, null, null, 'Accepté');
+        if (!$this->modifierColis($colis, $id, 'En attente')) {
+            http_response_code(409);
+            $this->renderBack('poste/problem', [
+                'title' => 'Déclaration déjà traitée', 'currentPage' => 'admin-colis', 'section' => 'colis',
+                'message' => 'Ce colis n’est plus en attente. Rechargez la liste des colis.',
+            ]);
+            return;
+        }
+        $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le colis ' . $old['numero_suivi'] . ' a été accepté.'];
+        header('Location: index.php?page=admin-colis', true, 303);
+        exit;
+    }
+
+    public function statistiques(): array {
+        CitoyenController::requireAdmin();
+        $liste = $this->listerColis();
+        $compteurs = array_fill_keys(self::STATUTS, 0);
+        foreach ($liste as $colis) $compteurs[$colis['statut']]++;
+        return [
+            'stats' => [
+                ['label' => 'Colis enregistrés', 'value' => count($liste), 'icon' => 'box'],
+                ['label' => 'En attente', 'value' => $compteurs['En attente'], 'icon' => 'clock'],
+                ['label' => 'Acceptés', 'value' => $compteurs['Accepté'], 'icon' => 'check-circle'],
+                ['label' => 'En transit', 'value' => $compteurs['En transit'], 'icon' => 'truck'],
+                ['label' => 'Bureaux de poste', 'value' => (new BureauPostalController())->compterBureaux(), 'icon' => 'geo-alt'],
+                ['label' => 'Utilisateurs', 'value' => count(gestionUtilisateurs()->lister()), 'icon' => 'people'],
+            ],
+            'liste' => array_slice($liste, 0, 5), 'compteurs' => $compteurs,
+        ];
+    }
+
+    private function trouverColisCitoyen($idCitoyen) {
         $id = posteId($_GET);
-        $colis = $id === null ? null : $this->modele->recupererColisCitoyen($id, $idCitoyen);
-        if ($colis === null) {
+        $colis = $id === null ? null : $this->recupererColisCitoyen($id, $idCitoyen);
+        if (!$colis) {
             http_response_code(404);
             $this->afficherMesColis(tr('Colis introuvable dans vos déclarations.', 'لم يتمّ العثور على الطرد في تصريحاتك.'));
             return null;
@@ -480,18 +367,21 @@ class ColisController extends Controller
         return $colis;
     }
 
-    public function mesColisFront(): void {
-        exigerRole(['citoyen']);
-        $erreur = '';
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') $erreur = $this->annulerEnvoi($_POST['id_colis'] ?? '');
-        $this->afficherMesColis($erreur);
+    private function afficherMesColis($erreur = '', $colisASupprimer = null): void {
+        $confirmation = isset($_SESSION['flash']['kind']) ? $_SESSION['flash'] : null;
+        unset($_SESSION['flash']);
+        $this->renderFront('poste/mesColis', [
+            'title' => tr('Mes colis', 'طرودي'), 'currentPage' => 'mes-colis', 'erreur' => $erreur,
+            'liste' => $this->listerColisCitoyen((int) $_SESSION['id_citoyen']),
+            'confirmation' => $confirmation, 'colisASupprimer' => $colisASupprimer,
+        ]);
     }
 
-    private function afficherMesColis($erreur = '', $colisASupprimer = null)
-    {
-        $colisDuCitoyen = $this->listerHistorique();
-        $confirmation = $_SESSION['poste_front_flash'] ?? null;
-        unset($_SESSION['poste_front_flash']);
-        posteFront('mesColis', tr('Mes colis', 'طرودي'), compact('erreur', 'colisDuCitoyen', 'confirmation', 'colisASupprimer'));
+    private function introuvable(): void {
+        http_response_code(404);
+        $this->renderBack('poste/problem', [
+            'title' => 'Colis introuvable', 'currentPage' => 'admin-colis', 'section' => 'colis',
+            'message' => 'Ce colis n’existe plus ou le lien est incorrect.',
+        ]);
     }
 }

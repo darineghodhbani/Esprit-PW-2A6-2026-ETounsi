@@ -5,6 +5,8 @@
 class Controller {
 
     public function renderBack(string $vue, array $data = []): void {
+        $csrf = csrfToken();
+        $compteConnecte = utilisateurConnecte();
         extract($data);
 
         ob_start();
@@ -16,6 +18,10 @@ class Controller {
     }
 
     public function renderFront(string $vue, array $data = []): void {
+        $language = et_lang();
+        $jeton = csrfToken();
+        $utilisateur = utilisateurConnecte();
+        $pageTitle = $data['title'] ?? 'E-Tounsi';
         extract($data);
         if (strpos($vue, 'poste/') === 0) {
             ob_start();

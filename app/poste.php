@@ -13,8 +13,6 @@ function tr($francais, $arabe)
 
 function frontUrl($page = 'accueil', $parametres = [], $langue = null)
 {
-    global $language;
-
     $page = pagesFrontPoste()[$page] ?? $page;
 
     if ($langue === null) {
@@ -48,51 +46,6 @@ function parcelStatus($statut)
     }
 }
 
-function adminUrl($page = 'dashboard', $parametres = []) {
-    $pages = ['bureaux' => 'admin-bureaux', 'bureauList' => 'admin-bureaux', 'bureauliste' => 'admin-bureaux',
-              'colis' => 'admin-colis', 'colisList' => 'admin-colis', 'Colisliste' => 'admin-colis',
-              'utilisateurs' => 'admin-utilisateurs', 'userList' => 'admin-utilisateurs',
-              'utilisateur-form' => 'admin-utilisateur-form', 'utilisateur-suppression' => 'admin-utilisateur-delete'];
-    $query = ['page' => $pages[$page] ?? $page];
-    return 'index.php?' . http_build_query(array_merge($query, $parametres));
-}
-
-function posteRender($view, $title, $section, $data = []) {
-    if (isset($_SESSION['poste_admin_flash'])) {
-        $_SESSION['flash'] = $_SESSION['poste_admin_flash'];
-        unset($_SESSION['poste_admin_flash']);
-    }
-    $pages = ['bureaux' => 'admin-bureaux', 'colis' => 'admin-colis', 'utilisateurs' => 'admin-utilisateurs'];
-    (new Controller())->renderBack('poste/' . $view, ['title' => $title, 'currentPage' => $pages[$section] ?? 'dashboard',
-        'section' => $section, 'data' => $data, 'csrf' => csrfToken(), 'compteConnecte' => utilisateurConnecte()]);
-}
-
-function posteFront($vue, $titre, $data = []) {
-    $pages = ['bureaux' => 'bureaux-poste', 'suiviColis' => 'suivi-colis', 'declarerEnvoi' => 'declarer-envoi', 'mesColis' => 'mes-colis'];
-    $pageCourante = $pages[$vue] ?? 'module';
-    if (in_array($_GET['page'] ?? '', ['modifier-colis', 'supprimer-colis'], true)) $pageCourante = 'mes-colis';
-    (new Controller())->renderFront('poste/' . $vue, array_merge(['title' => $titre, 'pageTitle' => $titre,
-        'currentPage' => $pageCourante, 'language' => et_lang(), 'jeton' => csrfToken(),
-        'utilisateur' => utilisateurConnecte(), 'erreur' => ''], $data));
-}
-
-function posteProblem($code, $title, $message, $section = 'dashboard')
-{
-    http_response_code($code);
-    posteRender('problem', $title, $section, ['message' => $message]);
-}
-
-function posteCsrfValid()
-{
-    $token = posteText($_POST, 'csrf');
-    if (csrfValide($token)) {
-        return true;
-    }
-
-    posteProblem(403, 'Session expirée', 'Rechargez le formulaire avant de réessayer.');
-    return false;
-}
-
 function posteText($source, $field)
 {
     if (isset($source[$field]) && is_string($source[$field])) {
@@ -108,13 +61,6 @@ function posteId($source, $field = 'id')
         return null;
     }
     return $id;
-}
-
-function posteRedirect($page, $message, $type = 'success')
-{
-    $_SESSION['poste_admin_flash'] = ['message' => $message, 'type' => $type];
-    header('Location: ' . adminUrl($page), true, 303);
-    exit;
 }
 
 function posteMatches($query, $text)

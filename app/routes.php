@@ -37,30 +37,30 @@ $routes = [
 
 
 $routes['bureaux-poste'] = ['BureauPostalController', 'listFront', ['GET']];
-$routes['suivi-colis'] = ['ColisController', 'suiviFront', ['GET']];
-$routes['declarer-envoi'] = ['ColisController', 'declarerFront', ['GET', 'POST']];
-$routes['mes-colis'] = ['ColisController', 'mesColisFront', ['GET', 'POST']];
+$routes['suivi-colis'] = ['ColisController', 'suivi', ['GET']];
+$routes['declarer-envoi'] = ['ColisController', 'declarer', ['GET', 'POST']];
+$routes['mes-colis'] = ['ColisController', 'mesColis', ['GET', 'POST']];
 $routes['modifier-colis'] = ['ColisController', 'modifierFront', ['GET', 'POST']];
 $routes['supprimer-colis'] = ['ColisController', 'supprimerFront', ['GET', 'POST']];
-$routes['admin-bureaux'] = ['BureauPostalController', 'index', ['GET'], 'admin'];
-$routes['admin-bureau-form'] = ['BureauPostalController', 'form', ['GET'], 'admin'];
-$routes['admin-bureau-save'] = ['BureauPostalController', 'save', ['POST'], 'admin'];
-$routes['admin-bureau-delete'] = ['BureauPostalController', 'confirmDelete', ['GET'], 'admin'];
-$routes['admin-colis'] = ['ColisController', 'index', ['GET'], 'admin'];
-$routes['admin-colis-form'] = ['ColisController', 'form', ['GET'], 'admin'];
-$routes['admin-colis-save'] = ['ColisController', 'save', ['POST'], 'admin'];
-$routes['admin-colis-delete'] = ['ColisController', 'confirmDelete', ['GET'], 'admin'];
-$routes['admin-utilisateurs'] = ['CitoyenController', 'index', ['GET'], 'admin'];
-$routes['admin-utilisateur-form'] = ['CitoyenController', 'form', ['GET'], 'admin'];
-$routes['admin-utilisateur-save'] = ['CitoyenController', 'save', ['POST'], 'admin'];
-$routes['admin-utilisateur-delete'] = ['CitoyenController', 'confirmDelete', ['GET'], 'admin'];
-foreach (['addBureau' => 'BureauPostalController', 'updateBureau' => 'BureauPostalController',
-          'addColis' => 'ColisController', 'updateColis' => 'ColisController',
-          'addUser' => 'CitoyenController', 'updateUser' => 'CitoyenController'] as $pageForm => $classe) {
-    $routes[$pageForm] = [$classe, $_SERVER['REQUEST_METHOD'] === 'POST' ? 'save' : 'form', ['GET','POST'], 'admin'];
+
+$modulesAdmin = [
+    'bureau' => ['BureauPostalController', 'admin-bureaux'],
+    'colis' => ['ColisController', 'admin-colis'],
+    'utilisateur' => ['CitoyenController', 'admin-utilisateurs'],
+];
+foreach ($modulesAdmin as $entite => $module) {
+    $classe = $module[0];
+    $routes[$module[1]] = [$classe, 'listBack', ['GET'], 'admin'];
+    $routes['admin-' . $entite . '-add'] = [$classe, 'addBack', ['GET', 'POST'], 'admin'];
+    $routes['admin-' . $entite . '-update'] = [$classe, 'updateBack', ['GET', 'POST'], 'admin'];
+    $routes['admin-' . $entite . '-delete'] = [$classe, 'deleteBack', ['GET', 'POST'], 'admin'];
+    $routes['admin-' . $entite . '-form'] = [$classe, isset($_GET['id']) ? 'updateBack' : 'addBack', ['GET'], 'admin'];
+    $routes['admin-' . $entite . '-save'] = [$classe, isset($_POST['id']) && $_POST['id'] !== '' ? 'updateBack' : 'addBack', ['POST'], 'admin'];
 }
-foreach (['deleteBureau' => 'BureauPostalController', 'deleteColis' => 'ColisController', 'deleteUser' => 'CitoyenController'] as $pageDelete => $classe) {
-    $routes[$pageDelete] = [$classe, $_SERVER['REQUEST_METHOD'] === 'POST' ? 'delete' : 'confirmDelete', ['GET','POST'], 'admin'];
+foreach (['Bureau' => 'BureauPostalController', 'Colis' => 'ColisController', 'User' => 'CitoyenController'] as $entite => $classe) {
+    $routes['add' . $entite] = [$classe, 'addBack', ['GET', 'POST'], 'admin'];
+    $routes['update' . $entite] = [$classe, 'updateBack', ['GET', 'POST'], 'admin'];
+    $routes['delete' . $entite] = [$classe, 'deleteBack', ['GET', 'POST'], 'admin'];
 }
 $routes['colis-accepter'] = ['ColisController', 'accepter', ['POST'], 'admin'];
 foreach (['bureaux' => 'bureaux-poste', 'suivi' => 'suivi-colis', 'suiviColis' => 'suivi-colis',
@@ -71,4 +71,4 @@ $routes['logout'][2] = ['POST'];
 $routes['deconnexion'][2] = ['POST'];
 
 require_once __DIR__ . '/Controllers/AuditController.php';
-$routes['admin-audit'] = ['AuditController', 'index', ['GET'], 'admin'];
+$routes['admin-audit'] = ['AuditController', 'listBack', ['GET'], 'admin'];

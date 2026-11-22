@@ -62,6 +62,8 @@ E-Tounsi/
 └── uploads/cnam/
 ```
 
+Les contrôleurs Poste et utilisateurs suivent la présentation de Recette des Finances : `clean()`, méthodes de validation, variables `$old` et `$erreurs`, actions `listBack()`, `addBack()`, `updateBack()` et `deleteBack()`. La déclaration du colis utilise `declarer()`. Les modèles portent les propriétés, constructeurs et getters/setters ; les contrôleurs créent ces objets avant de les transmettre aux méthodes CRUD. Les mêmes formulaires sont conservés pour éviter les doublons.
+
 La connexion PDO est centralisée dans `config.php`. Les requêtes SQL sont dans les modèles. Les contrôleurs valident les données et préparent les vues. Le contrôleur de base assemble le contenu dans les layouts. Les pages Poste gardent un formulaire d’ajout/modification par entité et une confirmation de suppression partagée.
 
 Les deux modules utilisent le même en-tête, la même navigation, les mêmes pieds de page et la même session. Les sélecteurs et dates utilisent les contrôles HTML natifs ; les listes conservent leurs filtres dans l’URL. Les changements de page après traitement utilisent `header('Location: ...')`, suivi de `exit`. Les liens HTML assurent la navigation normale ; le script de redirection JavaScript entre pages a été retiré. L’animation d’entrée dans les services est conservée.

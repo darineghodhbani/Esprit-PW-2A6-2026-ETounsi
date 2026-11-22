@@ -32,13 +32,11 @@ header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 header("Content-Security-Policy: default-src 'self'; script-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; frame-src https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/; connect-src 'self' https://www.google.com/recaptcha/; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
 
-function gestionUtilisateurs()
-{
-    return new Citoyen(Database::getConnection());
+function gestionUtilisateurs() {
+    return new Citoyen();
 }
 
-function utilisateurConnecte()
-{
+function utilisateurConnecte() {
     if (empty($_SESSION['user_id'])) {
         return null;
     }
@@ -53,8 +51,7 @@ function utilisateurConnecte()
     return $utilisateur;
 }
 
-function exigerConnexion()
-{
+function exigerConnexion() {
     $utilisateur = utilisateurConnecte();
     if ($utilisateur === null) {
         header('Location: ' . frontUrl('connexion'));
@@ -63,8 +60,7 @@ function exigerConnexion()
     return $utilisateur;
 }
 
-function exigerRole($roles)
-{
+function exigerRole($roles) {
     $utilisateur = exigerConnexion();
     if (!in_array($utilisateur['role'], $roles, true)) {
         auditEvenement('ACCESS_DENIED', 'Rôle insuffisant pour la page ' . pageAudit() . '.');
@@ -77,21 +73,18 @@ function exigerRole($roles)
     return $utilisateur;
 }
 
-function csrfToken()
-{
+function csrfToken() {
     if (empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
     return $_SESSION['csrf_token'];
 }
 
-function csrfValide($token)
-{
+function csrfValide($token) {
     return is_string($token) && isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
 
-function connecterUtilisateur($utilisateur)
-{
+function connecterUtilisateur($utilisateur) {
     session_regenerate_id(true);
     $_SESSION = [
         'user_id' => (int) $utilisateur['id'],
@@ -106,8 +99,7 @@ function connecterUtilisateur($utilisateur)
     ];
 }
 
-function deconnecterUtilisateur($raison = 'Déconnexion de la session.')
-{
+function deconnecterUtilisateur($raison = 'Déconnexion de la session.') {
     if (!empty($_SESSION['user_id'])) auditEvenement('LOGOUT', $raison, (int) $_SESSION['user_id']);
     $_SESSION = [];
     if (ini_get('session.use_cookies')) {
@@ -128,14 +120,12 @@ function deconnecterUtilisateur($raison = 'Déconnexion de la session.')
 }
 
 
-function pageAudit()
-{
+function pageAudit() {
     $page = $_GET['page'] ?? 'home';
     return is_string($page) && preg_match('/^[a-zA-Z0-9_-]{1,80}$/', $page) ? $page : 'inconnue';
 }
 
-function auditEvenement($action, $details, $cible = null)
-{
+function auditEvenement($action, $details, $cible = null) {
     try {
         (new AuditLog())->log($_SESSION['user_id'] ?? null, $action, $details, $cible);
     } catch (PDOException $erreur) {

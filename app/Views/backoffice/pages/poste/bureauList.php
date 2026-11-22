@@ -1,10 +1,6 @@
-<?php
-$offices = $data['offices'];
-$query = $data['query'];
-?>
 <div class="page-header poste-page-header">
     <div>
-        <h1 class="page-title"><?= e($title) ?></h1>
+        <h1 class="page-title"><?php echo e($title); ?></h1>
         <p class="page-subtitle">Gérez les coordonnées affichées dans l’annuaire citoyen.</p>
     </div>
     <a class="btn-custom btn-custom-primary" href="?espace=admin&amp;page=addBureau"><i class="bi bi-plus-lg" aria-hidden="true"></i> Ajouter un bureau</a>
@@ -16,30 +12,30 @@ $query = $data['query'];
         <input type="hidden" name="page" value="bureauliste">
         <div class="poste-filter-field">
             <label for="q">Rechercher un bureau</label>
-            <input type="search" class="form-control-custom" id="q" name="q" value="<?= e($query) ?>" placeholder="Nom, adresse ou ville">
+            <input type="search" class="form-control-custom" id="q" name="q" value="<?php echo e($recherche); ?>" placeholder="Nom, adresse ou ville">
         </div>
         <button class="btn-custom btn-custom-light" type="submit"><i class="bi bi-search" aria-hidden="true"></i> Rechercher</button>
-        <?php if ($query !== ''): ?><a href="?espace=admin&amp;page=bureauList" class="btn-custom btn-custom-light">Effacer</a><?php endif; ?>
+        <?php if ($recherche !== ''): ?><a href="?espace=admin&amp;page=bureauList" class="btn-custom btn-custom-light">Effacer</a><?php endif; ?>
     </form>
-    <?php if ($offices === []): ?>
-        <p class="poste-empty"><?= $query === '' ? 'Aucun bureau enregistré. Ajoutez le premier bureau à l’annuaire.' : 'Aucun bureau trouvé. Essayez un autre nom ou une autre ville.' ?></p>
+    <?php if ($liste === []): ?>
+        <p class="poste-empty"><?php echo $recherche === '' ? 'Aucun bureau enregistré. Ajoutez le premier bureau à l’annuaire.' : 'Aucun bureau trouvé. Essayez un autre nom ou une autre ville.'; ?></p>
     <?php else: ?>
         <div class="table-responsive" tabindex="0" role="region" aria-label="Tableau des bureaux">
             <table class="table-custom">
                 <caption class="visually-hidden">Bureaux de poste</caption>
                 <thead><tr><th scope="col">Bureau</th><th scope="col">Adresse</th><th scope="col">Ville</th><th scope="col">Actions</th></tr></thead>
                 <tbody>
-                <?php foreach ($offices as $office): ?>
+                <?php foreach ($liste as $bureau): ?>
                     <tr>
-                        <th scope="row" class="table-order-id"><?= e($office['nom']) ?></th>
-                        <td><?= e($office['adresse']) ?></td>
-                        <td><?= e($office['ville']) ?></td>
+                        <th scope="row" class="table-order-id"><?php echo e($bureau['nom']); ?></th>
+                        <td><?php echo e($bureau['adresse']); ?></td>
+                        <td><?php echo e($bureau['ville']); ?></td>
                         <td>
                             <div class="poste-table-actions">
-                                <a class="btn-custom btn-custom-light btn-custom-sm" href="?espace=admin&amp;page=updateBureau&amp;id=<?= e($office['id_bureau']) ?>"
-                                   aria-label="Modifier <?= e($office['nom']) ?>">Modifier</a>
-                                <a class="btn-custom btn-custom-danger btn-custom-sm" href="?espace=admin&amp;page=deleteBureau&amp;id=<?= e($office['id_bureau']) ?>"
-                                   aria-label="Supprimer <?= e($office['nom']) ?>"><i class="bi bi-trash3" aria-hidden="true"></i> Supprimer</a>
+                                <a class="btn-custom btn-custom-light btn-custom-sm" href="?espace=admin&amp;page=updateBureau&amp;id=<?php echo e($bureau['id_bureau']); ?>"
+                                   aria-label="Modifier <?php echo e($bureau['nom']); ?>">Modifier</a>
+                                <a class="btn-custom btn-custom-danger btn-custom-sm" href="?espace=admin&amp;page=deleteBureau&amp;id=<?php echo e($bureau['id_bureau']); ?>"
+                                   aria-label="Supprimer <?php echo e($bureau['nom']); ?>"><i class="bi bi-trash3" aria-hidden="true"></i> Supprimer</a>
                             </div>
                         </td>
                     </tr>

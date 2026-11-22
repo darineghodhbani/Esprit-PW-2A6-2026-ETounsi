@@ -1,212 +1,179 @@
 <?php
 
 require_once __DIR__ . '/Controller.php';
+require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../Models/BureauPostal.php';
-require_once __DIR__ . '/../poste.php';
 
-class BureauPostalController extends Controller
-{
-    private $connexion;
+class BureauPostalController extends Controller {
     private $modele;
 
-    public function __construct($connexion = null)
-    {
-        $this->connexion = $connexion ?? Database::getConnection();
+    public function __construct() {
         $this->modele = new BureauPostal();
     }
 
-    public function listeBureaux()
-    {
-        return $this->modele->listeBureaux();
+    public function listerBureaux() {
+        return $this->modele->listerBureaux();
     }
 
-    public function recupererBureau($id)
-    {
+    public function recupererBureau($id) {
         return $this->modele->recupererBureau($id);
     }
 
-    public function ajouterBureau(BureauPostal $bureau)
-    {
+    public function compterBureaux() {
+        return $this->modele->compterBureaux();
+    }
+
+    public function ajouterBureau(BureauPostal $bureau) {
         return $this->modele->ajouterBureau($bureau);
     }
 
-    public function modifierBureau(BureauPostal $bureau)
-    {
-        return $this->modele->modifierBureau($bureau);
+    public function modifierBureau(BureauPostal $bureau, $id) {
+        return $this->modele->modifierBureau($bureau, $id);
     }
 
-    public function deleteBureau($id)
-    {
-        return $this->modele->deleteBureau($id);
+    public function supprimerBureau($id) {
+        return $this->modele->supprimerBureau($id);
     }
 
-    public function filtrerBureaux($ville)
-    {
-        $bureaux = $this->listeBureaux();
-        $villes = [];
-        foreach ($bureaux as $bureau) {
-            if (!in_array($bureau['ville'], $villes, true)) {
-                $villes[] = $bureau['ville'];
-            }
-        }
-        natcasesort($villes);
-
-        if (!is_string($ville) || !in_array($ville, $villes, true)) {
-            $ville = '';
-        }
-
-        $resultats = [];
-        foreach ($bureaux as $bureau) {
-            if ($ville === '' || $bureau['ville'] === $ville) {
-                $resultats[] = $bureau;
-            }
-        }
-
-        return ['bureaux' => $resultats, 'villes' => $villes, 'ville' => $ville];
+    public static function clean(array $post): array {
+        return [
+            'nom' => posteText($post, 'nom'),
+            'adresse' => posteText($post, 'adresse'),
+            'ville' => posteText($post, 'ville'),
+        ];
     }
 
-
-    private const FIELDS = [
-        'nom' => ['label' => 'Nom du bureau', 'limit' => 100],
-        'adresse' => ['label' => 'Adresse', 'limit' => 200],
-        'ville' => ['label' => 'Ville', 'limit' => 80],
-    ];
-
-    public function index()
-    {
-        $query = posteText($_GET, 'q');
-        $offices = [];
-        foreach ($this->listeBureaux() as $office) {
-            $coordinates = $office['nom'] . ' ' . $office['adresse'] . ' ' . $office['ville'];
-            if (posteMatches($query, $coordinates)) {
-                $offices[] = $office;
-            }
+    public function verifierBureau(array $d): array {
+        $erreurs = [];
+        if ($d['nom'] === '') {
+            $erreurs['nom'] = 'Le nom du bureau est obligatoire.';
+        } elseif (mb_strlen($d['nom']) > 100) {
+            $erreurs['nom'] = 'Le nom doit contenir au maximum 100 caractères.';
         }
-
-        posteRender('bureauList', 'Bureaux de poste', 'bureaux', ['offices' => $offices, 'query' => $query]);
+        if ($d['adresse'] === '') {
+            $erreurs['adresse'] = 'L’adresse est obligatoire.';
+        } elseif (mb_strlen($d['adresse']) > 200) {
+            $erreurs['adresse'] = 'L’adresse doit contenir au maximum 200 caractères.';
+        }
+        if ($d['ville'] === '') {
+            $erreurs['ville'] = 'La ville est obligatoire.';
+        } elseif (mb_strlen($d['ville']) > 80) {
+            $erreurs['ville'] = 'La ville doit contenir au maximum 80 caractères.';
+        }
+        return $erreurs;
     }
 
-    public function form()
-    {
-        $office = ['nom' => '', 'adresse' => '', 'ville' => ''];
-        if (isset($_GET['id'])) {
-            $office = $this->find(posteId($_GET));
+    public function listBack(): void {
+        CitoyenController::requireAdmin();
+        $recherche = posteText($_GET, 'q');
+        $liste = [];
+        foreach ($this->listerBureaux() as $bureau) {
+            if (posteMatches($recherche, $bureau['nom'] . ' ' . $bureau['adresse'] . ' ' . $bureau['ville'])) $liste[] = $bureau;
         }
-        if ($office !== null) {
-            $this->renderForm($office);
-        }
+        $this->renderBack('poste/bureauList', [
+            'title' => 'Bureaux de poste', 'currentPage' => 'admin-bureaux', 'section' => 'bureaux',
+            'liste' => $liste, 'total' => $this->compterBureaux(), 'recherche' => $recherche,
+        ]);
     }
 
-    public function save()
-    {
-        if (!posteCsrfValid()) {
-            return;
-        }
-
-        $id = null;
-        if (isset($_POST['id']) && $_POST['id'] !== '') {
-            $id = posteId($_POST);
-            if ($this->find($id) === null) {
-                return;
-            }
-        }
-
-        $office = ['id_bureau' => $id];
-        $errors = [];
-        foreach (self::FIELDS as $field => $info) {
-            $value = posteText($_POST, $field);
-            $office[$field] = $value;
-            $limit = $info['limit'];
-            if ($value === '') {
-                $errors[$field] = 'Renseignez ce champ.';
-            } elseif (mb_strlen($value, 'UTF-8') > $limit) {
-                $errors[$field] = "Utilisez au maximum $limit caractères.";
-            }
-        }
-
-        if ($errors !== []) {
-            $this->renderForm($office, $errors);
-            return;
-        }
-
-        try {
-            $bureau = new BureauPostal($id, $office['nom'], $office['adresse'], $office['ville']);
-            if ($id === null) {
+    public function addBack(): void {
+        CitoyenController::requireAdmin();
+        $erreurs = [];
+        $old = ['nom' => '', 'adresse' => '', 'ville' => ''];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $old = self::clean($_POST);
+            $erreurs = $this->verifierBureau($old);
+            if (count($erreurs) == 0) {
+                $bureau = new BureauPostal(null, $old['nom'], $old['adresse'], $old['ville']);
                 $this->ajouterBureau($bureau);
-            } else {
-                $this->modifierBureau($bureau);
+                $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le bureau a été ajouté.'];
+                header('Location: index.php?page=admin-bureaux', true, 303);
+                exit;
             }
-        } catch (OutOfBoundsException $error) {
-            posteProblem(404, 'Bureau introuvable', 'Ce bureau a été supprimé pendant la modification.', 'bureaux');
-            return;
-        }
-
-        if ($id === null) {
-            posteRedirect('bureaux', 'Le bureau a été ajouté.');
-        }
-        posteRedirect('bureaux', 'Le bureau a été mis à jour.');
-    }
-
-    public function confirmDelete()
-    {
-        $office = $this->find(posteId($_GET));
-        if ($office !== null) {
-            posteRender('supprimer', 'Supprimer le bureau', 'bureaux', [
-                'id' => $office['id_bureau'],
-                'reference' => $office['nom'],
-                'action' => 'deleteBureau',
-                'message' => 'Le bureau sera retiré de l’annuaire. La suppression est possible si aucun colis n’est associé à ce bureau.',
-            ]);
-        }
-    }
-
-    public function delete()
-    {
-        if (!posteCsrfValid()) {
-            return;
-        }
-
-        $id = posteId($_POST);
-        if ($this->find($id) === null) {
-            return;
-        }
-
-        if (!$this->deleteBureau($id)) {
-            posteRedirect('bureaux', 'Ce bureau est associé à des colis ou a déjà été supprimé.', 'warning');
-        }
-        posteRedirect('bureaux', 'Le bureau a été supprimé.');
-    }
-
-    private function find($id)
-    {
-        $office = null;
-        if ($id !== null) {
-            $office = $this->recupererBureau($id);
-        }
-        if ($office === null) {
-            posteProblem(404, 'Bureau introuvable', 'Ce bureau n’existe plus ou le lien est incorrect.', 'bureaux');
-        }
-        return $office;
-    }
-
-    private function renderForm($office, $errors = [])
-    {
-        if ($errors !== []) {
             http_response_code(422);
         }
+        $this->renderBack('poste/bureauForm', [
+            'title' => 'Ajouter un bureau', 'currentPage' => 'admin-bureaux', 'section' => 'bureaux',
+            'old' => $old, 'erreurs' => $erreurs,
+        ]);
+    }
 
-        $title = 'Ajouter un bureau';
-        if (!empty($office['id_bureau'])) {
-            $title = 'Modifier le bureau';
+    public function updateBack(): void {
+        CitoyenController::requireAdmin();
+        $id = posteId($_GET) ?? posteId($_POST);
+        $old = $id === null ? null : $this->recupererBureau($id);
+        if (!$old) {
+            $this->introuvable();
+            return;
         }
-        posteRender('bureauForm', $title, 'bureaux', [
-            'office' => $office,
-            'fields' => self::FIELDS,
-            'errors' => $errors,
+        $erreurs = [];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $old = self::clean($_POST);
+            $old['id_bureau'] = $id;
+            $erreurs = $this->verifierBureau($old);
+            if (count($erreurs) == 0) {
+                $bureau = new BureauPostal($id, $old['nom'], $old['adresse'], $old['ville']);
+                if (!$this->modifierBureau($bureau, $id)) {
+                    $this->introuvable();
+                    return;
+                }
+                $_SESSION['flash'] = ['type' => 'success', 'message' => 'Le bureau a été mis à jour.'];
+                header('Location: index.php?page=admin-bureaux', true, 303);
+                exit;
+            }
+            http_response_code(422);
+        }
+        $this->renderBack('poste/bureauForm', [
+            'title' => 'Modifier le bureau', 'currentPage' => 'admin-bureaux', 'section' => 'bureaux',
+            'old' => $old, 'erreurs' => $erreurs,
+        ]);
+    }
+
+    public function deleteBack(): void {
+        CitoyenController::requireAdmin();
+        $id = $_SERVER['REQUEST_METHOD'] === 'POST' ? posteId($_POST) : posteId($_GET);
+        $bureau = $id === null ? null : $this->recupererBureau($id);
+        if (!$bureau) {
+            $this->introuvable();
+            return;
+        }
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $supprime = $this->supprimerBureau($id);
+            $_SESSION['flash'] = [
+                'type' => $supprime ? 'success' : 'warning',
+                'message' => $supprime ? 'Le bureau a été supprimé.' : 'Ce bureau est associé à des colis et ne peut pas être supprimé.',
+            ];
+            header('Location: index.php?page=admin-bureaux', true, 303);
+            exit;
+        }
+        $this->renderBack('poste/supprimer', [
+            'title' => 'Supprimer le bureau', 'currentPage' => 'admin-bureaux', 'section' => 'bureaux', 'erreurs' => [],
+            'old' => ['id' => $id, 'reference' => $bureau['nom'], 'action' => 'deleteBureau',
+                'message' => 'La suppression est possible si aucun colis n’est associé à ce bureau.'],
         ]);
     }
 
     public function listFront(): void {
-        posteFront('bureaux', tr('Bureaux de poste', 'مكاتب البريد'), ['annuaire' => $this->filtrerBureaux($_GET['ville'] ?? '')]);
+        $bureaux = $this->listerBureaux();
+        $villes = array_values(array_unique(array_column($bureaux, 'ville')));
+        natcasesort($villes);
+        $ville = posteText($_GET, 'ville');
+        if (!in_array($ville, $villes, true)) $ville = '';
+        $liste = [];
+        foreach ($bureaux as $bureau) {
+            if ($ville === '' || $bureau['ville'] === $ville) $liste[] = $bureau;
+        }
+        $this->renderFront('poste/bureaux', [
+            'title' => tr('Bureaux de poste', 'مكاتب البريد'), 'currentPage' => 'bureaux-poste',
+            'annuaire' => ['bureaux' => $liste, 'villes' => $villes, 'ville' => $ville],
+        ]);
+    }
+
+    private function introuvable(): void {
+        http_response_code(404);
+        $this->renderBack('poste/problem', [
+            'title' => 'Bureau introuvable', 'currentPage' => 'admin-bureaux', 'section' => 'bureaux',
+            'message' => 'Ce bureau n’existe plus ou le lien est incorrect.',
+        ]);
     }
 }
