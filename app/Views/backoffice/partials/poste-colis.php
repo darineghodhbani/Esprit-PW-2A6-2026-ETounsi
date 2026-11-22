@@ -6,8 +6,8 @@
             <th scope="col">Bureau de départ</th>
             <th scope="col">Statut</th>
             <?php if ($section === 'colis'): ?>
-                <th scope="col">Citoyen</th>
-                <th scope="col">Enregistré le</th>
+                <th scope="col">Nom déclaré</th>
+                <th scope="col">Date de déclaration</th>
             <?php endif; ?>
             <th scope="col">Actions</th>
         </tr></thead>
@@ -18,8 +18,8 @@
                 <td><strong><?= e($parcel['bureau']) ?></strong><br><small class="text-muted-green"><?= e($parcel['ville']) ?></small></td>
                 <td><span class="poste-status"><?= e($parcel['statut']) ?></span></td>
                 <?php if ($section === 'colis'): ?>
-                    <td><?= e($parcel['id_citoyen']) ?></td>
-                    <td><?= e(date('d/m/Y', strtotime($parcel['created_at']))) ?></td>
+                    <td><?= e($parcel['nom_citoyen']) ?><br><small>Compte nº <?= e($parcel['id_citoyen']) ?></small></td>
+                    <td><?= e(date('d/m/Y', strtotime($parcel['date_declaration']))) ?></td>
                 <?php endif; ?>
                 <td>
                     <div class="poste-table-actions">

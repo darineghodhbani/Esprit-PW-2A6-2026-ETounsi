@@ -16,7 +16,7 @@ require __DIR__ . '/page-heading.php';
                 <?= e(tr('Envoi déclaré, en attente d’acceptation. Numéro de suivi', 'تمّ التصريح بالإرسال في انتظار القبول. رقم التتبّع')) ?>
                 <a href="<?= e(frontUrl('suivi', ['numero' => $confirmation['number']])) ?>"><bdi><?= e($confirmation['number']) ?></bdi></a>
             <?php elseif ($confirmation['kind'] === 'updated'): ?>
-                <?= e(tr('Le bureau de départ de votre envoi a été mis à jour.', 'تمّ تعديل مكتب إرسال طردك.')) ?>
+                <?= e(tr('Les informations de votre envoi ont été mises à jour.', 'تمّ تعديل معلومات إرساليّتك.')) ?>
             <?php elseif ($confirmation['kind'] === 'deleted'): ?>
                 <?= e(tr('Votre envoi a été supprimé.', 'تمّ حذف إرساليّتك.')) ?>
             <?php else: ?>
@@ -48,6 +48,7 @@ require __DIR__ . '/page-heading.php';
         <table class="table poste-history-table">
             <thead><tr>
                 <th scope="col"><?= e(tr('Référence', 'رقم التتبّع')) ?></th>
+                <th scope="col"><?= e(tr('Nom et prénom', 'الاسم واللقب')) ?></th>
                 <th scope="col"><?= e(tr('Bureau de départ', 'مكتب الإرسال')) ?></th>
                 <th scope="col"><?= e(tr('Date', 'التاريخ')) ?></th>
                 <th scope="col"><?= e(tr('Statut', 'الحالة')) ?></th>
@@ -57,8 +58,9 @@ require __DIR__ . '/page-heading.php';
             <?php foreach ($colisDuCitoyen as $colis): ?>
                 <tr class="parcel-row">
                     <th scope="row"><a href="<?= e(frontUrl('suivi', ['numero' => $colis['numero_suivi']])) ?>"><bdi><?= e($colis['numero_suivi']) ?></bdi></a></th>
+                    <td><bdi><?= e($colis['nom_citoyen']) ?></bdi></td>
                     <td><bdi><?= e($colis['bureau']) ?></bdi></td>
-                    <td><bdi><?= e(date('d/m/Y', strtotime($colis['created_at']))) ?></bdi></td>
+                    <td><bdi><?= e(date('d/m/Y', strtotime($colis['date_declaration']))) ?></bdi></td>
                     <td><span class="status-badge" data-statut="<?= e($colis['statut']) ?>"><?= e(parcelStatus($colis['statut'])) ?></span></td>
                     <td>
                     <?php if ($colis['statut'] === 'En attente'): ?>

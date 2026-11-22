@@ -8,7 +8,7 @@ class Colis
 
     private const SELECT_COLIS =
         'SELECT c.id_colis, c.id_bureau_depart, c.id_citoyen, c.numero_suivi,
-                c.statut, c.created_at, b.nom AS bureau, b.ville
+                c.statut, c.created_at, c.nom_citoyen, c.date_declaration, b.nom AS bureau, b.ville
          FROM colis c INNER JOIN bureau_postal b ON c.id_bureau_depart = b.id_bureau';
 
 
@@ -133,16 +133,17 @@ class Colis
         return $colis === false ? null : $colis;
     }
 
-    public function modifierDeclaration($id, $idCitoyen, $idBureau)
+    public function modifierDeclaration($id, $idCitoyen, $idBureau, $nomCitoyen, $dateDeclaration)
     {
         // Le propriétaire et le statut sont aussi vérifiés au moment de l’écriture.
         $requete = $this->connexion->prepare(
-            'UPDATE colis SET id_bureau_depart = :id_bureau
+            'UPDATE colis SET id_bureau_depart = :id_bureau, nom_citoyen = :nom, date_declaration = :date_declaration
              WHERE id_colis = :id AND id_citoyen = :id_citoyen AND statut = :statut'
         );
         $requete->execute([
             'id_bureau' => $idBureau, 'id' => $id,
             'id_citoyen' => $idCitoyen, 'statut' => 'En attente',
+            'nom' => $nomCitoyen, 'date_declaration' => $dateDeclaration,
         ]);
         return $requete->rowCount() === 1;
     }
@@ -156,11 +157,19 @@ class Colis
         return $requete->rowCount() === 1;
     }
 
-    public function ajouterColis($idBureau, $idCitoyen)
+    public function ajouterColis($idBureau, $idCitoyen, $nomCitoyen = null, $dateDeclaration = null)
     {
+        // Les créations dans le Back Office reprennent le compte sélectionné par l’admin.
+        if ($nomCitoyen === null) {
+            $compte = $this->connexion->prepare('SELECT nom, prenom FROM citoyen WHERE id_citoyen = :id');
+            $compte->execute(['id' => $idCitoyen]);
+            $citoyen = $compte->fetch();
+            $nomCitoyen = trim(($citoyen['prenom'] ?? '') . ' ' . ($citoyen['nom'] ?? ''));
+        }
+        if ($dateDeclaration === null) $dateDeclaration = date('Y-m-d');
         $requete = $this->connexion->prepare(
-            'INSERT INTO colis (id_bureau_depart, id_citoyen, numero_suivi, statut)
-             VALUES (:id_bureau, :id_citoyen, :numero, :statut)'
+            'INSERT INTO colis (id_bureau_depart, id_citoyen, numero_suivi, statut, nom_citoyen, date_declaration)
+             VALUES (:id_bureau, :id_citoyen, :numero, :statut, :nom, :date_declaration)'
         );
 
         $this->connexion->beginTransaction();
@@ -175,6 +184,8 @@ class Colis
                         'id_citoyen' => $colis->getIdCitoyen(),
                         'numero' => $colis->getNumeroSuivi(),
                         'statut' => $colis->getStatut(),
+                        'nom' => $nomCitoyen,
+                        'date_declaration' => $dateDeclaration,
                     ]);
                     $enregistre = true;
                 } catch (PDOException $erreur) {

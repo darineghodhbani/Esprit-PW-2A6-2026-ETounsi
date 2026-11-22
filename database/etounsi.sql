@@ -110,6 +110,8 @@ CREATE TABLE `colis` (
   `numero_suivi` varchar(32) NOT NULL,
   `statut` enum('En attente','Accepté','En transit','Livré','Annulé') NOT NULL DEFAULT 'En attente',
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `nom_citoyen` varchar(200) NOT NULL DEFAULT '',
+  `date_declaration` date NOT NULL,
   PRIMARY KEY (`id_colis`),
   UNIQUE KEY `numero_suivi` (`numero_suivi`),
   KEY `fk_poste_bureau` (`id_bureau_depart`),

@@ -18,7 +18,7 @@ $statuses = $data['statuses'];
         <input type="hidden" name="page" value="searchColis">
         <div class="poste-filter-field">
             <label for="q">Rechercher un colis</label>
-            <input type="search" class="form-control-custom" id="q" name="q" value="<?= e($query) ?>" placeholder="Nº de suivi, bureau ou ville">
+            <input type="search" class="form-control-custom" id="q" name="q" value="<?= e($query) ?>" placeholder="Nº de suivi, nom, bureau ou ville">
         </div>
         <div class="poste-filter-field">
             <label for="filtre-statut">Statut</label>

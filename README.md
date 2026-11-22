@@ -7,7 +7,7 @@ Projet Technologies Web, classe 2A6, Esprit School of Engineering, année univer
 ## Features
 
 - Compte commun : inscription, connexion, profil, CRUD utilisateurs, activation/suspension et rôles citoyen/administrateur.
-- Poste : annuaire des bureaux, déclaration d’un envoi, référence unique, suivi et historique. Le citoyen crée, consulte, modifie le bureau de départ et supprime ses propres déclarations en attente ; l’administrateur dispose du CRUD des bureaux et colis et gère leur traitement.
+- Poste : annuaire des bureaux, déclaration d’un envoi, référence unique, suivi et historique. Le citoyen saisit le nom et la date, choisit le bureau, puis peut modifier ces informations et supprimer ses propres déclarations en attente ; l’administrateur dispose du CRUD des bureaux et colis et gère leur traitement.
 - Cycle des colis : En attente → Accepté → En transit → Livré ; annulation avant départ selon les règles du module.
 - Finances : déclaration de propriétés, gestion des impôts, demande de paiement simulée, validation administrateur et reçus.
 - Audit : connexions réussies/refusées, déconnexions, opérations sur les comptes, changements de rôle et accès 403. Consultation administrateur avec filtres et pagination.
@@ -88,6 +88,8 @@ Développé à Esprit School of Engineering — Tunisia, dans le cadre du Projet
 3. Vérifier la connexion dans `config.php`. Un fichier local `config.local.php`, ignoré par Git, peut sélectionner une autre base : `<?php return ['host'=>'127.0.0.1','database'=>'nom_base','user'=>'root','password'=>''];`.
 4. Ouvrir `http://localhost/NOM_DU_DOSSIER/index.php`.
 
+Pour une base déjà installée avant l’ajout des champs de saisie des colis, sélectionner cette base dans phpMyAdmin et importer une seule fois `database/mise-a-jour-colis.sql`. Cette mise à jour ajoute le nom saisi et la date choisie sans remplacer les colis existants. Sur une installation neuve, `database/etounsi.sql` contient déjà ces colonnes.
+
 Sur ce PC, la copie de revue est `C:\xampp\htdocs\ETounsi-Integration-Preview` et utilise la base isolée `etounsi_integration_preview`. Les comptes du module Poste y ont été copiés en conservant leurs mots de passe ; les correspondances d’identifiants ont été appliquées aux colis. Le dossier et la base d’origine restent séparés.
 
 Routes principales :
@@ -115,7 +117,7 @@ Les formulaires utilisent des jetons CSRF, des validations PHP et des sorties é
 
 Dans « Mes colis », la modification et la suppression sont réservées au propriétaire tant que le statut est « En attente ». Le citoyen ne choisit ni le propriétaire, ni la référence, ni le statut. La suppression demande une confirmation et une requête POST avec un jeton CSRF. Les conditions de propriétaire et de statut sont également appliquées dans les requêtes SQL pour éviter une modification pendant l’acceptation par l’administrateur. Une référence supprimée n’apparaît plus dans le suivi.
 
-Le formulaire de déclaration présente le nom du citoyen connecté, le bureau de départ, la date de déclaration et le code de suivi. Le nom est relié au compte par `id_citoyen` ; il n’est pas dupliqué dans la table `colis`. La date est enregistrée dans `created_at`. Le code unique est généré à l’enregistrement et affiché dans la confirmation et dans « Mes colis ». Nom, date et code sont en lecture seule et ne peuvent pas être remplacés par les valeurs envoyées depuis le formulaire.
+Le citoyen saisit le nom et la date de déclaration et choisit un bureau existant. Ces informations sont enregistrées dans `colis.nom_citoyen`, `colis.date_declaration` et `colis.id_bureau_depart`. Le compte propriétaire reste déterminé par la session (`id_citoyen`) ; saisir un nom ne modifie pas le compte utilisateur. `created_at` conserve la date et l’heure réelles de l’enregistrement. Seul le code de suivi est automatique et en lecture seule : il est généré à l’enregistrement, protégé par une contrainte UNIQUE, puis affiché dans la confirmation et dans « Mes colis ». La modification permet de corriger le nom, la date et le bureau tant que le colis est en attente.
 
 `audit_logs` contient `id`, `user_id`, `action`, `target_id`, `details`, `ip_address` et `created_at`. `actor_name` conserve le nom de l’auteur lorsqu’un compte est supprimé. L’adresse provient de `REMOTE_ADDR` ; les en-têtes transmis par le client ne sont pas utilisés comme preuve d’adresse. Le journal ne contient aucun mot de passe, hash, cookie ou jeton. Les changements d’un compte et leurs traces sont enregistrés dans une même transaction. L’administration du journal est en lecture seule.
 
@@ -125,7 +127,7 @@ Pour la démonstration : ouvrir Utilisateurs, modifier le rôle d’un compte de
 
 Les vérifications locales couvrent les CRUD Poste et utilisateurs, le parcours Finances avec un compte commun, les accès, les sessions, les redirections, la protection CSRF, les filtres et la pagination de l’audit. Le contrôle d’une panne du journal utilise des tables temporaires pour vérifier l’annulation de la modification du compte. Les essais sur la copie sont nettoyés après exécution. Le script SQL est aussi vérifié sur une base vide.
 
-Le CRUD citoyen des colis a été vérifié avec deux comptes distincts : modification du bureau, suppression réelle après confirmation, validation des formulaires, refus d’accès aux colis d’un autre citoyen et refus après acceptation par l’administrateur. Les écrans de liste, modification et suppression ont été contrôlés sur ordinateur et mobile, en français et en arabe. Les données de test ont été retirées sans modifier les données existantes.
+Le CRUD citoyen des colis a été vérifié avec deux comptes distincts : saisie et modification du nom, de la date et du bureau, suppression réelle après confirmation, validation des formulaires, refus d’accès aux colis d’un autre citoyen et refus après acceptation par l’administrateur. Les dates impossibles et les noms invalides sont refusés ; le code, le compte propriétaire et l’horodatage réel ne peuvent pas être remplacés par un formulaire falsifié. Les écrans de déclaration, liste, modification et suppression ont été contrôlés sur ordinateur et mobile, en français et en arabe. Les données de test ont été retirées sans modifier les données existantes.
 
 ## Acknowledgments
 

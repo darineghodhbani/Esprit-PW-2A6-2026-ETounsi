@@ -1,9 +1,7 @@
 <?php
 $intro = $modification
-    ? tr('Modifiez le bureau de départ avant l’acceptation de votre envoi.', 'عدّل مكتب الإرسال قبل قبول إرساليّتك.')
-    : tr('Choisissez votre bureau de départ. Votre nom est repris de votre compte ; la date et le numéro de suivi sont attribués automatiquement.', 'اختر مكتب الإرسال. يُستخرج اسمك من حسابك ويُسجّل تاريخ التصريح ورقم التتبّع آليًّا.');
-$nomCitoyen = trim(($utilisateur['prenom'] ?? '') . ' ' . $utilisateur['nom']);
-$dateDeclaration = $modification ? substr($colis['created_at'], 0, 10) : date('Y-m-d');
+    ? tr('Modifiez votre nom, la date et le bureau de départ avant l’acceptation de votre envoi.', 'عدّل اسمك والتاريخ ومكتب الإرسال قبل قبول إرساليّتك.')
+    : tr('Saisissez votre nom et la date, puis choisissez le bureau de départ. Seul le code de suivi est généré automatiquement.', 'أدخل اسمك والتاريخ ثم اختر مكتب الإرسال. يُولّد رقم التتبّع وحده آليًّا.');
 require __DIR__ . '/page-heading.php';
 ?>
 <div class="poste-section">
@@ -23,13 +21,14 @@ require __DIR__ . '/page-heading.php';
                 <div class="poste-form-grid">
                     <div>
                         <label class="form-label" for="nom_citoyen"><?= e(tr('Nom et prénom du citoyen', 'اسم المواطن ولقبه')) ?></label>
-                        <input type="text" id="nom_citoyen" value="<?= e($nomCitoyen) ?>" readonly aria-describedby="aide-nom">
-                        <small class="form-text" id="aide-nom"><?= e(tr('Informations de votre compte connecté.', 'معلومات حسابك المتّصل.')) ?></small>
+                        <input type="text" id="nom_citoyen" name="nom_citoyen" value="<?= e($nomCitoyen) ?>" required minlength="2" maxlength="200" autocomplete="name" aria-describedby="aide-nom<?= isset($erreurs['nom_citoyen']) ? ' erreur-envoi' : '' ?>"
+                            <?php if (isset($erreurs['nom_citoyen'])): ?>aria-invalid="true"<?php endif; ?>>
+                        <small class="form-text" id="aide-nom"><?= e(tr('Indiquez votre nom et votre prénom pour cet envoi.', 'أدخل اسمك ولقبك لهذه الإرسالية.')) ?></small>
                     </div>
                     <div>
                         <label class="form-label" for="id_bureau_depart"><?= e(tr('Bureau de départ', 'مكتب الإرسال')) ?></label>
                         <select class="form-select" id="id_bureau_depart" name="id_bureau_depart" required
-                            <?php if ($erreur !== ''): ?>aria-invalid="true" aria-describedby="erreur-envoi" autofocus<?php endif; ?>>
+                            <?php if (isset($erreurs['id_bureau_depart'])): ?>aria-invalid="true" aria-describedby="erreur-envoi"<?php endif; ?>>
                             <option value=""><?= e(tr('Sélectionnez un bureau', 'اختر مكتبًا')) ?></option>
                             <?php foreach ($bureaux as $bureau): ?>
                                 <option value="<?= e($bureau['id_bureau']) ?>" <?= (string) $bureau['id_bureau'] === $bureauSelectionne ? 'selected' : '' ?>><?= e($bureau['nom']) ?> · <?= e($bureau['ville']) ?></option>
@@ -38,8 +37,9 @@ require __DIR__ . '/page-heading.php';
                     </div>
                     <div>
                         <label class="form-label" for="date_declaration"><?= e(tr('Date de déclaration', 'تاريخ التصريح')) ?></label>
-                        <input type="date" id="date_declaration" value="<?= e($dateDeclaration) ?>" readonly aria-describedby="aide-date">
-                        <small class="form-text" id="aide-date"><?= e(tr('Date enregistrée automatiquement lors de la déclaration.', 'يُسجّل التاريخ آليًّا عند التصريح.')) ?></small>
+                        <input type="date" id="date_declaration" name="date_declaration" value="<?= e($dateDeclaration) ?>" required min="1000-01-01" max="9999-12-31" aria-describedby="aide-date<?= isset($erreurs['date_declaration']) ? ' erreur-envoi' : '' ?>"
+                            <?php if (isset($erreurs['date_declaration'])): ?>aria-invalid="true"<?php endif; ?>>
+                        <small class="form-text" id="aide-date"><?= e(tr('Choisissez la date de votre déclaration.', 'اختر تاريخ تصريحك.')) ?></small>
                     </div>
                     <div>
                         <label class="form-label" for="numero_suivi"><?= e(tr('Code de suivi unique', 'رقم التتبّع الفريد')) ?></label>

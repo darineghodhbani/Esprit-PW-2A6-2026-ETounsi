@@ -34,7 +34,7 @@ require __DIR__ . '/page-heading.php';
                         <dt><?= e(tr('Bureau de départ', 'مكتب الإرسال')) ?></dt>
                         <dd><bdi><?= e($colis['bureau']) ?> · <?= e($colis['ville']) ?></bdi></dd>
                         <dt><?= e(tr('Date de déclaration', 'تاريخ التصريح')) ?></dt>
-                        <dd><bdi><?= e(date('d/m/Y', strtotime($colis['created_at']))) ?></bdi></dd>
+                        <dd><bdi><?= e(date('d/m/Y', strtotime($colis['date_declaration']))) ?></bdi></dd>
                     </dl>
                 </article>
             <?php endif; ?>

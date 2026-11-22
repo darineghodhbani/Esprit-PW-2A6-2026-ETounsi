@@ -38,9 +38,9 @@ class ColisController extends Controller
         return $this->modele->chercherColis($numero);
     }
 
-    public function ajouterColis($idBureau, $idCitoyen)
+    public function ajouterColis($idBureau, $idCitoyen, $nomCitoyen = null, $dateDeclaration = null)
     {
-        return $this->modele->ajouterColis($idBureau, $idCitoyen);
+        return $this->modele->ajouterColis($idBureau, $idCitoyen, $nomCitoyen, $dateDeclaration);
     }
 
     public static function statutsSuivants($statut)
@@ -63,28 +63,49 @@ class ColisController extends Controller
         return $this->modele->deleteColis($id);
     }
 
-    public function declarerEnvoi($idRecu)
+    public function declarerEnvoi($idRecu, $nomCitoyen, $dateDeclaration)
     {
         exigerRole(['citoyen']);
         $utilisateur = utilisateurConnecte();
-        $idBureau = $this->identifiantValide($idRecu);
-        if ($idBureau === null || !(new BureauPostalController($this->connexion))->recupererBureau($idBureau)) {
+        $erreurs = $this->validerDeclaration($idRecu, $nomCitoyen, $dateDeclaration);
+        if ($erreurs !== []) {
             http_response_code(422);
-            return tr('Choisissez un bureau de départ dans la liste.', 'اختر مكتب الإرسال من القائمة.');
+            return $erreurs;
         }
+        $idBureau = $this->identifiantValide($idRecu);
 
         try {
-            $colis = $this->ajouterColis($idBureau, $utilisateur['id']);
+            $colis = $this->ajouterColis($idBureau, $utilisateur['id'], $nomCitoyen, $dateDeclaration);
         } catch (PDOException $erreur) {
             if ((new BureauPostalController($this->connexion))->recupererBureau($idBureau) !== null) {
                 throw $erreur;
             }
 
             http_response_code(409);
-            return tr('Ce bureau n’est plus disponible. Choisissez un autre bureau de départ.', 'لم يعد هذا المكتب متاحًا. اختر مكتب إرسال آخر.');
+            return ['id_bureau_depart' => tr('Ce bureau n’est plus disponible. Choisissez un autre bureau de départ.', 'لم يعد هذا المكتب متاحًا. اختر مكتب إرسال آخر.')];
         }
 
         $this->retourHistorique(['kind' => 'declared', 'number' => $colis['numero_suivi']]);
+    }
+
+    private function validerDeclaration($idBureau, $nomCitoyen, $dateDeclaration)
+    {
+        $erreurs = [];
+        $id = $this->identifiantValide($idBureau);
+        if ($id === null || (new BureauPostalController())->recupererBureau($id) === null) {
+            $erreurs['id_bureau_depart'] = tr('Choisissez un bureau de départ dans la liste.', 'اختر مكتب الإرسال من القائمة.');
+        }
+        if (mb_strlen($nomCitoyen) < 2 || mb_strlen($nomCitoyen) > 200
+            || preg_match('/[\x00-\x1F\x7F<>]/u', $nomCitoyen)) {
+            $erreurs['nom_citoyen'] = tr('Saisissez un nom et prénom entre 2 et 200 caractères, sans balises ni caractères de contrôle.', 'أدخل اسمًا ولقبًا بين حرفين و200 حرف دون وسوم أو محارف تحكّم.');
+        }
+        $dateValide = preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/D', $dateDeclaration, $parties) === 1
+            && (int) $parties[1] >= 1000
+            && checkdate((int) $parties[2], (int) $parties[3], (int) $parties[1]);
+        if (!$dateValide) {
+            $erreurs['date_declaration'] = tr('Choisissez une date de déclaration valide.', 'اختر تاريخ تصريح صحيحًا.');
+        }
+        return $erreurs;
     }
 
     public function listerHistorique()
@@ -140,7 +161,7 @@ class ColisController extends Controller
         $parcels = [];
         foreach ($this->listeColis() as $parcel) {
             $matchesStatus = $statusFilter === '' || $parcel['statut'] === $statusFilter;
-            $parcelInfo = $parcel['numero_suivi'] . ' ' . $parcel['bureau'] . ' ' . $parcel['ville'];
+            $parcelInfo = $parcel['numero_suivi'] . ' ' . $parcel['bureau'] . ' ' . $parcel['ville'] . ' ' . $parcel['nom_citoyen'];
             if ($matchesStatus && posteMatches($query, $parcelInfo)) {
                 $parcels[] = $parcel;
             }
@@ -367,11 +388,15 @@ class ColisController extends Controller
 
     public function declarerFront(): void {
         exigerRole(['citoyen']);
-        $erreur = '';
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') $erreur = $this->declarerEnvoi($_POST['id_bureau_depart'] ?? '');
+        $bureauSelectionne = posteText($_POST, 'id_bureau_depart');
+        $nomCitoyen = posteText($_POST, 'nom_citoyen');
+        $dateDeclaration = posteText($_POST, 'date_declaration');
+        $erreurs = [];
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') $erreurs = $this->declarerEnvoi($bureauSelectionne, $nomCitoyen, $dateDeclaration);
         posteFront('declarerEnvoi', tr('Déclarer un envoi', 'التصريح بإرسال طرد'),
-            ['erreur' => $erreur, 'bureaux' => (new BureauPostalController())->listeBureaux(),
-             'modification' => false, 'bureauSelectionne' => posteText($_POST, 'id_bureau_depart')]);
+            ['erreur' => implode(' ', $erreurs), 'erreurs' => $erreurs, 'bureaux' => (new BureauPostalController())->listeBureaux(),
+             'modification' => false, 'bureauSelectionne' => $bureauSelectionne,
+             'nomCitoyen' => $nomCitoyen, 'dateDeclaration' => $dateDeclaration]);
     }
 
     public function modifierFront(): void
@@ -381,17 +406,24 @@ class ColisController extends Controller
         if ($colis === null) return;
 
         $erreur = '';
+        $erreurs = [];
         $bureauSelectionne = (string) $colis['id_bureau_depart'];
+        $nomCitoyen = $colis['nom_citoyen'];
+        $dateDeclaration = $colis['date_declaration'];
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $bureauSelectionne = posteText($_POST, 'id_bureau_depart');
+            $nomCitoyen = posteText($_POST, 'nom_citoyen');
+            $dateDeclaration = posteText($_POST, 'date_declaration');
             $idBureau = posteId($_POST, 'id_bureau_depart');
-            if ($idBureau === null || (new BureauPostalController())->recupererBureau($idBureau) === null) {
+            $erreurs = $this->validerDeclaration($bureauSelectionne, $nomCitoyen, $dateDeclaration);
+            if ($erreurs !== []) {
                 http_response_code(422);
-                $erreur = tr('Choisissez un bureau de départ dans la liste.', 'اختر مكتب الإرسال من القائمة.');
+                $erreur = implode(' ', $erreurs);
             } else {
                 try {
-                    if ($idBureau !== (int) $colis['id_bureau_depart']
-                        && !$this->modele->modifierDeclaration($colis['id_colis'], $utilisateur['id'], $idBureau)) {
+                    $modifie = $idBureau !== (int) $colis['id_bureau_depart']
+                        || $nomCitoyen !== $colis['nom_citoyen'] || $dateDeclaration !== $colis['date_declaration'];
+                    if ($modifie && !$this->modele->modifierDeclaration($colis['id_colis'], $utilisateur['id'], $idBureau, $nomCitoyen, $dateDeclaration)) {
                         http_response_code(409);
                         $this->afficherMesColis(tr('Ce colis vient d’être traité ou supprimé. Rechargez la liste.', 'تمّت معالجة هذا الطرد أو حذفه. أعد تحميل القائمة.'));
                         return;
@@ -401,6 +433,7 @@ class ColisController extends Controller
                     if ($exception->getCode() !== '23000') throw $exception;
                     http_response_code(409);
                     $erreur = tr('Ce bureau n’est plus disponible. Choisissez un autre bureau.', 'لم يعد هذا المكتب متاحًا. اختر مكتبًا آخر.');
+                    $erreurs['id_bureau_depart'] = $erreur;
                 }
             }
         }
@@ -408,6 +441,7 @@ class ColisController extends Controller
         posteFront('declarerEnvoi', tr('Modifier mon envoi', 'تعديل إرساليتي'), [
             'erreur' => $erreur, 'bureaux' => (new BureauPostalController())->listeBureaux(),
             'modification' => true, 'colis' => $colis, 'bureauSelectionne' => $bureauSelectionne,
+            'erreurs' => $erreurs, 'nomCitoyen' => $nomCitoyen, 'dateDeclaration' => $dateDeclaration,
         ]);
     }
 

@@ -12,6 +12,8 @@ $modification = !empty($parcel['id_colis']);
     <dl class="poste-details">
         <div><dt>Nº de suivi</dt><dd><?= e($parcel['numero_suivi']) ?></dd></div>
         <div><dt>Bureau de départ</dt><dd><?= e($parcel['bureau']) ?></dd></div>
+        <div><dt>Nom déclaré</dt><dd><?= e($parcel['nom_citoyen']) ?></dd></div>
+        <div><dt>Date de déclaration</dt><dd><?= e(date('d/m/Y', strtotime($parcel['date_declaration']))) ?></dd></div>
         <div><dt>État actuel</dt><dd><?= e($parcel['statut']) ?></dd></div>
     </dl>
     <?php if ($statuses === []): ?>
