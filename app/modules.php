@@ -87,7 +87,8 @@ return [
         'threshold'    => ['u' => 0.702, 'v' => 0.6],
         'approachScale' => 10,
         'services'     => ['service.municipalite.services', 'service.municipalite.suivi'],
-        'route'        => 'services',
-        'ready'        => false,
+        'pages'        => ['municipalite-services', 'municipalite-suivi'],
+        'route'        => 'municipalite-services',
+        'ready'        => true,
     ],
 ];

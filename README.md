@@ -155,3 +155,13 @@ Le CRUD citoyen des colis a été vérifié avec deux comptes distincts : saisie
 Esprit School of Engineering et l’équipe pédagogique pour les supports et ateliers. Le thème, les photographies et l’identité visuelle de la branche d’intégration sont conservés. Les notices des polices Manrope, Lora et Noto Sans Arabic restent dans `assets/frontoffice/fonts/`. Le Back Office conserve les attributions de son template et de ses ressources.
 
 Contrôle de revue du 22 novembre 2026 : installation sur base vide vérifiée ; parcours Poste/Finances avec un compte commun et journal d’audit testés ; neuf états d’interface contrôlés sans anomalie automatisée WCAG A/AA et 2.1 AA. Ces contrôles complètent les essais fonctionnels et visuels. Les fichiers et les données du projet Poste d’origine ont été comparés à la sauvegarde et sont inchangés.
+
+## Municipalité et habilitations par rôle
+
+Le module Municipalité est activé dans le portail : formulaires d’état civil, demandes avec rendez-vous, suivi, récépissé imprimable, notifications, paiement de démonstration et gestion des services. Les anciens modèles et tables `ServiceMunicipal` / `DemandeMunicipale` restent en place ; le nouveau flux utilise ses tables `municipalite_*` dédiées.
+
+Pour une installation neuve, importez `database/etounsi.sql`, puis `database/municipalite-integration.sql`. Le fichier `database/etounsi-validation-avec-municipalite.sql` est aussi disponible pour installer la base complète dans `etounsi_validation`. Sur une base existante, importez uniquement `database/municipalite-integration.sql` dans la base configurée par `config.local.php`.
+
+Un administrateur peut créer ou modifier un compte avec le rôle global Agent, puis lui attribuer les droits municipaux « consultation » et « traitement » depuis **Back Office → Municipalité → Accès des agents municipaux**. Le traitement inclut la consultation. Les permissions sont vérifiées côté serveur et leurs changements sont inscrits au journal d’audit. Les Agents CNAM ne reçoivent aucun droit municipal automatiquement.
+
+Le paiement par carte reste en mode de démonstration locale tant qu’un fournisseur de paiement n’est pas configuré. Aucune donnée de carte bancaire réelle n’est enregistrée par cette démonstration.

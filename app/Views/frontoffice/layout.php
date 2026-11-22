@@ -9,6 +9,8 @@
 <?php require __DIR__ . '/cnam/menu.php'; ?>
 <?php elseif (in_array($currentPage, ['lignes-transport', 'stations-transport'], true)): ?>
 <?php require __DIR__ . '/transport/menu.php'; ?>
+<?php elseif (str_starts_with($currentPage, 'municipalite-')): ?>
+<?php require __DIR__ . '/municipalite/menu.php'; ?>
 <?php else: ?>
 <?php require __DIR__ . '/poste/menu.php'; ?>
 <?php endif; ?>

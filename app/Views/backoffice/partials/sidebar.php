@@ -33,7 +33,13 @@ $menu = [
 ];
 if ($role === 'agent') {
     $menu = [$menu[3]];
+    if (MunicipaliteModuleController::hasMunicipalitePermission((int) ($_SESSION['id_citoyen'] ?? 0), 'consulter_demandes')) {
+        $menu[] = ['section' => 'Municipalité', 'module' => 'municipalite', 'items' => [
+            ['page' => 'admin-demandes-municipales', 'label' => 'Demandes municipales', 'icone' => 'bi-building'],
+        ]];
+    }
 } elseif ($role === 'admin') {
+    $menu[2]['items'][] = ['page' => 'admin-municipalite-agents', 'label' => 'Accès des agents municipaux', 'icone' => 'bi-person-lock'];
     $menu[3]['items'][] = ['page' => 'admin-cnam-agents', 'label' => 'Habilitations CNAM', 'icone' => 'bi-person-check'];
 }
 ?>

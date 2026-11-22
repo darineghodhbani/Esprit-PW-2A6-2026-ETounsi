@@ -30,6 +30,7 @@
       <div class="d-flex gap-2 mt-3">
         <a class="btn-custom btn-custom-light text-decoration-none" href="index.php?page=admin-services">Services</a>
         <a class="btn-custom btn-custom-light text-decoration-none" href="index.php?page=admin-demandes-municipales">Demandes</a>
+        <a class="btn-custom btn-custom-light text-decoration-none" href="index.php?page=admin-municipalite-agents">Accès des agents</a>
       </div>
     </div>
   </div>
