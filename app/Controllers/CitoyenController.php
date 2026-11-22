@@ -153,7 +153,7 @@ class CitoyenController extends Controller {
             }
             http_response_code(422);
         }
-        $this->renderFront('profile', ['title' => tr('Mon profil', 'ملفي الشخصي'), 'currentPage' => 'profile', 'citoyen' => $citoyen, 'old' => $old, 'erreurs' => $erreurs]);
+        $this->renderFront('profile', ['title' => t('profil.titre'), 'currentPage' => 'profile', 'citoyen' => $citoyen, 'old' => $old, 'erreurs' => $erreurs]);
     }
 
     public static function requireLogin(): void {

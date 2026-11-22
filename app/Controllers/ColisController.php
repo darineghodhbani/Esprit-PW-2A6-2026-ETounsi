@@ -78,7 +78,7 @@ class ColisController extends Controller {
         $erreurs = [];
         $idBureau = posteId($d, 'id_bureau_depart');
         if ($idBureau === null || !(new BureauPostalController())->recupererBureau($idBureau)) {
-            $erreurs['id_bureau_depart'] = tr('Choisissez un bureau de départ dans la liste.', 'اختر مكتب الإرسال من القائمة.');
+            $erreurs['id_bureau_depart'] = t('poste.erreur.bureau_depart');
         }
         if ($admin) {
             $idCitoyen = posteId($d, 'id_citoyen');
@@ -88,11 +88,11 @@ class ColisController extends Controller {
         } else {
             if (mb_strlen($d['nom_citoyen']) < 2 || mb_strlen($d['nom_citoyen']) > 200
                 || preg_match('/[\x00-\x1F\x7F<>]/u', $d['nom_citoyen'])) {
-                $erreurs['nom_citoyen'] = tr('Saisissez un nom et prénom entre 2 et 200 caractères, sans balises ni caractères de contrôle.', 'أدخل اسمًا ولقبًا بين حرفين و200 حرف دون وسوم أو محارف تحكّم.');
+                $erreurs['nom_citoyen'] = t('poste.erreur.nom_citoyen');
             }
             $dateValide = preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/D', $d['date_declaration'], $parties) === 1
                 && (int) $parties[1] >= 1000 && checkdate((int) $parties[2], (int) $parties[3], (int) $parties[1]);
-            if (!$dateValide) $erreurs['date_declaration'] = tr('Choisissez une date de déclaration valide.', 'اختر تاريخ تصريح صحيحًا.');
+            if (!$dateValide) $erreurs['date_declaration'] = t('poste.erreur.date_declaration');
         }
         return $erreurs;
     }
@@ -114,7 +114,7 @@ class ColisController extends Controller {
                     exit;
                 } catch (PDOException $e) {
                     if ($e->getCode() !== '23000') throw $e;
-                    $erreurs['id_bureau_depart'] = tr('Ce bureau n’est plus disponible. Choisissez un autre bureau.', 'لم يعد هذا المكتب متاحًا. اختر مكتبًا آخر.');
+                    $erreurs['id_bureau_depart'] = t('poste.erreur.bureau_indisponible');
                     http_response_code(409);
                 }
             } else {
@@ -122,7 +122,7 @@ class ColisController extends Controller {
             }
         }
         $this->renderFront('poste/declarerEnvoi', [
-            'title' => tr('Déclarer un envoi', 'التصريح بإرسال طرد'), 'currentPage' => 'declarer-envoi',
+            'title' => t('poste.declarer_envoi'), 'currentPage' => 'declarer-envoi',
             'old' => $old, 'erreurs' => $erreurs, 'modification' => false,
             'bureaux' => (new BureauPostalController())->listerBureaux(),
         ]);
@@ -139,7 +139,7 @@ class ColisController extends Controller {
                 exit;
             }
             http_response_code(409);
-            $erreur = tr('Ce colis ne peut plus être annulé. Seuls les envois en attente sont annulables.', 'لا يمكن إلغاء هذا الطرد. يمكن إلغاء الإرساليات قيد الانتظار فقط.');
+            $erreur = t('poste.erreur.annulation');
         }
         $this->afficherMesColis($erreur);
     }
@@ -164,7 +164,7 @@ class ColisController extends Controller {
                 try {
                     if ($modifie && !$this->modifierColisCitoyen($declaration, $id)) {
                         http_response_code(409);
-                        $this->afficherMesColis(tr('Ce colis vient d’être traité ou supprimé. Rechargez la liste.', 'تمّت معالجة هذا الطرد أو حذفه. أعد تحميل القائمة.'));
+                        $this->afficherMesColis(t('poste.erreur.colis_deja_traite'));
                         return;
                     }
                     $_SESSION['flash'] = ['type' => 'success', 'kind' => 'updated', 'message' => 'Les informations de votre envoi ont été mises à jour.'];
@@ -173,14 +173,14 @@ class ColisController extends Controller {
                 } catch (PDOException $e) {
                     if ($e->getCode() !== '23000') throw $e;
                     http_response_code(409);
-                    $erreurs['id_bureau_depart'] = tr('Ce bureau n’est plus disponible. Choisissez un autre bureau.', 'لم يعد هذا المكتب متاحًا. اختر مكتبًا آخر.');
+                    $erreurs['id_bureau_depart'] = t('poste.erreur.bureau_indisponible');
                 }
             } else {
                 http_response_code(422);
             }
         }
         $this->renderFront('poste/declarerEnvoi', [
-            'title' => tr('Modifier mon envoi', 'تعديل إرساليتي'), 'currentPage' => 'mes-colis',
+            'title' => t('poste.modifier_mon_envoi'), 'currentPage' => 'mes-colis',
             'old' => $old, 'erreurs' => $erreurs, 'modification' => true,
             'bureaux' => (new BureauPostalController())->listerBureaux(),
         ]);
@@ -194,7 +194,7 @@ class ColisController extends Controller {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$this->supprimerColisCitoyen($colis['id_colis'], $idCitoyen)) {
                 http_response_code(409);
-                $this->afficherMesColis(tr('Ce colis vient d’être traité ou supprimé. Rechargez la liste.', 'تمّت معالجة هذا الطرد أو حذفه. أعد تحميل القائمة.'));
+                $this->afficherMesColis(t('poste.erreur.colis_deja_traite'));
                 return;
             }
             $_SESSION['flash'] = ['type' => 'success', 'kind' => 'deleted', 'message' => 'Votre envoi a été supprimé.'];
@@ -210,7 +210,7 @@ class ColisController extends Controller {
         $numeroValide = preg_match('/^ET[0-9A-Z]{6,20}TN$/', $numeroSuivi) === 1;
         $colis = $numeroValide ? $this->chercherColis($numeroSuivi) : null;
         $this->renderFront('poste/suiviColis', [
-            'title' => tr('Suivre un colis', 'تتبّع طرد'), 'currentPage' => 'suivi-colis',
+            'title' => t('poste.suivre_colis'), 'currentPage' => 'suivi-colis',
             'rechercheLancee' => $rechercheLancee, 'numeroSuivi' => $numeroSuivi,
             'numeroValide' => $numeroValide, 'colis' => $colis,
         ]);
@@ -356,12 +356,12 @@ class ColisController extends Controller {
         $colis = $id === null ? null : $this->recupererColisCitoyen($id, $idCitoyen);
         if (!$colis) {
             http_response_code(404);
-            $this->afficherMesColis(tr('Colis introuvable dans vos déclarations.', 'لم يتمّ العثور على الطرد في تصريحاتك.'));
+            $this->afficherMesColis(t('poste.erreur.colis_introuvable'));
             return null;
         }
         if ($colis['statut'] !== 'En attente') {
             http_response_code(409);
-            $this->afficherMesColis(tr('Seuls vos colis en attente peuvent être modifiés ou supprimés.', 'يمكن تعديل طرودك قيد الانتظار أو حذفها فقط.'));
+            $this->afficherMesColis(t('poste.erreur.colis_en_attente'));
             return null;
         }
         return $colis;
@@ -371,7 +371,7 @@ class ColisController extends Controller {
         $confirmation = isset($_SESSION['flash']['kind']) ? $_SESSION['flash'] : null;
         unset($_SESSION['flash']);
         $this->renderFront('poste/mesColis', [
-            'title' => tr('Mes colis', 'طرودي'), 'currentPage' => 'mes-colis', 'erreur' => $erreur,
+            'title' => t('poste.mes_colis'), 'currentPage' => 'mes-colis', 'erreur' => $erreur,
             'liste' => $this->listerColisCitoyen((int) $_SESSION['id_citoyen']),
             'confirmation' => $confirmation, 'colisASupprimer' => $colisASupprimer,
         ]);

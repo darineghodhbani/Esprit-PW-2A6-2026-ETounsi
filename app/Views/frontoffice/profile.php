@@ -64,9 +64,9 @@
                 <?php if ($erreurs !== []): ?><div class="alert alert-error" role="alert"><?php foreach ($erreurs as $message): ?><p><?php echo e($message); ?></p><?php endforeach; ?></div><?php endif; ?>
                 <form class="stack profile-edit" method="post" action="index.php?page=profile" novalidate>
                     <input type="hidden" name="csrf" value="<?php echo e(csrfToken()); ?>">
-                    <?php foreach (['nom' => [tr('Nom complet', 'الاسم الكامل'), 'text'], 'email' => [tr('Adresse email', 'البريد الإلكتروني'), 'email'],
-                        'mot_de_passe_actuel' => [tr('Mot de passe actuel', 'كلمة المرور الحالية'), 'password'],
-                        'password' => [tr('Nouveau mot de passe', 'كلمة مرور جديدة'), 'password'], 'confirmation' => [tr('Confirmer le mot de passe', 'تأكيد كلمة المرور'), 'password']] as $champ => $info): ?>
+                    <?php foreach (['nom' => [t('profil.nom_complet'), 'text'], 'email' => [t('profil.adresse_email'), 'email'],
+                        'mot_de_passe_actuel' => [t('profil.mot_de_passe_actuel'), 'password'],
+                        'password' => [t('profil.nouveau_mot_de_passe'), 'password'], 'confirmation' => [t('profil.confirmer_mot_de_passe'), 'password']] as $champ => $info): ?>
                     <div class="field"><label for="<?php echo e($champ); ?>"><?php echo e($info[0]); ?></label>
                         <input id="<?php echo e($champ); ?>" name="<?php echo e($champ); ?>" type="<?php echo e($info[1]); ?>" <?php echo $info[1] !== 'password' ? 'required' : ''; ?>
                             value="<?php echo e($info[1] === 'password' ? '' : $old[$champ]); ?>"
@@ -74,8 +74,8 @@
                             <?php echo isset($erreurs[$champ]) ? 'aria-invalid="true" aria-describedby="erreur-' . e($champ) . '"' : ''; ?>>
                         <?php if (isset($erreurs[$champ])): ?><small class="field-error" id="erreur-<?php echo e($champ); ?>"><?php echo e($erreurs[$champ]); ?></small><?php endif; ?>
                     </div><?php endforeach; ?>
-                    <p class="page-lead"><?php echo e(tr('Laissez les nouveaux mots de passe vides pour conserver le vôtre. Le mot de passe actuel est nécessaire pour modifier vos identifiants.', 'اترك كلمة المرور الجديدة فارغة للاحتفاظ بكلمتك الحالية.')); ?></p>
-                    <button class="button button-dark" type="submit"><?php echo e(tr('Enregistrer mon profil', 'حفظ ملفّي الشخصي')); ?></button>
+                    <p class="page-lead"><?php echo e(t('profil.aide_mot_de_passe')); ?></p>
+                    <button class="button button-dark" type="submit"><?php echo e(t('profil.enregistrer')); ?></button>
                 </form>
             </div>
         </div>

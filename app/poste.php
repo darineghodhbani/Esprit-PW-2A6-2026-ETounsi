@@ -6,11 +6,6 @@ function pagesFrontPoste()
         'profil' => 'profile', 'suivi' => 'suivi-colis', 'envoi' => 'declarer-envoi', 'historique' => 'mes-colis'];
 }
 
-function tr($francais, $arabe)
-{
-    return et_lang() === 'ar' ? $arabe : $francais;
-}
-
 function frontUrl($page = 'accueil', $parametres = [], $langue = null)
 {
     $page = pagesFrontPoste()[$page] ?? $page;
@@ -32,15 +27,15 @@ function parcelStatus($statut)
 {
     switch ($statut) {
         case 'En attente':
-            return tr('En attente', 'قيد الانتظار');
+            return t('poste.statut.en_attente');
         case 'Accepté':
-            return tr('Accepté', 'تمّ القبول');
+            return t('poste.statut.accepte');
         case 'En transit':
-            return tr('En transit', 'قيد النقل');
+            return t('poste.statut.en_transit');
         case 'Livré':
-            return tr('Livré', 'تم التسليم');
+            return t('poste.statut.livre');
         case 'Annulé':
-            return tr('Annulé', 'ملغى');
+            return t('poste.statut.annule');
         default:
             return $statut;
     }

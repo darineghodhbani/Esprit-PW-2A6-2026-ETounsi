@@ -164,7 +164,7 @@ class BureauPostalController extends Controller {
             if ($ville === '' || $bureau['ville'] === $ville) $liste[] = $bureau;
         }
         $this->renderFront('poste/bureaux', [
-            'title' => tr('Bureaux de poste', 'مكاتب البريد'), 'currentPage' => 'bureaux-poste',
+            'title' => t('poste.bureaux'), 'currentPage' => 'bureaux-poste',
             'annuaire' => ['bureaux' => $liste, 'villes' => $villes, 'ville' => $ville],
         ]);
     }

@@ -1,19 +1,19 @@
 <?php
-$intro = tr('Retrouvez un bureau de poste de démonstration par ville.', 'اعثر على مكتب بريد تجريبي حسب المدينة.');
+$intro = t('poste.bureaux_introduction');
 require __DIR__ . '/page-heading.php';
 ?>
 <div class="poste-section">
     <div class="section-heading poste-section-heading">
-        <p class="section-label"><?= e(tr('Annuaire', 'دليل المكاتب')) ?></p>
-        <h2><?= e(tr('Trouvez votre bureau de poste', 'اعثر على مكتب بريدك')) ?></h2>
+        <p class="section-label"><?= e(t('poste.annuaire')) ?></p>
+        <h2><?= e(t('poste.trouver_bureau')) ?></h2>
     </div>
     <form method="get" action="./" class="filter-bar mb-4" novalidate>
         <input type="hidden" name="page" value="bureaux">
         <input type="hidden" name="lang" value="<?= e($language) ?>">
         <div>
-            <label for="ville" class="form-label"><?= e(tr('Ville', 'المدينة')) ?></label>
+            <label for="ville" class="form-label"><?= e(t('poste.ville')) ?></label>
             <select class="form-select" id="ville" name="ville">
-                <option value=""><?= e(tr('Toutes les villes', 'كلّ المدن')) ?></option>
+                <option value=""><?= e(t('poste.toutes_les_villes')) ?></option>
                 <?php foreach ($annuaire['villes'] as $ville): ?>
                     <option value="<?= e($ville) ?>" <?php if ($ville === $annuaire['ville']) echo 'selected'; ?>>
                         <?= e($ville) ?>
@@ -21,13 +21,13 @@ require __DIR__ . '/page-heading.php';
                 <?php endforeach; ?>
             </select>
         </div>
-        <button class="button button-dark" type="submit"><?= e(tr('Filtrer', 'صفِّ النتائج')) ?></button>
+        <button class="button button-dark" type="submit"><?= e(t('poste.filtrer')) ?></button>
         <?php if ($annuaire['ville'] !== ''): ?>
-            <a class="button button-light" href="<?= e(frontUrl('bureaux')) ?>"><?= e(tr('Toutes les villes', 'كلّ المدن')) ?></a>
+            <a class="button button-light" href="<?= e(frontUrl('bureaux')) ?>"><?= e(t('poste.toutes_les_villes')) ?></a>
         <?php endif; ?>
     </form>
     <?php if (empty($annuaire['bureaux'])): ?>
-        <p class="content-panel"><?= e(tr('Aucun bureau de poste disponible.', 'لا يوجد مكتب بريد متاح.')) ?></p>
+        <p class="content-panel"><?= e(t('poste.aucun_bureau')) ?></p>
     <?php endif; ?>
     <div class="grille-bureaux">
         <?php foreach ($annuaire['bureaux'] as $bureau): ?>
