@@ -1,12 +1,10 @@
 # Entités du module Municipalité
 
-Le module municipalité comporte quatre entités métier : `MunicipaliteDemande`, `RendezVous`, `PaiementMunicipal` et `NotificationMunicipale`. Le rendez-vous est représenté séparément dans le modèle PHP, mais ses colonnes restent stockées dans `municipalite_demande` afin de préserver le schéma et les fonctionnalités actuels. Les paiements et notifications correspondent à leurs tables dédiées déjà présentes.
+Le diagramme présente exactement les quatre entités demandées : `DemandeMunicipale`, `RendezVous`, `PaiementMunicipal` et `NotificationMunicipale`. Le service et le citoyen sont représentés par leurs identifiants étrangers dans ces entités et ne sont donc pas ajoutés comme classes au diagramme. Le rendez-vous est représenté séparément dans le modèle PHP, mais ses colonnes restent stockées dans `municipalite_demande` afin de préserver le schéma et les fonctionnalités actuels. Les paiements et notifications correspondent à leurs tables dédiées déjà présentes.
 
 ```mermaid
 classDiagram
-  class Citoyen
-  class MunicipaliteService
-  class MunicipaliteDemande {
+  class DemandeMunicipale {
     +int serviceId
     +int citoyenId
     +string telephone
@@ -41,12 +39,9 @@ classDiagram
     +bool lue
     +string? creeLe
   }
-  Citoyen "1" --> "0..*" MunicipaliteDemande : dépose
-  MunicipaliteService "1" --> "0..*" MunicipaliteDemande : concerne
-  MunicipaliteDemande "1" --> "0..1" RendezVous : demande selon le service
-  MunicipaliteDemande "1" --> "0..1" PaiementMunicipal : donne lieu à
-  Citoyen "1" --> "0..*" NotificationMunicipale : reçoit
-  MunicipaliteDemande "0..1" --> "0..*" NotificationMunicipale : déclenche
+  DemandeMunicipale "1" --> "0..1" RendezVous : demande selon le service
+  DemandeMunicipale "1" --> "0..1" PaiementMunicipal : donne lieu à
+  DemandeMunicipale "0..1" --> "0..*" NotificationMunicipale : déclenche
 ```
 
 Une demande peut avoir au plus un paiement, conformément à la contrainte unique de `municipalite_paiement.id_demande`. Une notification est toujours destinée à un citoyen et peut être liée à une demande. Les reçus d'impression restent générés à partir de la demande et de son paiement : aucune entité d'impression distincte n'est nécessaire.

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/Controller.php';
 require_once __DIR__ . '/../../config.php';
-require_once __DIR__ . '/../Models/MunicipaliteDemande.php';
+require_once __DIR__ . '/../Models/DemandeMunicipale.php';
 require_once __DIR__ . '/../Models/MunicipaliteService.php';
 require_once __DIR__ . '/../Models/RendezVous.php';
 require_once __DIR__ . '/../Models/PaiementMunicipal.php';
@@ -87,7 +87,7 @@ class MunicipaliteModuleController extends Controller {
         if($errs){$this->flash('danger',implode(' ',$errs));$this->redirect('municipalite-demande',['id'=>$id]);}
         $phone=$tel;$d['telephone_contact']=$phone;
         $birthDate=$d['date_naissance']??$d['date_acte']??null;$birthPlace=$d['lieu_naissance']??$d['lieu_acte']??null;
-        $request=new MunicipaliteDemande($id,$this->citoyenId(),$phone,$name?:null,$birthDate?:null,$birthPlace?:null,json_encode($d,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR),$gov?:null,$deleg?:null,$date?$date->format('Y-m-d H:i:s'):null);
+        $request=new DemandeMunicipale($id,$this->citoyenId(),$phone,$name?:null,$birthDate?:null,$birthPlace?:null,json_encode($d,JSON_UNESCAPED_UNICODE|JSON_THROW_ON_ERROR),$gov?:null,$deleg?:null,$date?$date->format('Y-m-d H:i:s'):null);
         $db=$this->db();$db->beginTransaction();try{
             $q=$db->prepare('INSERT INTO municipalite_demande (id_service,id_citoyen,nom_concerne,telephone_contact,date_acte,lieu_acte,precision_demande,gouvernorat,delegation,date_souhaitee,statut_rdv) VALUES (?,?,?,?,?,?,?,?,?,?,?)');
             $q->execute([$request->getServiceId(),$request->getCitoyenId(),$request->getNomConcerne(),$request->getTelephone(),$request->getDateActe(),$request->getLieuActe(),$request->getDetailsJson(),$request->getGouvernorat(),$request->getDelegation(),$request->getDateSouhaitee(),$request->getDateSouhaitee()?'en_attente':null]);$requestId=(int)$db->lastInsertId();
