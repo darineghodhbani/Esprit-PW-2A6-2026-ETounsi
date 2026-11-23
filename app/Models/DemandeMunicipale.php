@@ -17,14 +17,53 @@ final class DemandeMunicipale
         private ?string $dateSouhaitee = null,
     ) {}
 
-    public function getServiceId(): int { return $this->serviceId; }
-    public function getCitoyenId(): int { return $this->citoyenId; }
-    public function getTelephone(): string { return $this->telephone; }
-    public function getNomConcerne(): ?string { return $this->nomConcerne; }
-    public function getDateActe(): ?string { return $this->dateActe; }
-    public function getLieuActe(): ?string { return $this->lieuActe; }
-    public function getDetailsJson(): string { return $this->detailsJson; }
-    public function getGouvernorat(): ?string { return $this->gouvernorat; }
-    public function getDelegation(): ?string { return $this->delegation; }
-    public function getDateSouhaitee(): ?string { return $this->dateSouhaitee; }
+    public function getServiceId(): int
+    {
+        return $this->serviceId;
+    }
+
+    public function getCitoyenId(): int
+    {
+        return $this->citoyenId;
+    }
+
+    public function getTelephone(): string
+    {
+        return $this->telephone;
+    }
+
+    public function getNomConcerne(): ?string
+    {
+        return $this->nomConcerne;
+    }
+
+    public function getDateActe(): ?string
+    {
+        return $this->dateActe;
+    }
+
+    public function getLieuActe(): ?string
+    {
+        return $this->lieuActe;
+    }
+
+    public function getDetailsJson(): string
+    {
+        return $this->detailsJson;
+    }
+
+    public function getGouvernorat(): ?string
+    {
+        return $this->gouvernorat;
+    }
+
+    public function getDelegation(): ?string
+    {
+        return $this->delegation;
+    }
+
+    public function getDateSouhaitee(): ?string
+    {
+        return $this->dateSouhaitee;
+    }
 }

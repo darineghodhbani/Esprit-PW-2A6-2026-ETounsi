@@ -31,10 +31,33 @@ final class RendezVous
         );
     }
 
-    public function getIdRendezVous(): ?int { return $this->idRendezVous; }
-    public function getIdDemande(): int { return $this->idDemande; }
-    public function getGouvernorat(): string { return $this->gouvernorat; }
-    public function getDelegation(): string { return $this->delegation; }
-    public function getDateSouhaitee(): string { return $this->dateSouhaitee; }
-    public function getStatut(): string { return $this->statut; }
+    public function getIdRendezVous(): ?int
+    {
+        return $this->idRendezVous;
+    }
+
+    public function getIdDemande(): int
+    {
+        return $this->idDemande;
+    }
+
+    public function getGouvernorat(): string
+    {
+        return $this->gouvernorat;
+    }
+
+    public function getDelegation(): string
+    {
+        return $this->delegation;
+    }
+
+    public function getDateSouhaitee(): string
+    {
+        return $this->dateSouhaitee;
+    }
+
+    public function getStatut(): string
+    {
+        return $this->statut;
+    }
 }

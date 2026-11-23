@@ -45,13 +45,48 @@ final class DocumentMunicipal
         );
     }
 
-    public function getIdDocument(): ?int { return $this->idDocument; }
-    public function getIdDemande(): int { return $this->idDemande; }
-    public function getTypeDocument(): string { return $this->typeDocument; }
-    public function getNomOriginal(): ?string { return $this->nomOriginal; }
-    public function getCheminStockage(): ?string { return $this->cheminStockage; }
-    public function getMimeType(): ?string { return $this->mimeType; }
-    public function getTailleOctets(): ?int { return $this->tailleOctets; }
-    public function getStatut(): string { return $this->statut; }
-    public function getDateDepot(): ?string { return $this->dateDepot; }
+    public function getIdDocument(): ?int
+    {
+        return $this->idDocument;
+    }
+
+    public function getIdDemande(): int
+    {
+        return $this->idDemande;
+    }
+
+    public function getTypeDocument(): string
+    {
+        return $this->typeDocument;
+    }
+
+    public function getNomOriginal(): ?string
+    {
+        return $this->nomOriginal;
+    }
+
+    public function getCheminStockage(): ?string
+    {
+        return $this->cheminStockage;
+    }
+
+    public function getMimeType(): ?string
+    {
+        return $this->mimeType;
+    }
+
+    public function getTailleOctets(): ?int
+    {
+        return $this->tailleOctets;
+    }
+
+    public function getStatut(): string
+    {
+        return $this->statut;
+    }
+
+    public function getDateDepot(): ?string
+    {
+        return $this->dateDepot;
+    }
 }

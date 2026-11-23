@@ -27,11 +27,38 @@ final class NotificationMunicipale
         );
     }
 
-    public function getIdNotification(): ?int { return $this->idNotification; }
-    public function getIdCitoyen(): int { return $this->idCitoyen; }
-    public function getIdDemande(): ?int { return $this->idDemande; }
-    public function getTitre(): string { return $this->titre; }
-    public function getMessage(): string { return $this->message; }
-    public function estLue(): bool { return $this->lue; }
-    public function getCreeLe(): ?string { return $this->creeLe; }
+    public function getIdNotification(): ?int
+    {
+        return $this->idNotification;
+    }
+
+    public function getIdCitoyen(): int
+    {
+        return $this->idCitoyen;
+    }
+
+    public function getIdDemande(): ?int
+    {
+        return $this->idDemande;
+    }
+
+    public function getTitre(): string
+    {
+        return $this->titre;
+    }
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
+
+    public function estLue(): bool
+    {
+        return $this->lue;
+    }
+
+    public function getCreeLe(): ?string
+    {
+        return $this->creeLe;
+    }
 }

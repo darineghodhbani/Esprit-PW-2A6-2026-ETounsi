@@ -37,14 +37,49 @@ final class PaiementMunicipal
         );
     }
 
-    public function getIdPaiement(): ?int { return $this->idPaiement; }
-    public function getIdDemande(): int { return $this->idDemande; }
+    public function getIdPaiement(): ?int
+    {
+        return $this->idPaiement;
+    }
+
+    public function getIdDemande(): int
+    {
+        return $this->idDemande;
+    }
+
     /** DECIMAL est conservé en chaîne pour éviter les erreurs d'arrondi. */
-    public function getMontant(): string { return $this->montant; }
-    public function getDevise(): string { return $this->devise; }
-    public function getStatut(): string { return $this->statut; }
-    public function getModePaiement(): string { return $this->modePaiement; }
-    public function getReference(): ?string { return $this->reference; }
-    public function getCreeLe(): ?string { return $this->creeLe; }
-    public function getPayeLe(): ?string { return $this->payeLe; }
+    public function getMontant(): string
+    {
+        return $this->montant;
+    }
+
+    public function getDevise(): string
+    {
+        return $this->devise;
+    }
+
+    public function getStatut(): string
+    {
+        return $this->statut;
+    }
+
+    public function getModePaiement(): string
+    {
+        return $this->modePaiement;
+    }
+
+    public function getReference(): ?string
+    {
+        return $this->reference;
+    }
+
+    public function getCreeLe(): ?string
+    {
+        return $this->creeLe;
+    }
+
+    public function getPayeLe(): ?string
+    {
+        return $this->payeLe;
+    }
 }
