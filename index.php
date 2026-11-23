@@ -31,12 +31,18 @@ if (!isset($routes[$page])) {
 }
 $route = $routes[$page];
 $access = $route[3] ?? null;
-if ($access === 'admin') {
+if ($access === 'public') {
+    // La route est explicitement publique.
+} elseif ($access === 'authenticated') {
+    exigerRole(['citoyen', 'agent', 'admin']);
+} elseif ($access === 'admin') {
     CitoyenController::requireAdmin();
 } elseif (is_array($access)) {
     exigerRole($access);
-} elseif (strpos($page, 'admin-') === 0 || $page === 'dashboard') {
-    CitoyenController::requireAdmin();
+} else {
+    error_log('Politique d’accès absente ou invalide pour la route : ' . $page);
+    http_response_code(500);
+    exit('La règle d’accès de cette page est manquante.');
 }
 $methodes = $route[2] ?? ['GET','POST'];
 if (!in_array($_SERVER['REQUEST_METHOD'], $methodes, true)) {

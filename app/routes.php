@@ -133,3 +133,36 @@ $routes['admin-demandes-municipales'] = ['MunicipaliteModuleController', 'demand
 $routes['admin-demande-municipale-statut'] = ['MunicipaliteModuleController', 'statutAdmin', ['POST'], ['agent','admin']];
 $routes['admin-municipalite-agents'] = ['MunicipaliteModuleController', 'agentsMunicipalite', ['GET'], 'admin'];
 $routes['admin-municipalite-acces'] = ['MunicipaliteModuleController', 'affecterAgentMunicipalite', ['POST'], 'admin'];
+
+// Politique globale : chaque route doit déclarer qui peut l'utiliser.
+$routesPubliques = [
+    'signup', 'inscription', 'register', 'login', 'connexion',
+    'google-start', 'google-callback',
+    'home', 'administrations', 'module', 'lang', 'aide', 'projet', 'confidentialite',
+    'bureaux-poste', 'bureaux', 'suivi-colis', 'suivi', 'suiviColis',
+    'lignes-transport', 'stations-transport',
+];
+$routesAuthentifiees = [
+    'profile', 'profil', 'logout', 'deconnexion',
+    'declarer-propriete', 'payer-impot', 'mes-recus',
+    'declarer-envoi', 'declarerEnvoi', 'envoi', 'mes-colis', 'mesColis', 'historique',
+    'modifier-colis', 'supprimer-colis',
+];
+
+foreach ($routes as $nomRoute => &$route) {
+    if (isset($route[3])) {
+        continue;
+    }
+
+    if (in_array($nomRoute, $routesPubliques, true)) {
+        $route[3] = 'public';
+    } elseif (in_array($nomRoute, $routesAuthentifiees, true)) {
+        // Ces fonctions exigeaient déjà une session dans leurs contrôleurs.
+        $route[3] = 'authenticated';
+    } elseif ($nomRoute === 'dashboard' || str_starts_with($nomRoute, 'admin-')) {
+        $route[3] = 'admin';
+    } else {
+        throw new LogicException('Politique d’accès manquante pour la route : ' . $nomRoute);
+    }
+}
+unset($route);
