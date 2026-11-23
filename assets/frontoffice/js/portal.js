@@ -42,7 +42,6 @@
     const handoff     = must(root, '[data-handoff]');
     const handoffLabel = root.querySelector('[data-handoff-label]');
     const controls    = must(root, '[data-portal-controls]');
-    const direct      = must(root, '[data-direct]');
     const status      = must(root, '[data-scene-status]');
     const intro       = root.querySelector('[data-scene-intro]');
 
@@ -205,7 +204,6 @@
         const id = runId;
         const controller = new AbortController();
         execution = controller;
-        direct.href = module.publicPath;
         handoff.href = module.publicPath;
         if (handoffLabel) handoffLabel.textContent = module.cta;
         else handoff.textContent = module.cta;
@@ -287,7 +285,7 @@
             void select(module, hotspot);
             return;
         }
-        if (target?.closest('[data-return], [data-cancel]')) {
+        if (target?.closest('[data-return]')) {
             event.preventDefault();
             reset(true, true);
             return;

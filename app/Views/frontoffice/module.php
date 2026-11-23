@@ -8,38 +8,42 @@
     <?php require_once __DIR__ . '/includes/navbar.php'; ?>
 
     <main id="main">
-        <section class="module-page container page-section"
-                 data-module="<?= e($module['id']) ?>"
+        <section class="module-scene" data-module="<?= e($module['id']) ?>"
                  style="--module-accent: <?= e($module['accent']) ?>">
-            <a class="breadcrumb" href="index.php?page=administrations">
-                <?= et_icon('arrow-left') . e(t('nav.services')) ?>
-            </a>
-
-            <img class="module-hero-img" src="<?= e($module['interior']) ?>"
-                 width="1672" height="941" alt="" loading="lazy">
-
-            <div class="module-heading">
-                <div>
+            <img class="module-scene-bg" src="<?= e($module['interior']) ?>"
+                 width="1672" height="941" alt="">
+            <div class="module-scene-blur" aria-hidden="true"></div>
+            <div class="module-scene-inner container">
+                <a class="breadcrumb breadcrumb-scene" href="index.php?page=administrations">
+                    <?= et_icon('arrow-left') . e(t('nav.services')) ?>
+                </a>
+                <div class="module-welcome">
+                    <span class="module-welcome-icon"><?= et_icon($module['icon']) ?></span>
                     <p class="eyebrow"><?= e(t('module.eyebrow')) ?></p>
-                    <?php if ($module['ready']): ?>
-                        <span class="badge badge-success"><?= e(t('module.status.ready')) ?></span>
-                    <?php else: ?>
-                        <span class="badge badge-neutral"><?= e(t('module.status')) ?></span>
-                    <?php endif; ?>
                     <h1 id="module-title" data-module-title tabindex="-1"><?= e(m($module, 'label')) ?></h1>
                     <p class="page-lead"><?= e(m($module, 'description')) ?></p>
                     <?php if ($module['ready']): ?>
-                        <a class="button button-dark" href="index.php?page=<?= e($module['route']) ?>">
+                        <a class="button module-welcome-cta" href="index.php?page=<?= e($module['route']) ?>">
                             <?= e(t('module.access')) . et_icon('arrow-right') ?>
                         </a>
                     <?php else: ?>
-                        <button class="button button-dark" type="button" disabled aria-disabled="true">
+                        <button class="button module-welcome-cta" type="button" disabled aria-disabled="true">
                             <?= e(t('module.access')) . et_icon('arrow-right') ?>
                         </button>
                     <?php endif; ?>
+                    <p class="module-welcome-status">
+                        <?php if ($module['ready']): ?>
+                            <span class="badge badge-success"><?= e(t('module.status.ready')) ?></span>
+                        <?php else: ?>
+                            <span class="badge badge-neutral"><?= e(t('module.status')) ?></span>
+                        <?php endif; ?>
+                    </p>
                 </div>
-                <span class="module-hero-icon"><?= et_icon($module['icon']) ?></span>
             </div>
+        </section>
+
+        <section class="module-page container page-section"
+                 style="--module-accent: <?= e($module['accent']) ?>">
 
             <?php if (!$module['ready']): ?>
                 <div class="alert alert-info">

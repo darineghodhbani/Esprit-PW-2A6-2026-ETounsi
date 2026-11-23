@@ -4,7 +4,6 @@ declare(strict_types=1);
 require_once __DIR__ . '/CnamController.php';
 require_once __DIR__ . '/../Models/Beneficiaire.php';
 require_once __DIR__ . '/DocumentCNAMController.php';
-require_once __DIR__ . '/HabilitationCNAMController.php';
 
 class BeneficiaireController extends CnamController {
     public function duCitoyen(int $citoyen): array {
@@ -39,10 +38,9 @@ class BeneficiaireController extends CnamController {
             });
         } catch (Throwable $e) { DocumentCNAMController::effacerFichiers($stored); throw $e; }
     }
-    public function valider(int $agent, int $id, string $statut): void {
+    public function valider(int $id, string $statut): void {
         if (!in_array($statut,['VALIDE','REFUSE'],true)) throw new DomainException('Choisissez une validation proposée.',422);
-        $this->transaction(function () use ($agent,$id,$statut) {
-            (new HabilitationCNAMController($this->db))->exiger($agent,true);
+        $this->transaction(function () use ($id,$statut) {
             $b = $this->one('SELECT * FROM beneficiaire WHERE id_beneficiaire=? FOR UPDATE',[$id]);
             if (!$b) throw new DomainException('Bénéficiaire introuvable.',404);
             if ($b['statut_validation']!=='EN_ATTENTE') throw new DomainException('Le rattachement a déjà été traité.',409);
@@ -100,16 +98,16 @@ class BeneficiaireController extends CnamController {
     }
 
     public function adminListe(): void {
-        $user=$this->utilisateurCNAM();
+        $this->utilisateurCNAM();
         $liste=$this->tous();
         $documents=(new DocumentCNAMController())->pourBeneficiaires(array_column($liste,'id_beneficiaire'));
         $this->renderBack('cnam/beneficiaires',['title'=>'Bénéficiaires CNAM','currentPage'=>'admin-beneficiaires',
-            'liste'=>$liste,'documentsParBeneficiaire'=>$documents,'peutTraiter'=>$user['role']==='agent']);
+            'liste'=>$liste,'documentsParBeneficiaire'=>$documents,'peutTraiter'=>true]);
     }
 
     public function traiterValidation(): void {
-        $user=exigerRole(['agent']);
-        try { $this->valider($user['id'],CnamValidation::id($_POST['id_beneficiaire']??null),is_string($_POST['statut']??null)?$_POST['statut']:'');
+        exigerRole(['admin']);
+        try { $this->valider(CnamValidation::id($_POST['id_beneficiaire']??null),is_string($_POST['statut']??null)?$_POST['statut']:'');
             $_SESSION['flash']=['type'=>'success','message'=>'Le rattachement a été traité.'];
         } catch (DomainException $e) { $_SESSION['flash']=['type'=>'danger','message'=>$e->getMessage()]; }
         header('Location: index.php?page=admin-beneficiaires',true,303); exit;

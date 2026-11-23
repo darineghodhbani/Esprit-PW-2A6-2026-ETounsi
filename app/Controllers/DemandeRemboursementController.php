@@ -5,7 +5,6 @@ require_once __DIR__ . '/CnamController.php';
 require_once __DIR__ . '/../Models/DemandeRemboursement.php';
 require_once __DIR__ . '/BeneficiaireController.php';
 require_once __DIR__ . '/DocumentCNAMController.php';
-require_once __DIR__ . '/HabilitationCNAMController.php';
 require_once __DIR__ . '/DecisionCNAMController.php';
 
 class DemandeRemboursementController extends CnamController {
@@ -44,7 +43,7 @@ class DemandeRemboursementController extends CnamController {
                 }
                 $d = CnamValidation::demande($data);
                 $beneficiaire = $this->one('SELECT * FROM beneficiaire WHERE id_beneficiaire=? AND id_assure=? FOR UPDATE',[$d['id_beneficiaire'],$assure['id_assure']]);
-                if (!$beneficiaire || $beneficiaire['statut_validation']!=='VALIDE') throw new DomainException('Choisissez un bénéficiaire de votre dossier validé par un agent.',422);
+                if (!$beneficiaire || $beneficiaire['statut_validation']!=='VALIDE') throw new DomainException('Choisissez un bénéficiaire de votre dossier validé par la CNAM.',422);
                 if ($id!==null && $d['id_beneficiaire']!==(int)$previous['id_beneficiaire']) throw new DomainException('Le bénéficiaire d’une demande existante ne peut pas être remplacé.',409);
                 if ($d['date_soins'] < $beneficiaire['date_naissance']) throw new DomainException('Les soins ne peuvent pas précéder la naissance du bénéficiaire.',422);
                 $stored = $documents->stocker($files,'JUSTIFICATIF');
@@ -64,9 +63,8 @@ class DemandeRemboursementController extends CnamController {
             });
         } catch (Throwable $e) { DocumentCNAMController::effacerFichiers($stored); throw $e; }
     }
-    public function prendreEnChargeDemande(int $agent, int $id, int $version): void {
-        $this->transaction(function () use ($agent,$id,$version) {
-            (new HabilitationCNAMController($this->db))->exiger($agent,true);
+    public function prendreEnChargeDemande(int $id, int $version): void {
+        $this->transaction(function () use ($id,$version) {
             $d = $this->trouver($id,null,true);
             if (!$d) throw new DomainException('Demande introuvable.',404);
             if ($d['statut']!=='DEPOSEE' || (int)$d['version']!==$version) throw new DomainException('La demande a changé ou est déjà prise en charge.',409);
@@ -121,33 +119,31 @@ class DemandeRemboursementController extends CnamController {
         header('Location: index.php?page=mes-remboursements',true,303); exit;
     }
 
-    private function agent(): array {
-        return $this->utilisateurCNAM();
-    }
     public function adminListe(): void {
-        $user=$this->agent(); $statut=isset($_GET['statut'])&&is_string($_GET['statut'])?$_GET['statut']:null;
+        $this->utilisateurCNAM();
+        $statut=isset($_GET['statut'])&&is_string($_GET['statut'])?$_GET['statut']:null;
         $liste=$this->toutes($statut); $ids=array_column($liste,'id_demande');
         $this->renderBack('cnam/demandes',['title'=>'Demandes CNAM','currentPage'=>'admin-demandes-cnam',
             'liste'=>$liste,'documentsParDemande'=>(new DocumentCNAMController())->pourDemandes($ids),
-            'decisionsParDemande'=>(new DecisionCNAMController())->historiquesParDemandes($ids),'peutTraiter'=>$user['role']==='agent']);
+            'decisionsParDemande'=>(new DecisionCNAMController())->historiquesParDemandes($ids),'peutTraiter'=>true]);
     }
     public function prendreEnCharge(): void {
-        $user=exigerRole(['agent']);
-        try { $this->prendreEnChargeDemande($user['id'],CnamValidation::id($_POST['id_demande']??null),CnamValidation::id($_POST['version']??null));
+        exigerRole(['admin']);
+        try { $this->prendreEnChargeDemande(CnamValidation::id($_POST['id_demande']??null),CnamValidation::id($_POST['version']??null));
             $_SESSION['flash']=['type'=>'success','message'=>'La demande est maintenant à l’étude.']; }
         catch (DomainException $e) { $_SESSION['flash']=['type'=>'danger','message'=>$e->getMessage()]; }
         header('Location: index.php?page=admin-demandes-cnam',true,303); exit;
     }
     public function decision(): void {
-        $user=exigerRole(['agent']);
+        $user=exigerRole(['admin']);
         try { (new DecisionCNAMController())->enregistrer($user['id'],CnamValidation::id($_POST['id_demande']??null),CnamValidation::id($_POST['version']??null),$_POST);
             $_SESSION['flash']=['type'=>'success','message'=>'La décision a été enregistrée.']; }
         catch (DomainException $e) { $_SESSION['flash']=['type'=>'danger','message'=>$e->getMessage()]; }
         header('Location: index.php?page=admin-demandes-cnam',true,303); exit;
     }
     public function versement(): void {
-        $user=exigerRole(['agent']);
-        try { (new DecisionCNAMController())->enregistrerVersement($user['id'],CnamValidation::id($_POST['id_demande']??null),CnamValidation::id($_POST['version']??null),$_POST);
+        exigerRole(['admin']);
+        try { (new DecisionCNAMController())->enregistrerVersement(CnamValidation::id($_POST['id_demande']??null),CnamValidation::id($_POST['version']??null),$_POST);
             $_SESSION['flash']=['type'=>'success','message'=>'Le versement manuel a été enregistré.']; }
         catch (DomainException $e) { $_SESSION['flash']=['type'=>'danger','message'=>$e->getMessage()]; }
         header('Location: index.php?page=admin-demandes-cnam',true,303); exit;
