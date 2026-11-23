@@ -7,6 +7,7 @@ final class RendezVous
     public const STATUTS = ['en_attente', 'confirme', 'refuse', 'annule'];
 
     public function __construct(
+        private ?int $idRendezVous,
         private int $idDemande,
         private string $gouvernorat,
         private string $delegation,
@@ -18,23 +19,19 @@ final class RendezVous
         }
     }
 
-    /** Construit le rendez-vous à partir de la ligne de demande déjà enregistrée. */
-    public static function fromDemandeRow(array $row): ?self
+    public static function fromRow(array $row): self
     {
-        if (empty($row['date_souhaitee'])) {
-            return null;
-        }
-
         return new self(
+            isset($row['id_rendez_vous']) ? (int) $row['id_rendez_vous'] : null,
             (int) $row['id_demande'],
             (string) ($row['gouvernorat'] ?? ''),
             (string) ($row['delegation'] ?? ''),
-            (string) $row['date_souhaitee'],
-            (string) ($row['statut_rdv'] ?? 'en_attente'),
+            (string) $row['date_rendez_vous'],
+            (string) ($row['statut'] ?? 'en_attente'),
         );
     }
 
-    /** L'identifiant du rendez-vous est celui de sa demande, selon le schéma actuel. */
+    public function getIdRendezVous(): ?int { return $this->idRendezVous; }
     public function getIdDemande(): int { return $this->idDemande; }
     public function getGouvernorat(): string { return $this->gouvernorat; }
     public function getDelegation(): string { return $this->delegation; }

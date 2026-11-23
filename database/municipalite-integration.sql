@@ -35,6 +35,26 @@ CREATE TABLE IF NOT EXISTS municipalite_demande (
   INDEX idx_municipalite_demande_statut (statut)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Entité RendezVous dédiée. Les rendez-vous historiques seront repris ci-dessous.
+CREATE TABLE IF NOT EXISTS municipalite_rendez_vous (
+  id_rendez_vous INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  id_demande INT NOT NULL UNIQUE,
+  gouvernorat VARCHAR(100) NOT NULL,
+  delegation VARCHAR(150) NOT NULL,
+  date_rendez_vous DATETIME NOT NULL,
+  statut ENUM('en_attente','confirme','refuse','annule') NOT NULL DEFAULT 'en_attente',
+  cree_le DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_municipalite_rdv_demande FOREIGN KEY (id_demande) REFERENCES municipalite_demande(id_demande) ON DELETE CASCADE,
+  INDEX idx_municipalite_rdv_date (date_rendez_vous, statut),
+  INDEX idx_municipalite_rdv_localite (gouvernorat, delegation)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Migration non destructive : reprend les rendez-vous déjà stockés dans la demande.
+INSERT IGNORE INTO municipalite_rendez_vous (id_demande,gouvernorat,delegation,date_rendez_vous,statut)
+SELECT id_demande,COALESCE(gouvernorat,''),COALESCE(delegation,''),date_souhaitee,COALESCE(statut_rdv,'en_attente')
+FROM municipalite_demande
+WHERE date_souhaitee IS NOT NULL;
+
 CREATE TABLE IF NOT EXISTS municipalite_paiement (
   id_paiement INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   id_demande INT NOT NULL UNIQUE,

@@ -168,4 +168,6 @@ Le paiement par carte reste en mode de démonstration locale tant qu’un fourni
 
 Les sélecteurs Gouvernorat / Délégation reposent sur `app/Data/municipalite-delegations.php` (découpage INS) et `assets/frontoffice/js/municipalite.js`. Pour réappliquer le schéma et réinstaller le contenu UTF-8 des services, lancez `php scripts/migrate-municipalite.php` depuis le dossier du projet.
 
-Les quatre entités PHP du module sont `DemandeMunicipale`, `RendezVous`, `PaiementMunicipal` et `NotificationMunicipale`. Le rendez-vous est modélisé séparément en PHP et continue d'utiliser les colonnes de rendez-vous déjà présentes dans `municipalite_demande`. Les attributs et cardinalités sont décrits dans [docs/entites-municipalite.md](docs/entites-municipalite.md).
+Les quatre entités PHP et SQL du module sont `DemandeMunicipale`, `RendezVous`, `PaiementMunicipal` et `NotificationMunicipale`. La table `municipalite_rendez_vous` est créée par la migration et reprend sans perte les rendez-vous existants. Les attributs et cardinalités sont décrits dans [docs/entites-municipalite.md](docs/entites-municipalite.md).
+
+Le métier avancé de contrôle d'accès par rôle est visible dans `app/Security/MunicipaliteAuthorization.php` et documenté dans [docs/controle-acces-municipalite.md](docs/controle-acces-municipalite.md). Un Agent sans habilitation n'accède à aucune demande municipale ; l'administrateur attribue lecture ou traitement depuis le Back Office.

@@ -1,6 +1,6 @@
 # Entités du module Municipalité
 
-Le diagramme présente exactement les quatre entités demandées : `DemandeMunicipale`, `RendezVous`, `PaiementMunicipal` et `NotificationMunicipale`. Le service et le citoyen sont représentés par leurs identifiants étrangers dans ces entités et ne sont donc pas ajoutés comme classes au diagramme. Le rendez-vous est représenté séparément dans le modèle PHP, mais ses colonnes restent stockées dans `municipalite_demande` afin de préserver le schéma et les fonctionnalités actuels. Les paiements et notifications correspondent à leurs tables dédiées déjà présentes.
+Le diagramme présente exactement les quatre entités demandées : `DemandeMunicipale`, `RendezVous`, `PaiementMunicipal` et `NotificationMunicipale`. Le service et le citoyen sont représentés par leurs identifiants étrangers dans ces entités et ne sont donc pas ajoutés comme classes au diagramme. `RendezVous` possède sa propre table SQL `municipalite_rendez_vous`. Les rendez-vous historiques sont migrés depuis `municipalite_demande` sans suppression des anciennes colonnes.
 
 ```mermaid
 classDiagram
@@ -14,6 +14,7 @@ classDiagram
     +string? dateSouhaitee
   }
   class RendezVous {
+    +int? idRendezVous
     +int idDemande
     +string gouvernorat
     +string delegation
@@ -44,6 +45,6 @@ classDiagram
   DemandeMunicipale "0..1" --> "0..*" NotificationMunicipale : déclenche
 ```
 
-Une demande peut avoir au plus un paiement, conformément à la contrainte unique de `municipalite_paiement.id_demande`. Une notification est toujours destinée à un citoyen et peut être liée à une demande. Les reçus d'impression restent générés à partir de la demande et de son paiement : aucune entité d'impression distincte n'est nécessaire.
+Une demande peut avoir au plus un rendez-vous et au plus un paiement, conformément aux contraintes uniques de `municipalite_rendez_vous.id_demande` et `municipalite_paiement.id_demande`. Une notification est toujours destinée à un citoyen et peut être liée à une demande. Les reçus d'impression restent générés à partir de la demande et de son paiement : aucune entité d'impression distincte n'est nécessaire.
 
-`RendezVous::fromDemandeRow()` construit l'entité lorsqu'une demande contient une date de rendez-vous ; il renvoie `null` pour les demandes qui ne nécessitent pas de déplacement.
+`RendezVous::fromRow()` construit l'entité depuis sa table dédiée.

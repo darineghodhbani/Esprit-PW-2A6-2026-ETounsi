@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/Controller.php';
 require_once __DIR__ . '/../../config.php';
+require_once __DIR__ . '/../Security/MunicipaliteAuthorization.php';
 require_once __DIR__ . '/../Models/DemandeMunicipale.php';
 require_once __DIR__ . '/../Models/MunicipaliteService.php';
 require_once __DIR__ . '/../Models/RendezVous.php';
@@ -14,18 +15,10 @@ class MunicipaliteModuleController extends Controller {
     private function redirect(string $page, array $query=[]): never { header('Location: index.php?' . http_build_query(['page'=>$page]+$query)); exit; }
     private function flash(string $type,string $message): void { $_SESSION['flash']=['type'=>$type,'message'=>$message]; }
     public static function hasMunicipalitePermission(int $id, string $permission): bool {
-        if ($id < 1 || !in_array($permission, ['consulter_demandes','traiter_demandes'], true)) return false;
-        $st=Database::getConnection()->prepare('SELECT '.$permission.' FROM municipalite_agent_access a JOIN citoyen c ON c.id_citoyen=a.id_citoyen WHERE a.id_citoyen=? AND c.role="agent" AND c.actif=1');
-        $st->execute([$id]); return (int)$st->fetchColumn()===1;
+        return MunicipaliteAuthorization::agentHasPermission($id, $permission);
     }
     private function requireMunicipalitePermission(string $permission): void {
-        $user=exigerConnexion();
-        if (($user['role']??'')==='admin') return;
-        if (($user['role']??'')==='agent' && self::hasMunicipalitePermission($this->citoyenId(),$permission)) return;
-        auditEvenement('ACCESS_DENIED','Accès refusé au module Municipalité : permission '.$permission.'.',$this->citoyenId());
-        http_response_code(403);
-        echo '<!doctype html><html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Accès refusé · E-Tounsi</title><main><h1>Accès refusé</h1><p>Votre compte ne possède pas l’autorisation nécessaire pour cette fonction municipale.</p><a href="index.php?page=home">Revenir à l’accueil</a></main></html>';
-        exit;
+        MunicipaliteAuthorization::requirePermission($this->citoyenId(), $permission);
     }
     private function phone(string $raw): string {
         if (!preg_match('/^\+?[0-9 () .-]+$/',trim($raw))) return '';
@@ -91,6 +84,11 @@ class MunicipaliteModuleController extends Controller {
         $db=$this->db();$db->beginTransaction();try{
             $q=$db->prepare('INSERT INTO municipalite_demande (id_service,id_citoyen,nom_concerne,telephone_contact,date_acte,lieu_acte,precision_demande,gouvernorat,delegation,date_souhaitee,statut_rdv) VALUES (?,?,?,?,?,?,?,?,?,?,?)');
             $q->execute([$request->getServiceId(),$request->getCitoyenId(),$request->getNomConcerne(),$request->getTelephone(),$request->getDateActe(),$request->getLieuActe(),$request->getDetailsJson(),$request->getGouvernorat(),$request->getDelegation(),$request->getDateSouhaitee(),$request->getDateSouhaitee()?'en_attente':null]);$requestId=(int)$db->lastInsertId();
+            if ($date) {
+                $rdv = new RendezVous(null, $requestId, $gov, $deleg, $date->format('Y-m-d H:i:s'));
+                $insertRdv = $db->prepare('INSERT INTO municipalite_rendez_vous (id_demande,gouvernorat,delegation,date_rendez_vous,statut) VALUES (?,?,?,?,?)');
+                $insertRdv->execute([$rdv->getIdDemande(),$rdv->getGouvernorat(),$rdv->getDelegation(),$rdv->getDateSouhaitee(),$rdv->getStatut()]);
+            }
             if((float)$s['frais']>0){$p=$db->prepare('INSERT INTO municipalite_paiement (id_demande,montant) VALUES (?,?)');$p->execute([$requestId,$s['frais']]);}
             $n=$db->prepare('INSERT INTO municipalite_notification (id_citoyen,id_demande,titre,message) VALUES (?,?,?,?)');$n->execute([$this->citoyenId(),$requestId,'Demande reçue',$date?'Votre demande de rendez-vous est reçue et attend la confirmation de la municipalité.':'Votre demande a été enregistrée. Vous recevrez une notification lorsque son état changera.']);$db->commit();
         }catch(Throwable $e){if($db->inTransaction())$db->rollBack();error_log($e->getMessage());$this->flash('danger','La demande n’a pas pu être enregistrée. Vérifiez que la base de données a été installée.');$this->redirect('municipalite-services');}
@@ -133,6 +131,7 @@ class MunicipaliteModuleController extends Controller {
     public function statutAdmin(): void {
         $this->requireMunicipalitePermission('traiter_demandes');$id=(int)($_POST['id_demande']??0);$status=(string)($_POST['statut']??'');$allowed=['en_attente','en_cours','approuvee','document_pret','rejetee'];if(!in_array($status,$allowed,true)){$this->flash('danger','Statut invalide.');$this->redirect('admin-demandes-municipales');}
         $db=$this->db();$q=$db->prepare('SELECT id_citoyen,statut FROM municipalite_demande WHERE id_demande=?');$q->execute([$id]);$before=$q->fetch();if(!$before){$this->flash('danger','Demande introuvable.');$this->redirect('admin-demandes-municipales');}$db->prepare('UPDATE municipalite_demande SET statut=?,statut_rdv=CASE WHEN date_souhaitee IS NULL THEN statut_rdv WHEN ?="approuvee" THEN "confirme" WHEN ?="rejetee" THEN "refuse" ELSE statut_rdv END WHERE id_demande=?')->execute([$status,$status,$status,$id]);
+        $db->prepare('UPDATE municipalite_rendez_vous SET statut=CASE WHEN ?="approuvee" THEN "confirme" WHEN ?="rejetee" THEN "refuse" ELSE statut END WHERE id_demande=?')->execute([$status,$status,$id]);
         if($before['statut']!==$status){$text=['en_cours'=>'Votre demande est en cours de traitement.','approuvee'=>'Votre demande a été approuvée.','document_pret'=>'Votre document est prêt à retirer au guichet municipal.','rejetee'=>'Votre demande a été refusée. Contactez la municipalité pour les précisions.'][$status]??'Le statut de votre demande a été mis à jour.';$db->prepare('INSERT INTO municipalite_notification (id_citoyen,id_demande,titre,message) VALUES (?,?,?,?)')->execute([$before['id_citoyen'],$id,'Mise à jour municipale',$text]);}
         $this->flash('success','Statut de la demande mis à jour.');$this->redirect('admin-demandes-municipales');
     }
