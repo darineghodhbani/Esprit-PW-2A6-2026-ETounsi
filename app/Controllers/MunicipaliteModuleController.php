@@ -58,6 +58,18 @@ class MunicipaliteModuleController extends Controller {
         $currentPage='municipalite-services'; $title='Services municipaux · E-Tounsi';
         $this->renderFront('municipalite/services',compact('services','currentPage','title'));
     }
+    public function rendezVous(): void {
+        $services=$this->db()->query('SELECT * FROM municipalite_service WHERE actif=1 AND mode_traitement="rendez_vous" ORDER BY id_service')->fetchAll();
+        $currentPage='municipalite-rendez-vous'; $title='Rendez-vous municipaux · E-Tounsi';
+        $this->renderFront('municipalite/services',compact('services','currentPage','title'));
+    }
+    public function documents(): void {
+        $query=$this->db()->prepare('SELECT doc.id_document,doc.id_demande,doc.type_document,doc.statut AS document_statut,doc.date_depot,d.date_depot AS date_demande,d.statut AS demande_statut FROM municipalite_document doc JOIN municipalite_demande d ON d.id_demande=doc.id_demande WHERE d.id_citoyen=? ORDER BY doc.date_depot DESC,doc.id_document DESC');
+        $query->execute([$this->citoyenId()]);
+        $documents=$query->fetchAll();
+        $currentPage='municipalite-documents'; $title='Mes documents municipaux · E-Tounsi';
+        $this->renderFront('municipalite/documents',compact('documents','currentPage','title'));
+    }
     public function nouveau(): void {
         $id=filter_var($_GET['id']??null,FILTER_VALIDATE_INT)?:0;
         $st=$this->db()->prepare('SELECT * FROM municipalite_service WHERE id_service=? AND actif=1'); $st->execute([$id]); $service=$st->fetch();

@@ -235,6 +235,8 @@ return [
     "service.transport.stations" => "المحطات والتعريفات",
     "service.municipalite.services" => "الخدمات البلدية",
     "service.municipalite.suivi" => "متابعة المطالب",
+    "service.municipalite.appointments" => "حجز موعد في البلدية",
+    "service.municipalite.documents" => "متابعة الوثائق البلدية",
     "service.poste.bureaux" => "مكاتب البريد",
     "service.poste.envoi" => "إرسال وتتبع الطرود",
     "service.finances.proprietes" => "عقاراتي وضرائبي",

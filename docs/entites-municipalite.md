@@ -55,4 +55,4 @@ classDiagram
 
 La clé `id_service` relie une demande au service. La clé unique `id_demande` dans la table Document relie au plus un document municipal à sa demande. Le citoyen est référencé par `id_citoyen` dans la demande. La ligne Document est créée avec la demande et son état suit son traitement : en attente, préparation, prêt à retirer ou rejeté. Le chemin d'un éventuel fichier est privé et n'est jamais servi comme URL publique.
 
-La page publique « Municipalité » affiche des raccourcis fonctionnels (consulter les services, suivre ses demandes). Ce ne sont pas des entités de base de données. La liste des services détaillés est dans « Démarches municipales » ; les quatre entités sont celles du modèle et du schéma SQL ci-dessus.
+La page publique « Municipalité » affiche maintenant quatre parcours fonctionnels : consulter les services, suivre ses demandes, prendre un rendez-vous et suivre ses documents. Ces cartes sont des actions utilisateur, pas des entités de base de données. Elles donnent accès aux quatre entités métier décrites ci-dessus.

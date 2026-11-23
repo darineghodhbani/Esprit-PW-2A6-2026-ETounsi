@@ -118,6 +118,8 @@ foreach (['ligne' => ['LigneTransportController', 'admin-lignes'],
 // Module Municipalité : démarches citoyennes, suivi, paiement et habilitations métiers.
 require_once __DIR__ . '/Controllers/MunicipaliteModuleController.php';
 $routes['municipalite-services'] = ['MunicipaliteModuleController', 'services', ['GET'], ['citoyen','admin']];
+$routes['municipalite-rendez-vous'] = ['MunicipaliteModuleController', 'rendezVous', ['GET'], ['citoyen','admin']];
+$routes['municipalite-documents'] = ['MunicipaliteModuleController', 'documents', ['GET'], ['citoyen','admin']];
 $routes['municipalite-demande'] = ['MunicipaliteModuleController', 'nouveau', ['GET'], ['citoyen','admin']];
 $routes['municipalite-enregistrer'] = ['MunicipaliteModuleController', 'enregistrer', ['POST'], ['citoyen','admin']];
 $routes['municipalite-suivi'] = ['MunicipaliteModuleController', 'suivi', ['GET'], ['citoyen','admin']];
