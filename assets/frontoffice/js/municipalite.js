@@ -66,4 +66,9 @@
     celebration.addEventListener('change', updateNotaryFields);
     updateNotaryFields();
   }
+
+  const printReceiptButton = document.querySelector('[data-print-receipt]');
+  if (printReceiptButton) {
+    printReceiptButton.addEventListener('click', () => window.print());
+  }
 })();

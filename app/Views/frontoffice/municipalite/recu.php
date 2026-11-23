@@ -10,5 +10,14 @@ $labels=['telephone_contact'=>'Téléphone','nom'=>'Nom','prenom'=>'Prénom(s)',
  <?php if($details): ?><h2 class="h5 mt-4">Informations déclarées</h2><dl class="row"><?php foreach($details as $k=>$v): if(!isset($labels[$k])||$v==='')continue; ?><dt class="col-sm-4"><?= e($labels[$k]) ?></dt><dd class="col-sm-8"><?= e(is_scalar($v)?(string)$v:'') ?></dd><?php endforeach; ?></dl><?php endif; ?>
  <div class="no-print d-flex flex-wrap gap-2 mt-4"><button class="button button-dark" type="button" data-print-receipt>Imprimer le récépissé</button><a class="button button-light" href="index.php?page=municipalite-suivi">Mes demandes et notifications</a><?php if(($demande['paiement_statut']??'')==='en_attente'&&$carteActive): ?><form method="post" action="index.php?page=municipalite-payer"><input type="hidden" name="csrf" value="<?= e(csrfToken()) ?>"><input type="hidden" name="id_demande" value="<?= (int)$demande['id_demande'] ?>"><button class="button button-dark" type="submit">Payer par carte bancaire</button></form><?php endif; ?></div>
 </article>
-<style>.receipt{max-width:900px;margin:0 auto}@media print{.site-header,.site-footer,.workspace-sidebar,.no-print{display:none!important}.workspace{display:block!important}.workspace-content{width:100%!important}.receipt{max-width:100%;box-shadow:none!important;border:1px solid #aaa!important}}</style>
-<script src="assets/frontoffice/js/municipalite.js"></script>
+<style>
+.receipt{max-width:900px;margin:0 auto}
+@page{margin:15mm}
+@media print{
+  body *{visibility:hidden!important}
+  .receipt,.receipt *{visibility:visible!important}
+  .receipt{position:absolute;inset:0;max-width:none;width:100%;margin:0;border:0!important;box-shadow:none!important}
+  .no-print{display:none!important}
+}
+</style>
+<script src="assets/frontoffice/js/municipalite.js?v=print-1"></script>
