@@ -5,6 +5,7 @@ require_once __DIR__ . '/../Security/MunicipaliteAuthorization.php';
 require_once __DIR__ . '/../Models/DemandeMunicipale.php';
 require_once __DIR__ . '/../Models/MunicipaliteService.php';
 require_once __DIR__ . '/../Models/RendezVous.php';
+require_once __DIR__ . '/../Models/DocumentMunicipal.php';
 require_once __DIR__ . '/../Models/PaiementMunicipal.php';
 require_once __DIR__ . '/../Models/NotificationMunicipale.php';
 
@@ -84,6 +85,8 @@ class MunicipaliteModuleController extends Controller {
         $db=$this->db();$db->beginTransaction();try{
             $q=$db->prepare('INSERT INTO municipalite_demande (id_service,id_citoyen,nom_concerne,telephone_contact,date_acte,lieu_acte,precision_demande,gouvernorat,delegation,date_souhaitee,statut_rdv) VALUES (?,?,?,?,?,?,?,?,?,?,?)');
             $q->execute([$request->getServiceId(),$request->getCitoyenId(),$request->getNomConcerne(),$request->getTelephone(),$request->getDateActe(),$request->getLieuActe(),$request->getDetailsJson(),$request->getGouvernorat(),$request->getDelegation(),$request->getDateSouhaitee(),$request->getDateSouhaitee()?'en_attente':null]);$requestId=(int)$db->lastInsertId();
+            $document=new DocumentMunicipal(null,$requestId,(string)$s['libelle'],null,null,null,null,'en_attente_demande');
+            $db->prepare('INSERT INTO municipalite_document (id_demande,type_document,statut) VALUES (?,?,?)')->execute([$document->getIdDemande(),$document->getTypeDocument(),$document->getStatut()]);
             if ($date) {
                 $rdv = new RendezVous(null, $requestId, $gov, $deleg, $date->format('Y-m-d H:i:s'));
                 $insertRdv = $db->prepare('INSERT INTO municipalite_rendez_vous (id_demande,gouvernorat,delegation,date_rendez_vous,statut) VALUES (?,?,?,?,?)');
@@ -95,13 +98,13 @@ class MunicipaliteModuleController extends Controller {
         $this->flash('success','Votre demande a été envoyée. Vous pouvez imprimer son récépissé.');$this->redirect('municipalite-recu',['id'=>$requestId]);
     }
     public function suivi(): void {
-        $q=$this->db()->prepare('SELECT d.*,s.libelle,s.frais,s.mode_traitement,p.statut AS paiement_statut,p.id_paiement,p.reference AS paiement_reference FROM municipalite_demande d JOIN municipalite_service s ON s.id_service=d.id_service LEFT JOIN municipalite_paiement p ON p.id_demande=d.id_demande WHERE d.id_citoyen=? ORDER BY d.date_depot DESC,d.id_demande DESC');$q->execute([$this->citoyenId()]);$demandes=$q->fetchAll();
+        $q=$this->db()->prepare('SELECT d.*,s.libelle,s.frais,s.mode_traitement,p.statut AS paiement_statut,p.id_paiement,p.reference AS paiement_reference,doc.statut AS document_statut,doc.type_document AS document_type FROM municipalite_demande d JOIN municipalite_service s ON s.id_service=d.id_service LEFT JOIN municipalite_paiement p ON p.id_demande=d.id_demande LEFT JOIN municipalite_document doc ON doc.id_demande=d.id_demande WHERE d.id_citoyen=? ORDER BY d.date_depot DESC,d.id_demande DESC');$q->execute([$this->citoyenId()]);$demandes=$q->fetchAll();
         $n=$this->db()->prepare('SELECT * FROM municipalite_notification WHERE id_citoyen=? ORDER BY cree_le DESC LIMIT 30');$n->execute([$this->citoyenId()]);$notifications=$n->fetchAll();$currentPage='municipalite-suivi';$title='Mes demandes municipales · E-Tounsi';
         $cfg=is_file(__DIR__.'/../../config.local.php')?require __DIR__.'/../../config.local.php':[];$carteActive=!empty($cfg['konnect_api_key'])&&!empty($cfg['konnect_wallet_id']);$demoActive=($cfg['app_env']??'production')==='development';
         $this->renderFront('municipalite/suivi',compact('demandes','notifications','currentPage','title','carteActive','demoActive'));
     }
     public function recu(): void {
-        $id=(int)($_GET['id']??0);$q=$this->db()->prepare('SELECT d.*,s.libelle,s.frais,s.mode_traitement,p.statut AS paiement_statut,p.id_paiement,p.reference AS paiement_reference FROM municipalite_demande d JOIN municipalite_service s ON s.id_service=d.id_service LEFT JOIN municipalite_paiement p ON p.id_demande=d.id_demande WHERE d.id_demande=? AND d.id_citoyen=?');$q->execute([$id,$this->citoyenId()]);$demande=$q->fetch();if(!$demande){$this->flash('danger','Récépissé introuvable.');$this->redirect('municipalite-suivi');}
+        $id=(int)($_GET['id']??0);$q=$this->db()->prepare('SELECT d.*,s.libelle,s.frais,s.mode_traitement,p.statut AS paiement_statut,p.id_paiement,p.reference AS paiement_reference,doc.statut AS document_statut,doc.type_document AS document_type FROM municipalite_demande d JOIN municipalite_service s ON s.id_service=d.id_service LEFT JOIN municipalite_paiement p ON p.id_demande=d.id_demande LEFT JOIN municipalite_document doc ON doc.id_demande=d.id_demande WHERE d.id_demande=? AND d.id_citoyen=?');$q->execute([$id,$this->citoyenId()]);$demande=$q->fetch();if(!$demande){$this->flash('danger','Récépissé introuvable.');$this->redirect('municipalite-suivi');}
         $details=json_decode((string)$demande['precision_demande'],true)?:[];$currentPage='municipalite-suivi';$title='Récépissé DM-'.str_pad((string)$id,5,'0',STR_PAD_LEFT).' · E-Tounsi';$cfg=is_file(__DIR__.'/../../config.local.php')?require __DIR__.'/../../config.local.php':[];$carteActive=!empty($cfg['konnect_api_key'])&&!empty($cfg['konnect_wallet_id']);$demoActive=($cfg['app_env']??'production')==='development';$this->renderFront('municipalite/recu',compact('demande','details','currentPage','title','carteActive','demoActive'));
     }
     public function payer(): void {
@@ -130,7 +133,12 @@ class MunicipaliteModuleController extends Controller {
     }
     public function statutAdmin(): void {
         $this->requireMunicipalitePermission('traiter_demandes');$id=(int)($_POST['id_demande']??0);$status=(string)($_POST['statut']??'');$allowed=['en_attente','en_cours','approuvee','document_pret','rejetee'];if(!in_array($status,$allowed,true)){$this->flash('danger','Statut invalide.');$this->redirect('admin-demandes-municipales');}
-        $db=$this->db();$q=$db->prepare('SELECT id_citoyen,statut FROM municipalite_demande WHERE id_demande=?');$q->execute([$id]);$before=$q->fetch();if(!$before){$this->flash('danger','Demande introuvable.');$this->redirect('admin-demandes-municipales');}$db->prepare('UPDATE municipalite_demande SET statut=?,statut_rdv=CASE WHEN date_souhaitee IS NULL THEN statut_rdv WHEN ?="approuvee" THEN "confirme" WHEN ?="rejetee" THEN "refuse" ELSE statut_rdv END WHERE id_demande=?')->execute([$status,$status,$status,$id]);
+        $db=$this->db();$q=$db->prepare('SELECT d.id_citoyen,d.statut,s.libelle FROM municipalite_demande d JOIN municipalite_service s ON s.id_service=d.id_service WHERE d.id_demande=?');$q->execute([$id]);$before=$q->fetch();if(!$before){$this->flash('danger','Demande introuvable.');$this->redirect('admin-demandes-municipales');}$db->prepare('UPDATE municipalite_demande SET statut=?,statut_rdv=CASE WHEN date_souhaitee IS NULL THEN statut_rdv WHEN ?="approuvee" THEN "confirme" WHEN ?="rejetee" THEN "refuse" ELSE statut_rdv END WHERE id_demande=?')->execute([$status,$status,$status,$id]);
+        $documentStatus=match($status){'en_cours','approuvee'=>'en_preparation','document_pret'=>'pret_a_retirer','rejetee'=>'rejete',default=>null};
+        if($documentStatus!==null){
+            $document=new DocumentMunicipal(null,$id,(string)$before['libelle'],null,null,null,null,$documentStatus);
+            $db->prepare('INSERT INTO municipalite_document (id_demande,type_document,statut) VALUES (?,?,?) ON DUPLICATE KEY UPDATE type_document=VALUES(type_document),statut=VALUES(statut)')->execute([$document->getIdDemande(),$document->getTypeDocument(),$document->getStatut()]);
+        }
         $db->prepare('UPDATE municipalite_rendez_vous SET statut=CASE WHEN ?="approuvee" THEN "confirme" WHEN ?="rejetee" THEN "refuse" ELSE statut END WHERE id_demande=?')->execute([$status,$status,$id]);
         if($before['statut']!==$status){$text=['en_cours'=>'Votre demande est en cours de traitement.','approuvee'=>'Votre demande a été approuvée.','document_pret'=>'Votre document est prêt à retirer au guichet municipal.','rejetee'=>'Votre demande a été refusée. Contactez la municipalité pour les précisions.'][$status]??'Le statut de votre demande a été mis à jour.';$db->prepare('INSERT INTO municipalite_notification (id_citoyen,id_demande,titre,message) VALUES (?,?,?,?)')->execute([$before['id_citoyen'],$id,'Mise à jour municipale',$text]);}
         $this->flash('success','Statut de la demande mis à jour.');$this->redirect('admin-demandes-municipales');

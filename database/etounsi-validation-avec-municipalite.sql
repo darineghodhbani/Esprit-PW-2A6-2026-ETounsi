@@ -325,6 +325,40 @@ CREATE TABLE IF NOT EXISTS municipalite_rendez_vous (
   INDEX idx_municipalite_rdv_localite (gouvernorat, delegation)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Pièces justificatives et documents produits pour une demande municipale.
+CREATE TABLE IF NOT EXISTS municipalite_document (
+  id_document INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  id_demande INT NOT NULL,
+  type_document VARCHAR(100) NOT NULL,
+  nom_original VARCHAR(255) DEFAULT NULL,
+  chemin_stockage VARCHAR(500) DEFAULT NULL,
+  mime_type VARCHAR(120) DEFAULT NULL,
+  taille_octets INT UNSIGNED DEFAULT NULL,
+  statut ENUM('en_attente_demande','en_preparation','pret_a_retirer','delivre','rejete') NOT NULL DEFAULT 'en_attente_demande',
+  date_depot DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_municipalite_document_demande FOREIGN KEY (id_demande) REFERENCES municipalite_demande(id_demande) ON DELETE CASCADE,
+  UNIQUE KEY uq_municipalite_document_demande (id_demande),
+  INDEX idx_municipalite_document_demande (id_demande, statut)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE municipalite_document MODIFY statut
+  ENUM('en_attente_demande','en_preparation','pret_a_retirer','delivre','rejete')
+  NOT NULL DEFAULT 'en_attente_demande';
+
+-- Préserve et relie les demandes déjà enregistrées à leur document municipal.
+INSERT IGNORE INTO municipalite_document (id_demande,type_document,statut)
+SELECT d.id_demande,s.libelle,
+       CASE d.statut
+         WHEN 'en_cours' THEN 'en_preparation'
+         WHEN 'approuvee' THEN 'en_preparation'
+         WHEN 'document_pret' THEN 'pret_a_retirer'
+         WHEN 'rejetee' THEN 'rejete'
+         ELSE 'en_attente_demande'
+       END
+FROM municipalite_demande d
+JOIN municipalite_service s ON s.id_service=d.id_service
+WHERE d.statut <> 'annulee';
+
 -- Migration non destructive : reprend les rendez-vous déjà stockés dans la demande.
 INSERT IGNORE INTO municipalite_rendez_vous (id_demande,gouvernorat,delegation,date_rendez_vous,statut)
 SELECT id_demande,COALESCE(gouvernorat,''),COALESCE(delegation,''),date_souhaitee,COALESCE(statut_rdv,'en_attente')

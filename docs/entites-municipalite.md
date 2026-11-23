@@ -1,50 +1,58 @@
-# Entités du module Municipalité
+# Entités métier du module Municipalité
 
-Le diagramme présente exactement les quatre entités demandées : `DemandeMunicipale`, `RendezVous`, `PaiementMunicipal` et `NotificationMunicipale`. Le service et le citoyen sont représentés par leurs identifiants étrangers dans ces entités et ne sont donc pas ajoutés comme classes au diagramme. `RendezVous` possède sa propre table SQL `municipalite_rendez_vous`. Les rendez-vous historiques sont migrés depuis `municipalite_demande` sans suppression des anciennes colonnes.
+La fiche de répartition du projet présente quatre entités métier propres à la Municipalité. Leurs noms dans le code PHP et leurs tables SQL sont :
+
+| Entité du projet | Classe PHP | Table SQL |
+|---|---|---|
+| MunicipalService | `MunicipaliteService` | `municipalite_service` |
+| AdministrativeRequest | `DemandeMunicipale` | `municipalite_demande` |
+| Appointment | `RendezVous` | `municipalite_rendez_vous` |
+| Document | `DocumentMunicipal` | `municipalite_document` |
+
+Les fonctions Paiement et Notification restent présentes et opérationnelles comme entités transversales supplémentaires. Elles ne remplacent pas les quatre entités municipales indiquées dans la fiche de répartition.
 
 ```mermaid
 classDiagram
-  class DemandeMunicipale {
-    +int serviceId
-    +int citoyenId
+  class MunicipalService {
+    +int id
+    +string libelle
+    +string typeFormulaire
+    +string description
+    +string piecesRequises
+    +float frais
+    +string modeTraitement
+  }
+  class AdministrativeRequest {
+    +int idDemande
+    +int idService
+    +int idCitoyen
     +string telephone
     +string detailsJson
-    +string? gouvernorat
-    +string? delegation
-    +string? dateSouhaitee
+    +string statut
   }
-  class RendezVous {
-    +int? idRendezVous
+  class Appointment {
+    +int idRendezVous
     +int idDemande
     +string gouvernorat
     +string delegation
-    +string dateSouhaitee
+    +string dateRendezVous
     +string statut
   }
-  class PaiementMunicipal {
-    +int? idPaiement
+  class Document {
+    +int idDocument
     +int idDemande
-    +string montant
-    +string devise
+    +string typeDocument
+    +string nomOriginal
+    +string cheminStockage
+    +string mimeType
+    +int tailleOctets
     +string statut
-    +string modePaiement
-    +string? reference
-    +string? payeLe
   }
-  class NotificationMunicipale {
-    +int? idNotification
-    +int idCitoyen
-    +int? idDemande
-    +string titre
-    +string message
-    +bool lue
-    +string? creeLe
-  }
-  DemandeMunicipale "1" --> "0..1" RendezVous : demande selon le service
-  DemandeMunicipale "1" --> "0..1" PaiementMunicipal : donne lieu à
-  DemandeMunicipale "0..1" --> "0..*" NotificationMunicipale : déclenche
+  MunicipalService "1" --> "0..*" AdministrativeRequest : propose
+  AdministrativeRequest "1" --> "0..1" Appointment : peut nécessiter
+  AdministrativeRequest "1" --> "0..1" Document : produit
 ```
 
-Une demande peut avoir au plus un rendez-vous et au plus un paiement, conformément aux contraintes uniques de `municipalite_rendez_vous.id_demande` et `municipalite_paiement.id_demande`. Une notification est toujours destinée à un citoyen et peut être liée à une demande. Les reçus d'impression restent générés à partir de la demande et de son paiement : aucune entité d'impression distincte n'est nécessaire.
+La clé `id_service` relie une demande au service. La clé unique `id_demande` dans la table Document relie au plus un document municipal à sa demande. Le citoyen est référencé par `id_citoyen` dans la demande. La ligne Document est créée avec la demande et son état suit son traitement : en attente, préparation, prêt à retirer ou rejeté. Le chemin d'un éventuel fichier est privé et n'est jamais servi comme URL publique.
 
-`RendezVous::fromRow()` construit l'entité depuis sa table dédiée.
+La page publique « Municipalité » affiche des raccourcis fonctionnels (consulter les services, suivre ses demandes). Ce ne sont pas des entités de base de données. La liste des services détaillés est dans « Démarches municipales » ; les quatre entités sont celles du modèle et du schéma SQL ci-dessus.
