@@ -30,13 +30,6 @@ abstract class CnamController extends Controller {
         catch (DomainException $e) { http_response_code(400); exit('Identifiant invalide.'); }
     }
     protected function utilisateurCNAM(): array {
-        require_once __DIR__ . '/HabilitationCNAMController.php';
-        $user=exigerRole(['agent','admin']);
-        if ($user['role']==='agent' && !(new HabilitationCNAMController())->autorise($user['id'])) {
-            http_response_code(403);
-            $this->renderFront('cnam/nonHabilite',['title'=>'Accès CNAM','currentPage'=>'cnam-refuse']);
-            exit;
-        }
-        return $user;
+        return exigerRole(['admin']);
     }
 }

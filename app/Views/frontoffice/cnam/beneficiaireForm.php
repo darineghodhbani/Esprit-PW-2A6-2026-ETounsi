@@ -1,4 +1,4 @@
-<?php $intro=tr('Le rattachement devient actif après vérification par un agent CNAM.','يُفعّل الارتباط بعد التثبت منه من طرف موظف الصندوق.'); require __DIR__ . '/../poste/page-heading.php'; ?>
+<?php $intro=tr('Le rattachement devient actif après vérification par la CNAM.','يُفعّل الارتباط بعد التثبت منه من طرف الصندوق.'); require __DIR__ . '/../poste/page-heading.php'; ?>
 <div class="poste-section"><section class="content-panel panel-narrow">
     <?php if ($erreurs): ?><div class="alert alert-error" role="alert"><?php foreach ($erreurs as $erreur): ?><p><?= e($erreur) ?></p><?php endforeach; ?></div><?php endif; ?>
     <form method="post" enctype="multipart/form-data" action="index.php?page=beneficiaire-form<?= !empty($old['id_beneficiaire'])?'&amp;id='.rawurlencode((string)$old['id_beneficiaire']):'' ?>">

@@ -22,8 +22,8 @@
                     <a href="index.php?page=profile" aria-current="page">
                         <?php echo et_icon('user'); ?> <?php echo t('account.profile'); ?>
                     </a>
-                    <?php if ($_SESSION['role'] == 'agent' || $_SESSION['role'] == 'admin'): ?>
-                        <a href="index.php?page=<?= $_SESSION['role'] === 'agent' ? 'admin-demandes-cnam' : 'dashboard' ?>">
+                    <?php if ($_SESSION['role'] == 'admin'): ?>
+                        <a href="index.php?page=dashboard">
                             <?php echo et_icon('landmark'); ?> <?php echo t('nav.backoffice'); ?>
                         </a>
                     <?php endif; ?>

@@ -32,7 +32,7 @@ $menu = [
     ]],
 ];
 if ($role === 'agent') {
-    $menu = [$menu[3]];
+    $menu = [];
     if (MunicipaliteModuleController::hasMunicipalitePermission((int) ($_SESSION['id_citoyen'] ?? 0), 'consulter_demandes')) {
         $menu[] = ['section' => 'Municipalité', 'module' => 'municipalite', 'items' => [
             ['page' => 'admin-demandes-municipales', 'label' => 'Demandes municipales', 'icone' => 'bi-building'],
@@ -40,12 +40,11 @@ if ($role === 'agent') {
     }
 } elseif ($role === 'admin') {
     $menu[2]['items'][] = ['page' => 'admin-municipalite-agents', 'label' => 'Accès des agents municipaux', 'icone' => 'bi-person-lock'];
-    $menu[3]['items'][] = ['page' => 'admin-cnam-agents', 'label' => 'Habilitations CNAM', 'icone' => 'bi-person-check'];
 }
 ?>
 <div class="sidebar-wrapper" id="sidebar">
 
-    <a href="index.php?page=<?php echo $role === 'agent' ? 'admin-demandes-cnam' : 'dashboard'; ?>" class="sidebar-brand">
+    <a href="index.php?page=dashboard" class="sidebar-brand">
         <img src="assets/frontoffice/img/brand/e-tounsi-mark.svg" alt="" style="height: 36px; width: auto;">
         <span>E-Tounsi</span>
     </a>

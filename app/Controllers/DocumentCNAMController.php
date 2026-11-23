@@ -87,7 +87,7 @@ final class DocumentCNAMController extends CnamController {
     }
 
     public function telecharger(): void {
-        $user=exigerRole(['citoyen','agent','admin']);
+        $user=exigerRole(['citoyen','admin']);
         try { $id=CnamValidation::id($_GET['id']??null); }
         catch (DomainException $e) { http_response_code(400); exit('Identifiant invalide.'); }
         $doc=$this->avecProprietaire($id);

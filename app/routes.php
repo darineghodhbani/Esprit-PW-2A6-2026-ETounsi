@@ -80,7 +80,6 @@ $routes['google-callback'] = ['GoogleController', 'callback', ['GET']];
 require_once __DIR__ . '/Controllers/AssureSocialController.php';
 require_once __DIR__ . '/Controllers/BeneficiaireController.php';
 require_once __DIR__ . '/Controllers/DemandeRemboursementController.php';
-require_once __DIR__ . '/Controllers/HabilitationCNAMController.php';
 require_once __DIR__ . '/Controllers/DocumentCNAMController.php';
 $routes['mon-dossier'] = ['AssureSocialController', 'dossier', ['GET', 'POST'], ['citoyen']];
 $routes['mes-beneficiaires'] = ['BeneficiaireController', 'liste', ['GET'], ['citoyen']];
@@ -89,16 +88,14 @@ $routes['beneficiaire-delete'] = ['BeneficiaireController', 'supprimer', ['POST'
 $routes['mes-remboursements'] = ['DemandeRemboursementController', 'liste', ['GET'], ['citoyen']];
 $routes['remboursement-form'] = ['DemandeRemboursementController', 'formulaire', ['GET', 'POST'], ['citoyen']];
 $routes['remboursement-delete'] = ['DemandeRemboursementController', 'supprimer', ['POST'], ['citoyen']];
-$routes['document-cnam'] = ['DocumentCNAMController', 'telecharger', ['GET'], ['citoyen', 'agent', 'admin']];
-$routes['admin-assures'] = ['AssureSocialController', 'assures', ['GET'], ['agent', 'admin']];
-$routes['admin-beneficiaires'] = ['BeneficiaireController', 'adminListe', ['GET'], ['agent', 'admin']];
-$routes['admin-demandes-cnam'] = ['DemandeRemboursementController', 'adminListe', ['GET'], ['agent', 'admin']];
-$routes['cnam-valider-beneficiaire'] = ['BeneficiaireController', 'traiterValidation', ['POST'], ['agent']];
-$routes['cnam-prise-en-charge'] = ['DemandeRemboursementController', 'prendreEnCharge', ['POST'], ['agent']];
-$routes['cnam-decision'] = ['DemandeRemboursementController', 'decision', ['POST'], ['agent']];
-$routes['cnam-versement'] = ['DemandeRemboursementController', 'versement', ['POST'], ['agent']];
-$routes['admin-cnam-agents'] = ['HabilitationCNAMController', 'liste', ['GET'], 'admin'];
-$routes['cnam-habilitation'] = ['HabilitationCNAMController', 'modifier', ['POST'], 'admin'];
+$routes['document-cnam'] = ['DocumentCNAMController', 'telecharger', ['GET'], ['citoyen', 'admin']];
+$routes['admin-assures'] = ['AssureSocialController', 'assures', ['GET'], 'admin'];
+$routes['admin-beneficiaires'] = ['BeneficiaireController', 'adminListe', ['GET'], 'admin'];
+$routes['admin-demandes-cnam'] = ['DemandeRemboursementController', 'adminListe', ['GET'], 'admin'];
+$routes['cnam-valider-beneficiaire'] = ['BeneficiaireController', 'traiterValidation', ['POST'], 'admin'];
+$routes['cnam-prise-en-charge'] = ['DemandeRemboursementController', 'prendreEnCharge', ['POST'], 'admin'];
+$routes['cnam-decision'] = ['DemandeRemboursementController', 'decision', ['POST'], 'admin'];
+$routes['cnam-versement'] = ['DemandeRemboursementController', 'versement', ['POST'], 'admin'];
 
 // Module Transport (Ranim Aissa) : lignes, stations et horaires.
 require_once __DIR__ . '/Controllers/LigneTransportController.php';
