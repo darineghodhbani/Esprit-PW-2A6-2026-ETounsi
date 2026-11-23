@@ -94,7 +94,7 @@ Développé à Esprit School of Engineering — Tunisia, dans le cadre du Projet
 
 ## Getting Started
 
-1. Démarrer Apache et MySQL, puis importer `database/etounsi.sql` si la base commune `etounsi` n’existe pas encore.
+1. Démarrer Apache et MySQL, puis importer database/etounsi-validation-avec-municipalite.sql dans phpMyAdmin ; ce fichier crée la base complète etounsi_validation.
 2. Installer les dépendances avec `composer install`.
 3. Copier `config.local.example.php` vers `config.local.php` et renseigner MySQL. Le fichier local est ignoré par Git ; `app_env` doit rester `development` en local.
 4. Pour activer la connexion Google, copier `google.local.example.php` vers `google.local.php`. Renseigner l’identifiant et le secret du client Google, avec une URI de redirection correspondant exactement à l’adresse du projet. Ce fichier est aussi ignoré par Git.
@@ -160,7 +160,7 @@ Contrôle de revue du 22 novembre 2026 : installation sur base vide vérifiée ;
 
 Le module Municipalité est activé dans le portail : formulaires d’état civil, demandes avec rendez-vous, suivi, récépissé imprimable, notifications, paiement de démonstration et gestion des services. Les anciens modèles et tables `ServiceMunicipal` / `DemandeMunicipale` restent en place ; le nouveau flux utilise ses tables `municipalite_*` dédiées.
 
-Pour une installation neuve, importez `database/etounsi.sql`, puis `database/municipalite-integration.sql`. Le fichier `database/etounsi-validation-avec-municipalite.sql` est aussi disponible pour installer la base complète dans `etounsi_validation`. Sur une base existante, importez uniquement `database/municipalite-integration.sql` dans la base configurée par `config.local.php`.
+Pour une installation neuve, importez database/etounsi-validation-avec-municipalite.sql pour créer la base complète etounsi_validation, Municipalité incluse. Sur une base existante, importez uniquement database/municipalite-integration.sql dans la base configurée par config.local.php.
 
 Un administrateur peut créer ou modifier un compte avec le rôle global Agent, puis lui attribuer les droits municipaux « consultation » et « traitement » depuis **Back Office → Municipalité → Accès des agents municipaux**. Le traitement inclut la consultation. Les permissions sont vérifiées côté serveur et leurs changements sont inscrits au journal d’audit. Les Agents CNAM ne reçoivent aucun droit municipal automatiquement.
 

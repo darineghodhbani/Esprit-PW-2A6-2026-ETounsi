@@ -75,38 +75,18 @@
 
                 <?php if (isset($_SESSION['flash'])): ?><p class="alert alert-success" role="status"><?php echo e($_SESSION['flash']['message']); ?></p><?php unset($_SESSION['flash']); endif; ?>
                 <?php if ($erreurs !== []): ?><div class="alert alert-error" role="alert"><?php foreach ($erreurs as $message): ?><p><?php echo e($message); ?></p><?php endforeach; ?></div><?php endif; ?>
-                <form class="stack profile-edit" method="post" action="index.php?page=profile" novalidate data-validate-form>
+                <form class="stack profile-edit" method="post" action="index.php?page=profile" novalidate>
                     <input type="hidden" name="csrf" value="<?php echo e(csrfToken()); ?>">
-
-                    <div class="field">
-                        <label for="nom"><?php echo e(t('profil.nom_complet')); ?></label>
-                        <input id="nom" name="nom" type="text" value="<?php echo e($old['nom']); ?>" data-validate="required|min:2|max:50">
-                        <?php if (isset($erreurs['nom'])): ?><small class="field-error server-error"><?php echo e($erreurs['nom']); ?></small><?php endif; ?>
-                    </div>
-
-                    <div class="field">
-                        <label for="email"><?php echo e(t('profil.adresse_email')); ?></label>
-                        <input id="email" name="email" type="email" value="<?php echo e($old['email']); ?>" data-validate="required|email">
-                        <?php if (isset($erreurs['email'])): ?><small class="field-error server-error"><?php echo e($erreurs['email']); ?></small><?php endif; ?>
-                    </div>
-
-                    <div class="field">
-                        <label for="mot_de_passe_actuel"><?php echo e(t('profil.mot_de_passe_actuel')); ?></label>
-                        <input id="mot_de_passe_actuel" name="mot_de_passe_actuel" type="password" autocomplete="current-password">
-                        <?php if (isset($erreurs['mot_de_passe_actuel'])): ?><small class="field-error server-error"><?php echo e($erreurs['mot_de_passe_actuel']); ?></small><?php endif; ?>
-                    </div>
-
-                    <div class="field">
-                        <label for="password"><?php echo e(t('profil.nouveau_mot_de_passe')); ?></label>
-                        <input id="password" name="password" type="password" autocomplete="new-password" data-validate="min:8">
-                        <?php if (isset($erreurs['password'])): ?><small class="field-error server-error"><?php echo e($erreurs['password']); ?></small><?php endif; ?>
-                    </div>
-
-                    <div class="field">
-                        <label for="confirmation"><?php echo e(t('profil.confirmer_mot_de_passe')); ?></label>
-                        <input id="confirmation" name="confirmation" type="password" autocomplete="new-password" data-validate="match:password">
-                        <?php if (isset($erreurs['confirmation'])): ?><small class="field-error server-error"><?php echo e($erreurs['confirmation']); ?></small><?php endif; ?>
-                    </div>
+                    <?php foreach (['nom' => [t('profil.nom_complet'), 'text'], 'email' => [t('profil.adresse_email'), 'email'],
+                        'mot_de_passe_actuel' => [t('profil.mot_de_passe_actuel'), 'password'],
+                        'password' => [t('profil.nouveau_mot_de_passe'), 'password'], 'confirmation' => [t('profil.confirmer_mot_de_passe'), 'password']] as $champ => $info): ?>
+                    <div class="field"><label for="<?php echo e($champ); ?>"><?php echo e($info[0]); ?></label>
+                        <input id="<?php echo e($champ); ?>" name="<?php echo e($champ); ?>" type="<?php echo e($info[1]); ?>" <?php echo $info[1] !== 'password' ? 'required' : ''; ?>
+                            value="<?php echo e($info[1] === 'password' ? '' : $old[$champ]); ?>"
+                            autocomplete="<?php echo $champ === 'mot_de_passe_actuel' ? 'current-password' : ($info[1] === 'password' ? 'new-password' : ($champ === 'email' ? 'email' : 'name')); ?>"
+                            <?php echo isset($erreurs[$champ]) ? 'aria-invalid="true" aria-describedby="erreur-' . e($champ) . '"' : ''; ?>>
+                        <?php if (isset($erreurs[$champ])): ?><small class="field-error" id="erreur-<?php echo e($champ); ?>"><?php echo e($erreurs[$champ]); ?></small><?php endif; ?>
+                    </div><?php endforeach; ?>
                     <p class="page-lead"><?php echo e(t('profil.aide_mot_de_passe')); ?></p>
                     <button class="button button-dark" type="submit"><?php echo e(t('profil.enregistrer')); ?></button>
                 </form>
@@ -116,6 +96,5 @@
 
     <?php require_once __DIR__ . '/includes/footer.php'; ?>
     <?php require_once __DIR__ . '/includes/scripts.php'; ?>
-    <script src="assets/frontoffice/js/validation.js"></script>
 </body>
 </html>

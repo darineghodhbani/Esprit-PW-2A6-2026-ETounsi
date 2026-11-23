@@ -5,7 +5,7 @@ class Database {
 
     public static function getConnection(): PDO {
         if (self::$instance === null) {
-            $config = ['host' => '127.0.0.1', 'port' => 3306, 'database' => 'etounsi', 'user' => 'root', 'password' => ''];
+            $config = ['host' => '127.0.0.1', 'port' => 3306, 'database' => 'etounsi_validation', 'user' => 'root', 'password' => ''];
             if (is_file(__DIR__ . '/config.local.php')) {
                 $config = array_merge($config, require __DIR__ . '/config.local.php');
             }
