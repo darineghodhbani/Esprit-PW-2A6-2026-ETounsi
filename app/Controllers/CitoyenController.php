@@ -8,7 +8,7 @@ require_once __DIR__ . '/../GoogleSignIn.php';
 require_once __DIR__ . '/GoogleController.php';
 
 class CitoyenController extends Controller {
-    public const ROLES = ['citoyen' => 'Citoyen', 'agent' => 'Agent', 'admin' => 'Administrateur'];
+    public const ROLES = ['citoyen' => 'Citoyen', 'admin' => 'Administrateur'];
     public const ETATS = ['1' => 'Actif', '0' => 'Désactivé'];
 
     // Colonnes pour tous les SELECT
