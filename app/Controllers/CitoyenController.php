@@ -213,93 +213,40 @@ class CitoyenController extends Controller {
         return $this->recupererCitoyen($id);
     }
 
-    public function modifierProfil($id, $nom, $email, $password, $confirmation, $motDePasseActuel, $versionAttendue)
-    {
+    // Lit le mot de passe haché d'un compte (pour vérifier le mot de passe actuel).
+    public function recupererMotDePasse($id) {
+        $sql = 'SELECT mot_de_passe FROM citoyen WHERE id_citoyen = :id';
         $db = Database::getConnection();
-        $nom = $this->texte($nom);
-        $email = strtolower($this->texte($email));
-        $password = is_string($password) ? $password : '';
-        $confirmation = is_string($confirmation) ? $confirmation : '';
-        $motDePasseActuel = is_string($motDePasseActuel) ? $motDePasseActuel : '';
-        $erreurs = $this->validerCompte($id, $nom, $email, $password, $confirmation);
-        if ($erreurs !== []) {
-            return $this->resultat($erreurs);
-        }
-
         try {
-            $db->beginTransaction();
-            $compte = $this->lireCompte($id, true);
-            if ($compte === false || (int) $compte['actif'] !== 1) {
-                $db->rollBack();
-                return $this->resultat(['general' => 'Ce compte est indisponible.']);
-            }
-            // La version provient de la session vérifiée avant le traitement du formulaire.
-            if ((int) $compte['version_session'] !== (int) $versionAttendue) {
-                $db->rollBack();
-                return $this->resultat(['general' => 'Votre compte a été modifié. Reconnectez-vous avant de modifier votre profil.']);
-            }
-            $identifiantsModifies = $password !== '' || $email !== $compte['email'];
-            $motDePasseActuelValide = strlen($motDePasseActuel) <= 72 && strpos($motDePasseActuel, "\0") === false;
-            if ($identifiantsModifies && (!$motDePasseActuelValide || !password_verify($motDePasseActuel, $compte['mot_de_passe'] ?? ''))) {
-                $db->rollBack();
-                return $this->resultat(['mot_de_passe_actuel' => 'Le mot de passe actuel est incorrect.']);
-            }
-            $motDePasse = $compte['mot_de_passe'];
-            if ($password !== '') {
-                $motDePasse = password_hash($password, PASSWORD_DEFAULT);
-            }
-            $version = (int) $compte['version_session'];
-            if ($identifiantsModifies) {
-                $version++;
-            }
-            // Le profil personnel conserve le rôle et l'état définis par l'administration.
-            $sql = 'UPDATE citoyen SET nom = :nom, email = :email, mot_de_passe = :mot_de_passe,
-                 version_session = :version WHERE id_citoyen = :id';
             $query = $db->prepare($sql);
-            $query->execute([
-                'nom' => $nom, 'email' => $email, 'mot_de_passe' => $motDePasse,
-                'version' => $version, 'id' => $id,
-            ]);
-            $utilisateur = $this->trouver($id);
-            (new AuditController($db))->log($_SESSION['user_id'] ?? $id, 'USER_UPDATED', 'Profil mis à jour.', $id);
-            $db->commit();
-            return $this->resultat([], $utilisateur);
-        } catch (PDOException $erreur) {
-            return $this->erreurBase($erreur);
+            $query->execute(['id' => $id]);
+            return $query->fetchColumn();
+        } catch (Exception $e) {
+            echo 'Error: ' . $e->getMessage();
         }
     }
 
-    private function validerCompte($id, $nom, $email, $password, $confirmation)
-    {
+    // UPDATE du profil : nom et email, et le mot de passe seulement s'il est rempli.
+    public function modifierProfil($id, $nom, $email, $password) {
+        $sql = 'UPDATE citoyen SET nom = :nom, email = :email WHERE id_citoyen = :id';
+        $db = Database::getConnection();
         try {
-            $erreurs = [];
-            if (mb_strlen($nom, 'UTF-8') < 2 || mb_strlen($nom, 'UTF-8') > 80) {
-                $erreurs['nom'] = 'Le nom doit contenir entre 2 et 80 caractères.';
+            $query = $db->prepare($sql);
+            $query->execute([
+                'id' => $id,
+                'nom' => $nom,
+                'email' => strtolower($email)
+            ]);
+
+            if ($password != '') {
+                $query = $db->prepare('UPDATE citoyen SET mot_de_passe = :mot_de_passe WHERE id_citoyen = :id');
+                $query->execute([
+                    'id' => $id,
+                    'mot_de_passe' => password_hash($password, PASSWORD_DEFAULT)
+                ]);
             }
-            if (preg_match('/[<>\x00-\x1F]/u', $nom)) {
-                $erreurs['nom'] = 'Saisissez un nom sans balises ni caractères de contrôle.';
-            }
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 150) {
-                $erreurs['email'] = 'Saisissez une adresse email valide de 150 caractères maximum.';
-            }
-            if ($id === null || $password !== '') {
-                if (mb_strlen($password, 'UTF-8') < 8 || strlen($password) > 72) {
-                    $erreurs['password'] = 'Le mot de passe doit contenir au moins 8 caractères et au maximum 72 octets.';
-                }
-                if (strpos($password, "\0") !== false) {
-                    $erreurs['password'] = 'Le mot de passe contient un caractère invalide.';
-                }
-            }
-            if ($password !== $confirmation) {
-                $erreurs['confirmation'] = 'Les mots de passe doivent être identiques.';
-            }
-            if ($this->emailDejaUtilise($email, $id)) {
-                $erreurs['email'] = 'Cette adresse email est déjà utilisée.';
-            }
-            return $erreurs;
         } catch (Exception $e) {
-            error_log($e->getMessage());
-            throw $e;
+            echo 'Error: ' . $e->getMessage();
         }
     }
 
@@ -490,18 +437,43 @@ class CitoyenController extends Controller {
     }
 
     public function profile(): void {
-        $citoyen = exigerConnexion();
+        $citoyen = exigerConnexion();   // il faut être connecté
         $erreurs = [];
-        $old = ['nom' => $citoyen['nom'], 'email' => $citoyen['email'], 'mot_de_passe_actuel' => '', 'password' => '', 'confirmation' => ''];
+        $old = ['nom' => $citoyen['nom'], 'email' => $citoyen['email']];
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            foreach ($old as $champ => $valeur) {
-                if (isset($_POST[$champ]) && is_string($_POST[$champ])) $old[$champ] = $_POST[$champ];
+            $old['nom'] = posteText($_POST, 'nom');
+            $old['email'] = posteText($_POST, 'email');
+            $actuel = $_POST['mot_de_passe_actuel'] ?? '';
+            $password = $_POST['password'] ?? '';
+            $confirmation = $_POST['confirmation'] ?? '';
+
+            // Contrôle de saisie PHP (les mêmes règles que le JavaScript)
+            if (strlen($old['nom']) < 2 || strlen($old['nom']) > 50) {
+                $erreurs['nom'] = 'Le nom doit contenir entre 2 et 50 caractères.';
             }
-            $resultat = $this->modifierProfil($citoyen['id'], $old['nom'], $old['email'],
-                $old['password'], $old['confirmation'], $old['mot_de_passe_actuel'], $citoyen['version_session']);
-            $erreurs = $resultat['erreurs'];
+            if (!filter_var($old['email'], FILTER_VALIDATE_EMAIL)) {
+                $erreurs['email'] = 'L’adresse email n’est pas valide.';
+            } elseif ($this->emailDejaUtilise($old['email'], $citoyen['id'])) {
+                $erreurs['email'] = 'Cette adresse email est déjà utilisée.';
+            }
+            if ($password != '' && strlen($password) < 8) {
+                $erreurs['password'] = 'Le mot de passe doit contenir au moins 8 caractères.';
+            }
+            if ($password != $confirmation) {
+                $erreurs['confirmation'] = 'Les deux mots de passe ne sont pas identiques.';
+            }
+
+            // Pour changer l'email ou le mot de passe, il faut le mot de passe actuel.
+            if (strtolower($old['email']) != $citoyen['email'] || $password != '') {
+                if (!password_verify($actuel, $this->recupererMotDePasse($citoyen['id']))) {
+                    $erreurs['mot_de_passe_actuel'] = 'Le mot de passe actuel est incorrect.';
+                }
+            }
+
             if (count($erreurs) == 0) {
-                connecterUtilisateur($resultat['utilisateur']);
+                $this->modifierProfil($citoyen['id'], $old['nom'], $old['email'], $password);
+                auditEvenement('USER_UPDATED', 'Profil mis à jour.', $citoyen['id']);
                 $_SESSION['flash'] = ['type' => 'success', 'message' => 'Votre profil a été mis à jour.'];
                 header('Location: index.php?page=profile', true, 303);
                 exit;
