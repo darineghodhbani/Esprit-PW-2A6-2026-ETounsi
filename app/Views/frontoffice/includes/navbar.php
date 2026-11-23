@@ -4,7 +4,13 @@ require_once __DIR__ . '/icons.php';
 
 $estConnecte = !empty($_SESSION['id_citoyen']);
 $estStaff    = $estConnecte && in_array($_SESSION['role'], ['agent', 'admin'], true);
-$lienCompte  = $estConnecte ? ($estStaff ? ($_SESSION['role'] === 'agent' ? 'admin-demandes-cnam' : 'dashboard') : 'profile') : 'login';
+$lienAgent   = 'admin-demandes-cnam';
+if ($estConnecte && ($_SESSION['role'] ?? '') === 'agent'
+    && class_exists('MunicipaliteModuleController')
+    && MunicipaliteModuleController::hasMunicipalitePermission((int) ($_SESSION['id_citoyen'] ?? 0), 'consulter_demandes')) {
+    $lienAgent = 'admin-demandes-municipales';
+}
+$lienCompte  = $estConnecte ? ($estStaff ? ($_SESSION['role'] === 'agent' ? $lienAgent : 'dashboard') : 'profile') : 'login';
 $autreLangue = et_lang() === 'fr' ? 'ar' : 'fr';
 ?>
 <a class="skip-link" href="#main"><?= e(t('nav.skip')) ?></a>

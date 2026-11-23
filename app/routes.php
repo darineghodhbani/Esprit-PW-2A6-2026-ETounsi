@@ -114,3 +114,55 @@ foreach (['ligne' => ['LigneTransportController', 'admin-lignes'],
     $routes['admin-' . $entite . '-update'] = [$module[0], 'updateBack', ['GET', 'POST'], 'admin'];
     $routes['admin-' . $entite . '-delete'] = [$module[0], 'deleteBack', ['POST'], 'admin'];
 }
+
+// Module Municipalité : démarches citoyennes, suivi, paiement et habilitations métiers.
+require_once __DIR__ . '/Controllers/MunicipaliteModuleController.php';
+$routes['municipalite-services'] = ['MunicipaliteModuleController', 'services', ['GET'], ['citoyen','admin']];
+$routes['municipalite-rendez-vous'] = ['MunicipaliteModuleController', 'rendezVous', ['GET'], ['citoyen','admin']];
+$routes['municipalite-documents'] = ['MunicipaliteModuleController', 'documents', ['GET'], ['citoyen','admin']];
+$routes['municipalite-demande'] = ['MunicipaliteModuleController', 'nouveau', ['GET'], ['citoyen','admin']];
+$routes['municipalite-enregistrer'] = ['MunicipaliteModuleController', 'enregistrer', ['POST'], ['citoyen','admin']];
+$routes['municipalite-suivi'] = ['MunicipaliteModuleController', 'suivi', ['GET'], ['citoyen','admin']];
+$routes['municipalite-recu'] = ['MunicipaliteModuleController', 'recu', ['GET'], ['citoyen','admin']];
+$routes['municipalite-payer'] = ['MunicipaliteModuleController', 'payer', ['POST'], ['citoyen','admin']];
+$routes['municipalite-paiement-demo'] = ['MunicipaliteModuleController', 'payerDemo', ['POST'], ['citoyen','admin']];
+$routes['municipalite-paiement-retour'] = ['MunicipaliteModuleController', 'retourPaiement', ['GET'], ['citoyen','admin']];
+$routes['admin-services-municipaux'] = ['MunicipaliteModuleController', 'servicesAdmin', ['GET'], 'admin'];
+$routes['admin-services'] = ['MunicipaliteModuleController', 'servicesAdmin', ['GET'], 'admin'];
+$routes['admin-demandes-municipales'] = ['MunicipaliteModuleController', 'demandesAdmin', ['GET'], ['agent','admin']];
+$routes['admin-demande-municipale-statut'] = ['MunicipaliteModuleController', 'statutAdmin', ['POST'], ['agent','admin']];
+$routes['admin-municipalite-agents'] = ['MunicipaliteModuleController', 'agentsMunicipalite', ['GET'], 'admin'];
+$routes['admin-municipalite-acces'] = ['MunicipaliteModuleController', 'affecterAgentMunicipalite', ['POST'], 'admin'];
+
+// Politique globale : chaque route doit déclarer qui peut l'utiliser.
+$routesPubliques = [
+    'signup', 'inscription', 'register', 'login', 'connexion',
+    'google-start', 'google-callback',
+    'home', 'administrations', 'module', 'lang', 'aide', 'projet', 'confidentialite',
+    'bureaux-poste', 'bureaux', 'suivi-colis', 'suivi', 'suiviColis',
+    'lignes-transport', 'stations-transport',
+];
+$routesAuthentifiees = [
+    'profile', 'profil', 'logout', 'deconnexion',
+    'declarer-propriete', 'payer-impot', 'mes-recus',
+    'declarer-envoi', 'declarerEnvoi', 'envoi', 'mes-colis', 'mesColis', 'historique',
+    'modifier-colis', 'supprimer-colis',
+];
+
+foreach ($routes as $nomRoute => &$route) {
+    if (isset($route[3])) {
+        continue;
+    }
+
+    if (in_array($nomRoute, $routesPubliques, true)) {
+        $route[3] = 'public';
+    } elseif (in_array($nomRoute, $routesAuthentifiees, true)) {
+        // Ces fonctions exigeaient déjà une session dans leurs contrôleurs.
+        $route[3] = 'authenticated';
+    } elseif ($nomRoute === 'dashboard' || str_starts_with($nomRoute, 'admin-')) {
+        $route[3] = 'admin';
+    } else {
+        throw new LogicException('Politique d’accès manquante pour la route : ' . $nomRoute);
+    }
+}
+unset($route);

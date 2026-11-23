@@ -244,6 +244,8 @@ return [
     "service.transport.stations" => "Stations et tarifs",
     "service.municipalite.services" => "Consulter les services municipaux",
     "service.municipalite.suivi" => "Suivre mes demandes",
+    "service.municipalite.appointments" => "Prendre un rendez-vous municipal",
+    "service.municipalite.documents" => "Suivre mes documents municipaux",
     "service.poste.bureaux" => "Trouver un bureau de poste",
     "service.poste.envoi" => "Déclarer et suivre un envoi",
     "service.finances.proprietes" => "Mes propriétés et mes impôts",

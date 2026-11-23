@@ -1,77 +1,69 @@
 <?php
+declare(strict_types=1);
 
-class DemandeMunicipale {
-    private ?int $idDemande;
-    private ?string $objet;
-    private ?string $description;
-    private ?string $statut;
-    private ?string $dateDemande;
-    private ?int $idCitoyen;
-    private ?int $idService;
+/** Entité métier d'une demande citoyenne du module Municipalité. */
+final class DemandeMunicipale
+{
+    public function __construct(
+        private int $serviceId,
+        private int $citoyenId,
+        private string $telephone,
+        private ?string $nomConcerne,
+        private ?string $dateActe,
+        private ?string $lieuActe,
+        private string $detailsJson,
+        private ?string $gouvernorat = null,
+        private ?string $delegation = null,
+        private ?string $dateSouhaitee = null,
+    ) {}
 
-    public function __construct(?int $idDemande, ?string $objet, ?string $description, ?string $statut, ?string $dateDemande, ?int $idCitoyen, ?int $idService) {
-        $this->idDemande = $idDemande;
-        $this->objet = $objet;
-        $this->description = $description;
-        $this->statut = $statut;
-        $this->dateDemande = $dateDemande;
-        $this->idCitoyen = $idCitoyen;
-        $this->idService = $idService;
+    public function getServiceId(): int
+    {
+        return $this->serviceId;
     }
 
-    public function getIdDemande(): ?int {
-        return $this->idDemande;
+    public function getCitoyenId(): int
+    {
+        return $this->citoyenId;
     }
 
-    public function setIdDemande(?int $idDemande): void {
-        $this->idDemande = $idDemande;
+    public function getTelephone(): string
+    {
+        return $this->telephone;
     }
 
-    public function getObjet(): ?string {
-        return $this->objet;
+    public function getNomConcerne(): ?string
+    {
+        return $this->nomConcerne;
     }
 
-    public function setObjet(?string $objet): void {
-        $this->objet = $objet;
+    public function getDateActe(): ?string
+    {
+        return $this->dateActe;
     }
 
-    public function getDescription(): ?string {
-        return $this->description;
+    public function getLieuActe(): ?string
+    {
+        return $this->lieuActe;
     }
 
-    public function setDescription(?string $description): void {
-        $this->description = $description;
+    public function getDetailsJson(): string
+    {
+        return $this->detailsJson;
     }
 
-    public function getStatut(): ?string {
-        return $this->statut;
+    public function getGouvernorat(): ?string
+    {
+        return $this->gouvernorat;
     }
 
-    public function setStatut(?string $statut): void {
-        $this->statut = $statut;
+    public function getDelegation(): ?string
+    {
+        return $this->delegation;
     }
 
-    public function getDateDemande(): ?string {
-        return $this->dateDemande;
-    }
-
-    public function setDateDemande(?string $dateDemande): void {
-        $this->dateDemande = $dateDemande;
-    }
-
-    public function getIdCitoyen(): ?int {
-        return $this->idCitoyen;
-    }
-
-    public function setIdCitoyen(?int $idCitoyen): void {
-        $this->idCitoyen = $idCitoyen;
-    }
-
-    public function getIdService(): ?int {
-        return $this->idService;
-    }
-
-    public function setIdService(?int $idService): void {
-        $this->idService = $idService;
+    public function getDateSouhaitee(): ?string
+    {
+        return $this->dateSouhaitee;
     }
 }

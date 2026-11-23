@@ -12,7 +12,7 @@ class Controller {
         ob_start();
         require __DIR__ . '/../Views/backoffice/pages/' . $vue . '.php';
         $content = ob_get_clean();
-        if (strpos($vue, 'poste/') === 0 || strpos($vue, 'utilisateurs/') === 0 || strpos($vue, 'commun/') === 0) {
+        if (strpos($vue, 'poste/') === 0 || strpos($vue, 'utilisateurs/') === 0 || strpos($vue, 'commun/') === 0 || strpos($vue, 'municipalite/') === 0) {
             $content = '<main id="contenu" class="poste-admin">' . $content . '</main>';
         }
 
@@ -25,7 +25,7 @@ class Controller {
         $utilisateur = utilisateurConnecte();
         $pageTitle = $data['title'] ?? 'E-Tounsi';
         extract($data);
-        if (strpos($vue, 'poste/') === 0 || strpos($vue, 'cnam/') === 0 || strpos($vue, 'transport/') === 0) {
+        if (strpos($vue, 'poste/') === 0 || strpos($vue, 'cnam/') === 0 || strpos($vue, 'transport/') === 0 || strpos($vue, 'municipalite/') === 0) {
             ob_start();
             require __DIR__ . '/../Views/frontoffice/' . $vue . '.php';
             $content = ob_get_clean();

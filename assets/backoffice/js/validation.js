@@ -97,10 +97,14 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('form[data-validate-form]').forEach(function (form) {
+        document.querySelectorAll('form').forEach(function (form) {
             form.addEventListener('submit', function (event) {
-                if (!validateForm(form)) {
+                var customValid = validateForm(form);
+                var nativeValid = form.checkValidity();
+
+                if (!customValid || !nativeValid) {
                     event.preventDefault();
+                    if (!nativeValid) form.reportValidity();
                 }
             });
             form.querySelectorAll('[data-validate]').forEach(function (field) {
