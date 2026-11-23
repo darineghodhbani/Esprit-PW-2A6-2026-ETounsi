@@ -2,7 +2,7 @@
 
 ## Overview
 
-Projet Technologies Web, classe 2A6, Esprit School of Engineering, année universitaire 2026–2027. Cette version réunit les modules Poste, Recette des Finances et CNAM dans la structure MVC et le thème commun de la branche `integration`, avec un compte citoyen partagé et une connexion Google OAuth.
+Projet Technologies Web, classe 2A6, Esprit School of Engineering, année universitaire 2026–2027. Cette version réunit les modules Municipalité, Poste, Recette des Finances, Transport et CNAM dans la structure MVC et le thème commun de la branche `integration`, avec un compte citoyen partagé et une connexion Google OAuth.
 
 ## Features
 
@@ -170,4 +170,4 @@ Les sélecteurs Gouvernorat / Délégation reposent sur `app/Data/municipalite-d
 
 Les quatre entités métier principales demandées pour la Municipalité sont `MunicipaliteService`, `DemandeMunicipale`, `RendezVous` et `DocumentMunicipal`. Paiement et notification restent aussi pris en charge comme fonctions transversales du module. La migration crée notamment les tables dédiées `municipalite_rendez_vous` et `municipalite_document`, sans supprimer les données déjà enregistrées. Les attributs et cardinalités sont décrits dans [docs/entites-municipalite.md](docs/entites-municipalite.md).
 
-Le métier avancé de contrôle d'accès par rôle est visible dans `app/Security/MunicipaliteAuthorization.php` et documenté dans [docs/controle-acces-municipalite.md](docs/controle-acces-municipalite.md). Un Agent sans habilitation n'accède à aucune demande municipale ; l'administrateur attribue lecture ou traitement depuis le Back Office.
+Le contrôle d'accès global par rôle est appliqué dans `index.php` à partir des règles de `app/routes.php` ; chaque route est publique, réservée aux utilisateurs connectés ou limitée à un ou plusieurs rôles. Les habilitations métier supplémentaires de la Municipalité sont centralisées dans `app/Security/MunicipaliteAuthorization.php` et expliquées dans [docs/controle-acces-municipalite.md](docs/controle-acces-municipalite.md). Un Agent sans habilitation n'accède à aucune demande municipale ; l'administrateur attribue lecture ou traitement depuis le Back Office.

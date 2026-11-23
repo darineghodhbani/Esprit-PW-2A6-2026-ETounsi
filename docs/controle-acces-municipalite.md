@@ -1,4 +1,10 @@
-# Métier avancé — contrôle d'accès municipal
+# Contrôle d'accès par rôle
+
+## Règles globales du portail
+
+Le routeur applique une politique à chaque route. `index.php` accepte une route explicitement publique, exige une session pour les routes authentifiées ou appelle `exigerRole()` pour les rôles autorisés. Les politiques sont déclarées dans `app/routes.php`. Une route sans règle est refusée.
+
+## Habilitations métier Municipalité
 
 La politique serveur est centralisée dans `app/Security/MunicipaliteAuthorization.php`.
 
